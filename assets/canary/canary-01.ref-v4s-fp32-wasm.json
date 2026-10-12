@@ -1,0 +1,89 @@
+{
+  "about": "Reference detections of assets/canary/canary-01.png from detector-v4-s.fixed.onnx on the onnxruntime-web WASM EP (fp32). The engine compares its first WebGPU run against this (DET-01 rule: same label, IoU >= 0.9, recall >= 0.98, precision >= 0.95, |count diff| <= 1).",
+  "recordedAt": "2026-10-09",
+  "model": {
+    "file": "detector-v4-s.fixed.onnx",
+    "sha256": "4a01e0bf9c265248f0eeb2f657789ddeaf9ac169d6566ddaf255a0e59afc44fa"
+  },
+  "ort": "1.30.0",
+  "backend": "wasm",
+  "input": {
+    "width": 800,
+    "height": 1200,
+    "resize": "stretch 640x640, RGB/255, NCHW",
+    "origTargetSizes": "[W,H]"
+  },
+  "scoreMin": 0.3,
+  "labels": {
+    "0": "bubble",
+    "1": "text_bubble",
+    "2": "text_free"
+  },
+  "detections": [
+    {
+      "label": 0,
+      "score": 0.9788,
+      "box": [107.08, 103.04, 339.96, 234.25]
+    },
+    {
+      "label": 0,
+      "score": 0.9778,
+      "box": [473.96, 1008.38, 715.6, 1133.35]
+    },
+    {
+      "label": 0,
+      "score": 0.9755,
+      "box": [445.19, 158.7, 673.21, 354.39]
+    },
+    {
+      "label": 1,
+      "score": 0.9582,
+      "box": [510.94, 1042.29, 680.02, 1102.65]
+    },
+    {
+      "label": 1,
+      "score": 0.958,
+      "box": [146.34, 136.19, 300.95, 201.15]
+    },
+    {
+      "label": 0,
+      "score": 0.9552,
+      "box": [129.33, 550.92, 258.93, 737.77]
+    },
+    {
+      "label": 1,
+      "score": 0.9541,
+      "box": [494.81, 205.08, 624.8, 307.23]
+    },
+    {
+      "label": 0,
+      "score": 0.9517,
+      "box": [493.16, 563.49, 638.36, 637.21]
+    },
+    {
+      "label": 1,
+      "score": 0.9297,
+      "box": [502.96, 573.59, 627.83, 628.36]
+    },
+    {
+      "label": 0,
+      "score": 0.8764,
+      "box": [260.71, 982.15, 416.04, 1035.11]
+    },
+    {
+      "label": 1,
+      "score": 0.8424,
+      "box": [157.66, 584.42, 230.69, 702.76]
+    },
+    {
+      "label": 1,
+      "score": 0.8409,
+      "box": [270.62, 994.82, 405.11, 1024.12]
+    },
+    {
+      "label": 2,
+      "score": 0.7267,
+      "box": [633.18, 710.79, 740.33, 754.98]
+    }
+  ]
+}

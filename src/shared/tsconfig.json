@@ -1,0 +1,12 @@
+{
+  // PURE code: no DOM, no chrome, no Node-only globals (ESLint bans process/Buffer/require).
+  // @types/node only supplies web-standard globals that Node and Chrome share (URL, TextEncoder, ...).
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "lib": ["es2025"],
+    "types": ["node"]
+  },
+  "include": ["./**/*.ts"]
+}

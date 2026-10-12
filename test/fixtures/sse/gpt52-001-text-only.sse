@@ -1,0 +1,16 @@
+data: {"id":"chatcmpl-1791635475851-xsg9ho580","object":"chat.completion.chunk","created":1791635492,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"role":"assistant"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635475851-xsg9ho580","object":"chat.completion.chunk","created":1791635492,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"@"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635475851-xsg9ho580","object":"chat.completion.chunk","created":1791635492,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"lang"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635475851-xsg9ho580","object":"chat.completion.chunk","created":1791635492,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635475851-xsg9ho580","object":"chat.completion.chunk","created":1791635492,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"en"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635475851-xsg9ho580","object":"chat.completion.chunk","created":1791635496,"model":"azure-gpt-5.2","choices":[],"usage":{"prompt_tokens":988,"completion_tokens":2,"total_tokens":990}}
+
+data: {"id":"chatcmpl-1791635475851-xsg9ho580","object":"chat.completion.chunk","created":1791635496,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+
+data: [DONE]
+

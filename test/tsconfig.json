@@ -1,0 +1,11 @@
+{
+  // Unit and integration tests run by `node --test` (type stripping).
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "lib": ["es2025", "dom"],
+    "types": ["node", "chrome"]
+  },
+  "include": ["./**/*.ts", "../src/types/**/*.d.ts"]
+}

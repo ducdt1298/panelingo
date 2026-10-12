@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="{{LANG}}" data-page="{{PAGE}}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{TITLE}}</title>
+    {{REFERRER_META}}
+    <link rel="stylesheet" href="/_shared/fixture.css" />
+    <script type="application/json" id="ctv-fixture-data">
+      {{DATA}}
+    </script>
+    <script src="/_shared/fixture.js"></script>
+    <script src="/paged/page.js" defer></script>
+  </head>
+  <body>
+    <header class="fixture-bar">
+      <strong>Paged reader</strong>
+      <a href="/paged/?set=ko-p01">ko</a>
+      <a href="/paged/?set=ja-p01">ja</a>
+      <a href="/paged/?set=zh-p01">zh</a>
+      <a href="/paged/?set=en-p01">en</a>
+      <a href="/paged/?set=es-p01">es</a>
+      <a href="/">all fixtures</a>
+    </header>
+    <main class="paged" id="reader">{{IMAGES}}</main>
+  </body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "models": [
+    {
+      "id": "v4s-fp32-upstream",
+      "file": "detector-v4-s.onnx",
+      "role": "source-of-v4s-fp32",
+      "license": "Apache-2.0",
+      "url": "https://huggingface.co/ogkalu/comic-text-and-bubble-detector/resolve/5084e7d2ff7e0934f474145d0316e182ed4cc85b/detector-v4-s.onnx",
+      "bytes": 41393650,
+      "sha256": "841da5c69b0f8c582e2654577b9bb2af462733df1c654471a932fe476700fa53",
+      "ship": false
+    },
+    {
+      "id": "v4s-fp32",
+      "file": "detector-v4-s.fixed.onnx",
+      "role": "primary-webgpu",
+      "license": "Apache-2.0",
+      "derivedFrom": "v4s-fp32-upstream",
+      "transform": "strip-value-info",
+      "bytes": 41361666,
+      "sha256": "4a01e0bf9c265248f0eeb2f657789ddeaf9ac169d6566ddaf255a0e59afc44fa"
+    },
+    {
+      "id": "v4s-int8",
+      "file": "detector-v4-s_int8.onnx",
+      "role": "fallback-wasm",
+      "license": "Apache-2.0",
+      "url": "https://huggingface.co/ogkalu/comic-text-and-bubble-detector/resolve/16e8a622f91fabc6b5b65c96d32d1183f8843546/detector-v4-s_int8.onnx",
+      "bytes": 11120765,
+      "sha256": "5fe9e4f576e49d4e7e8b0e029d6d3cdc252abd4694113e1cae120e62c931ea79"
+    }
+  ]
+}

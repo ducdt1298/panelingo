@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" data-page="index">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Panelingo fixtures</title>
+    <link rel="stylesheet" href="/_shared/fixture.css" />
+  </head>
+  <body>
+    <header class="fixture-bar"><strong>Fixture reader</strong> {{READER}} | CDN {{CDN}}</header>
+    <main class="note">
+      <h1>Fixture pages</h1>
+      <p>All images are generated drawings (<code>npm run fixtures</code>); none come from real comics.</p>
+      <ul>
+        <li>
+          Paged:
+          <a href="/paged/?set=ko-p01">ko-p01</a>, <a href="/paged/?set=ja-p01">ja-p01</a>,
+          <a href="/paged/?set=zh-p01">zh-p01</a>, <a href="/paged/?set=en-p01">en-p01</a>,
+          <a href="/paged/?set=es-p01">es-p01</a>, <a href="/paged/?set=ko-p01&amp;via=blob">blob: URL</a>,
+          <a href="/paged/?set=ko-p01&amp;crossorigin=anonymous">crossorigin</a>
+        </li>
+        <li>
+          Webtoon:
+          <a href="/webtoon/?set=chapter-ko-60&amp;n=60&amp;lazy=io&amp;margin=300">IntersectionObserver</a>,
+          <a href="/webtoon/?set=chapter-ko-60&amp;n=60&amp;lazy=native">loading=lazy</a>,
+          <a href="/webtoon/?set=chapter-ko-60&amp;n=60&amp;lazy=none">eager</a>,
+          <a href="/webtoon/?set=chapter-ko-60&amp;n=10&amp;protected=cookie">cookie-gated</a>,
+          <a href="/webtoon/?set=chapter-ko-60&amp;n=10&amp;delay=1500">slow CDN</a>,
+          <a href="/webtoon/?set=ko-strip01&amp;lazy=none">ko-strip01</a>,
+          <a href="/webtoon/?set=es-strip01&amp;lazy=none">es-strip01</a>
+        </li>
+        <li>
+          Seams:
+          <a href="/seam/?gap=0">gap 0</a>,
+          <a href="/seam/?gap=4">gap 4</a>
+        </li>
+        <li>
+          Formats:
+          <a href="/webp/">WebP slices</a>,
+          <a href="/srcset/">srcset and picture</a>
+        </li>
+        <li>
+          Hotlink protection:
+          <a href="/protected/">Referer (origin is enough)</a>,
+          <a href="/protected-full/">Referer (full page URL)</a>
+        </li>
+        <li>
+          Navigation:
+          <a href="/infinite/">infinite chapters</a>, <a href="/spa/">SPA (pushState)</a>,
+          <a href="/prerender/">prerender</a>
+        </li>
+        <li>
+          Hard cases:
+          <a href="/canvas/">canvas only</a>, <a href="/canvas/?src=cdn">tainted canvas</a>,
+          <a href="/csp/">strict CSP + Trusted Types</a>,
+          <a href="/iframe/">frames</a>
+        </li>
+      </ul>
+      <p>
+        CDN tools: <a href="{{CDN}}/__log">request log</a>, <a href="/__fixtures">generated files</a>. Routes
+        and query knobs: <code>tools/fixture-server/README.md</code>.
+      </p>
+    </main>
+  </body>
+</html>

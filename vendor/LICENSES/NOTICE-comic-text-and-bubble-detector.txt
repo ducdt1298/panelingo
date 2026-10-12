@@ -1,0 +1,21 @@
+comic-text-and-bubble-detector (ONNX exports by ogkalu)
+Source: https://huggingface.co/ogkalu/comic-text-and-bubble-detector
+License: Apache License 2.0 (as declared on the Hugging Face model card; see Apache-2.0.txt)
+
+The upstream repository ships no LICENSE or NOTICE file, so this notice and a copy of the
+Apache-2.0 text are included here for attribution. Files pinned by commit and sha256 in
+vendor/models.lock.json:
+
+  detector-v4-s.onnx        upstream, commit 5084e7d2ff7e0934f474145d0316e182ed4cc85b
+                            sha256 841da5c69b0f8c582e2654577b9bb2af462733df1c654471a932fe476700fa53
+                            (not shipped; input of the modified file below)
+  detector-v4-s_int8.onnx   upstream, unmodified, commit 16e8a622f91fabc6b5b65c96d32d1183f8843546
+                            sha256 5fe9e4f576e49d4e7e8b0e029d6d3cdc252abd4694113e1cae120e62c931ea79
+
+MODIFIED FILE (Apache-2.0 section 4(b)):
+  detector-v4-s.fixed.onnx  derived from detector-v4-s.onnx by the Panelingo contributors (2026-10-09):
+                            all 882 GraphProto.value_info entries (optional shape hints) were removed
+                            because three of them (linear_28/43/58) declare rank 1 where the model
+                            produces rank 2, which makes onnxruntime 1.30 refuse the model. Nodes,
+                            initializers (weights), inputs and outputs are unchanged.
+                            sha256 4a01e0bf9c265248f0eeb2f657789ddeaf9ac169d6566ddaf255a0e59afc44fa

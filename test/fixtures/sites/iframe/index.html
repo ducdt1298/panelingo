@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="{{LANG}}" data-page="{{PAGE}}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{TITLE}}</title>
+    {{REFERRER_META}}
+    <link rel="stylesheet" href="/_shared/fixture.css" />
+    <script type="application/json" id="ctv-fixture-data">
+      {{DATA}}
+    </script>
+    <script src="/_shared/fixture.js"></script>
+    <script src="/iframe/page.js" defer></script>
+  </head>
+  <body>
+    <header class="fixture-bar">
+      <strong>Frames</strong>
+      <span>top frame, same-origin, about:blank, srcdoc and a cross-origin frame on the CDN origin</span>
+      <a href="/">all fixtures</a>
+    </header>
+    <main class="frames">
+      <figure>
+        <figcaption>Same-origin iframe</figcaption>
+        <iframe id="same-frame" src="{{CHILD_SRC}}" title="same-origin frame"></iframe>
+      </figure>
+      <figure>
+        <figcaption>about:blank iframe filled by script</figcaption>
+        <iframe id="blank-frame" title="about:blank frame"></iframe>
+      </figure>
+      <figure>
+        <figcaption>srcdoc iframe</figcaption>
+        <iframe id="srcdoc-frame" srcdoc="{{SRCDOC}}" title="srcdoc frame"></iframe>
+      </figure>
+      <figure>
+        <figcaption>Cross-origin iframe (CDN origin)</figcaption>
+        <iframe id="cross-frame" src="{{FRAME_SRC}}" title="cross-origin frame"></iframe>
+      </figure>
+    </main>
+    <section class="paged" id="reader">
+      <h2>Top frame</h2>
+      {{IMAGES}}
+    </section>
+  </body>
+</html>

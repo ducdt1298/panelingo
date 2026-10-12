@@ -1,0 +1,11 @@
+{
+  // E2E tests run by `node --test` against the built extension in Chrome (puppeteer-core, CDP loadUnpacked).
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "lib": ["es2025", "dom"],
+    "types": ["node", "chrome"]
+  },
+  "include": ["./**/*.ts", "../src/types/**/*.d.ts"]
+}

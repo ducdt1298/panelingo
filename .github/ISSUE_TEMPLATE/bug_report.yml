@@ -1,0 +1,121 @@
+name: Bug report
+description: Something does not work as described in the documentation.
+title: "bug: "
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a problem.
+
+        **Never paste an API key, cookies or private URLs.** If the bug is a security issue, do not open a public
+        issue: follow [SECURITY.md](https://github.com/ducdt1298/panelingo/blob/main/SECURITY.md).
+
+  - type: input
+    id: version
+    attributes:
+      label: Extension version
+      description: Shown on `chrome://extensions` (or `version` in `dist/manifest.json` for a local build).
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and operating system
+      description: From `chrome://version`.
+      placeholder: "Chrome 150.0.0000.00 on Windows 11"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install it?
+      options:
+        - Chrome Web Store
+        - Release zip from GitHub
+        - Built from source (npm run build / build:prod)
+    validations:
+      required: true
+
+  - type: input
+    id: provider
+    attributes:
+      label: Provider and model
+      description: The base URL host and model id from the options page (no API key).
+      placeholder: "api.openai.com, gpt-4o-mini  /  127.0.0.1:11434 (Ollama), qwen2.5vl:7b"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Images are not detected or not translated
+        - Text detection / erasing looks wrong
+        - Translation quality or wrong language
+        - Lettering (font size, placement, overflow)
+        - Connection to the provider / errors from the API
+        - Popup, options page or side panel
+        - Performance or memory
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: site
+    attributes:
+      label: Kind of site
+      description: >-
+        For example "webtoon reader with lazy loading", "paged manga reader", "image inside an iframe". Share a
+        public URL only if you are comfortable doing so.
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Enable the extension on the site from the popup
+        2. Scroll to ...
+        3. See ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Screenshots help a lot (crop out anything private).
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: >-
+        Error text from the popup or overlay badge, and relevant lines from the extension's service worker or
+        offscreen console (`chrome://extensions` → Inspect views). Remove keys and private URLs first.
+      render: text
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: The configured model accepts image input (see the provider table in the README).
+          required: true
+        - label: I removed API keys and other secrets from everything above.
+          required: true

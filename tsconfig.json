@@ -1,0 +1,19 @@
+{
+  // Browser environment: offscreen engine, content script, extension UI pages and chrome-bound platform helpers.
+  // Bundled by esbuild, so bundler resolution; relative imports still carry .ts so Node tests can load them.
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["es2025", "dom"],
+    "types": ["chrome"]
+  },
+  "include": [
+    "src/manifest.ts",
+    "src/types/**/*.d.ts",
+    "src/platform/**/*.ts",
+    "src/engine/**/*.ts",
+    "src/content/**/*.ts",
+    "src/ui/**/*.ts"
+  ]
+}

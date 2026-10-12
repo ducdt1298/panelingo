@@ -1,0 +1,150 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 24.x
+
+jobs:
+  # Synthetic test images are generated, not committed (test/fixtures/generated is gitignored). The generator uses
+  # Python + Pillow and reads fonts that ship with Windows, so it runs on a Windows runner and hands the result to
+  # the Linux test job as an artifact. The output is cached until the generator or its sentences change.
+  fixtures:
+    name: Generate test fixtures
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore fixture cache
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: test/fixtures/generated
+          key: fixtures-${{ hashFiles('tools/fixtures/**', 'test/fixtures/sentences/**') }}
+
+      - name: Set up Python
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Generate fixtures
+        if: steps.cache.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          python -m pip install --disable-pip-version-check "pillow==12.3.*"
+          python -I -B tools/fixtures/make_fixtures.py --out test/fixtures/generated --seed 1 --assets never
+
+      - name: Upload fixtures
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-fixtures
+          path: test/fixtures/generated
+          retention-days: 3
+          if-no-files-found: error
+
+  check:
+    name: Typecheck, lint, format, unit + integration tests
+    runs-on: ubuntu-latest
+    needs: fixtures
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Download fixtures
+        uses: actions/download-artifact@v4
+        with:
+          name: test-fixtures
+          path: test/fixtures/generated
+
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run test:cov
+
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      # The detector models are downloaded from Hugging Face (pinned commits, sha256-verified) and never committed.
+      - name: Restore model cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/models
+          key: models-${{ hashFiles('vendor/models.lock.json') }}
+
+      - run: npm run fetch-models
+      - run: npm run build:prod
+
+      - name: Upload extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: panelingo-dist-${{ github.sha }}
+          path: dist
+          retention-days: 14
+          if-no-files-found: error
+
+  e2e:
+    name: End-to-end tests (Chrome, fixture server, mock API)
+    runs-on: ubuntu-latest
+    needs: fixtures
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Download fixtures
+        uses: actions/download-artifact@v4
+        with:
+          name: test-fixtures
+          path: test/fixtures/generated
+
+      - name: Restore model cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/models
+          key: models-${{ hashFiles('vendor/models.lock.json') }}
+
+      - run: npm run fetch-models
+
+      # Headless Chrome stable from the runner image; no WebGPU there, so the detector runs on WebAssembly. The
+      # extension only ever talks to the mock OpenAI-compatible server the tests start on an ephemeral port.
+      - name: Run E2E tests
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: npm run test:e2e

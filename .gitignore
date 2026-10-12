@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.cache/
+coverage/
+reports/
+private/
+test/fixtures/generated/
+*.log
+user-build/
+build-*/
+__pycache__/
+.ruff_cache/
+release/

@@ -1,0 +1,863 @@
+{
+  "lang": "es",
+  "about": "Original lines written for this project's synthetic fixtures (no quotes from published works). Spanish translations of the lines with the same id in en.json; vi is the same reference Vietnamese translation. canary is an invented token that must survive translation verbatim.",
+  "lines": [
+    {
+      "id": "d01",
+      "type": "dialogue",
+      "text": "NOS VEMOS A LAS SIETE FRENTE A LA ESTACIÓN.",
+      "vi": "Bảy giờ gặp nhau trước nhà ga nhé."
+    },
+    {
+      "id": "d02",
+      "type": "dialogue",
+      "text": "¡ESTE MAPA SOLO MUESTRA MEDIO PUEBLO!",
+      "vi": "Tấm bản đồ này chỉ có một nửa thị trấn thôi!"
+    },
+    {
+      "id": "d03",
+      "type": "dialogue",
+      "text": "¿CERRASTE LA PUERTA DE ATRÁS?",
+      "vi": "Cậu khóa cửa sau chưa?"
+    },
+    {
+      "id": "d04",
+      "type": "dialogue",
+      "text": "EL AUTOBÚS LLEGA TARDE OTRA VEZ.",
+      "vi": "Xe buýt lại trễ nữa rồi."
+    },
+    {
+      "id": "d05",
+      "type": "dialogue",
+      "text": "YO LLEVO LAS CAJAS. TÚ ABRE LA PUERTA.",
+      "vi": "Để mình bê thùng, cậu mở cửa giúp nhé."
+    },
+    {
+      "id": "d06",
+      "type": "dialogue",
+      "text": "¿QUIÉN DEJÓ LA VENTANA ABIERTA?",
+      "vi": "Ai để cửa sổ mở thế?"
+    },
+    {
+      "id": "d07",
+      "type": "dialogue",
+      "text": "ESTA VEZ PAGAMOS A MEDIAS.",
+      "vi": "Lần này chia đôi tiền nhé."
+    },
+    {
+      "id": "d08",
+      "type": "dialogue",
+      "text": "ESE PARAGUAS NO ES MÍO.",
+      "vi": "Cái ô đó không phải của mình."
+    },
+    {
+      "id": "d09",
+      "type": "dialogue",
+      "text": "¡CORRE, LA TIENDA CIERRA EN DIEZ MINUTOS!",
+      "vi": "Nhanh lên, mười phút nữa cửa hàng đóng cửa rồi!"
+    },
+    {
+      "id": "d10",
+      "type": "dialogue",
+      "text": "OTRA VEZ HORNEÉ DEMASIADO PAN.",
+      "vi": "Mình lại nướng quá nhiều bánh mì rồi."
+    },
+    {
+      "id": "d11",
+      "type": "dialogue",
+      "text": "¿OYES ESE RUIDO TAN RARO?",
+      "vi": "Cậu có nghe thấy tiếng động lạ đó không?"
+    },
+    {
+      "id": "d12",
+      "type": "dialogue",
+      "text": "VOLVAMOS A CASA POR EL CAMINO LARGO.",
+      "vi": "Mình đi đường vòng về nhà đi."
+    },
+    {
+      "id": "d13",
+      "type": "dialogue",
+      "text": "TIENES EL CORDÓN DESATADO.",
+      "vi": "Dây giày của cậu bị tuột kìa."
+    },
+    {
+      "id": "d14",
+      "type": "dialogue",
+      "text": "¡ESPERA, ME OLVIDÉ LA CARTERA!",
+      "vi": "Khoan đã, mình quên ví rồi!"
+    },
+    {
+      "id": "d15",
+      "type": "dialogue",
+      "text": "¿ESTÁ OCUPADO ESTE ASIENTO?",
+      "vi": "Chỗ này có ai ngồi chưa ạ?"
+    },
+    {
+      "id": "d16",
+      "type": "dialogue",
+      "text": "EL CAFÉ DE AQUÍ ESTÁ SORPRENDENTEMENTE BUENO.",
+      "vi": "Cà phê ở đây ngon bất ngờ đấy."
+    },
+    {
+      "id": "d17",
+      "type": "dialogue",
+      "text": "¡NO TOQUES ESE BOTÓN!",
+      "vi": "Đừng chạm vào cái nút đó!"
+    },
+    {
+      "id": "d18",
+      "type": "dialogue",
+      "text": "CREO QUE NOS HEMOS PERDIDO.",
+      "vi": "Hình như chúng ta lạc đường rồi."
+    },
+    {
+      "id": "d19",
+      "type": "dialogue",
+      "text": "PÁSAME EL CUADERNO AZUL.",
+      "vi": "Đưa mình cuốn vở màu xanh với."
+    },
+    {
+      "id": "d20",
+      "type": "dialogue",
+      "text": "PRONTO DEJARÁ DE LLOVER.",
+      "vi": "Mưa sắp tạnh rồi."
+    },
+    {
+      "id": "d21",
+      "type": "dialogue",
+      "text": "TE LLAMO CUANDO LLEGUE.",
+      "vi": "Tới nơi mình sẽ gọi cho cậu."
+    },
+    {
+      "id": "d22",
+      "type": "dialogue",
+      "text": "¿QUIÉN SE COMIÓ LA ÚLTIMA EMPANADILLA?",
+      "vi": "Ai ăn miếng sủi cảo cuối cùng rồi?"
+    },
+    {
+      "id": "d23",
+      "type": "dialogue",
+      "text": "¡HOY LLEGAS TEMPRANO!",
+      "vi": "Hôm nay cậu đến sớm thế!"
+    },
+    {
+      "id": "d24",
+      "type": "dialogue",
+      "text": "EL ASCENSOR ESTÁ ROTO OTRA VEZ.",
+      "vi": "Thang máy lại hỏng nữa rồi."
+    },
+    {
+      "id": "d25",
+      "type": "dialogue",
+      "text": "QUEDAMOS EN LA PANADERÍA MELUNDE.",
+      "canary": "Melunde",
+      "vi": "Gặp nhau ở tiệm bánh Melunde nhé."
+    },
+    {
+      "id": "d26",
+      "type": "dialogue",
+      "text": "ZORVAKI NOS ENVIÓ OTRA CARTA.",
+      "canary": "Zorvaki",
+      "vi": "Zorvaki lại gửi thư cho bọn mình nữa."
+    },
+    {
+      "id": "d27",
+      "type": "dialogue",
+      "text": "ACABA DE LLEGAR EL PAQUETE DE QUISTREL.",
+      "canary": "Quistrel",
+      "vi": "Bưu kiện từ Quistrel vừa tới."
+    },
+    {
+      "id": "d28",
+      "type": "dialogue",
+      "text": "¿VARNEXA SIGUE ESPERANDO FUERA?",
+      "canary": "Varnexa",
+      "vi": "Varnexa vẫn đang đợi ở ngoài à?"
+    },
+    {
+      "id": "d29",
+      "type": "dialogue",
+      "text": "LA HABITACIÓN KX-47 ESTÁ EN EL TERCER PISO.",
+      "canary": "KX-47",
+      "vi": "Phòng KX-47 ở tầng ba."
+    },
+    {
+      "id": "d30",
+      "type": "dialogue",
+      "text": "PERDÍ MI BILLETE PARA EL TREN DE OBRILLO.",
+      "canary": "Obrillo",
+      "vi": "Mình làm mất vé tàu đi Obrillo rồi."
+    },
+    {
+      "id": "d31",
+      "type": "dialogue",
+      "text": "TALUVEX DICE QUE LA REUNIÓN PASÓ AL VIERNES.",
+      "canary": "Taluvex",
+      "vi": "Taluvex bảo cuộc họp dời sang thứ Sáu rồi."
+    },
+    {
+      "id": "d32",
+      "type": "dialogue",
+      "text": "EL GATO DUERME OTRA VEZ SOBRE MIS DEBERES.",
+      "vi": "Con mèo lại nằm ngủ trên bài tập của mình."
+    },
+    {
+      "id": "d33",
+      "type": "dialogue",
+      "text": "GIRA A LA IZQUIERDA DESPUÉS DEL PUENTE.",
+      "vi": "Qua cầu thì rẽ trái nhé."
+    },
+    {
+      "id": "d34",
+      "type": "dialogue",
+      "text": "¿QUIERES TÉ O ZUMO?",
+      "vi": "Cậu muốn uống trà hay nước ép?"
+    },
+    {
+      "id": "d35",
+      "type": "dialogue",
+      "text": "NUNCA HABÍA VISTO TANTA NIEVE.",
+      "vi": "Lần đầu mình thấy tuyết dày thế này."
+    },
+    {
+      "id": "d36",
+      "type": "dialogue",
+      "text": "TU MÓVIL NO PARA DE VIBRAR.",
+      "vi": "Điện thoại của cậu cứ rung mãi."
+    },
+    {
+      "id": "d37",
+      "type": "dialogue",
+      "text": "VÁMONOS ANTES DE QUE OSCUREZCA.",
+      "vi": "Đi thôi, trước khi trời tối."
+    },
+    {
+      "id": "d38",
+      "type": "dialogue",
+      "text": "BAJA LA VOZ, TODOS ESTÁN DORMIDOS.",
+      "vi": "Nói nhỏ thôi, mọi người ngủ cả rồi."
+    },
+    {
+      "id": "d39",
+      "type": "dialogue",
+      "text": "ESTA LLAVE NO ABRE NINGUNA CERRADURA.",
+      "vi": "Chiếc chìa khóa này không vừa ổ nào cả."
+    },
+    {
+      "id": "d40",
+      "type": "dialogue",
+      "text": "EL JARDÍN DE LA ABUELA ESTÁ PRECIOSO.",
+      "vi": "Khu vườn của bà đẹp quá."
+    },
+    {
+      "id": "d41",
+      "type": "dialogue",
+      "text": "¿PUEDES ARREGLAR LA RADIO?",
+      "vi": "Cậu sửa được cái radio không?"
+    },
+    {
+      "id": "d42",
+      "type": "dialogue",
+      "text": "GRACIAS, TE DEBO UNA.",
+      "vi": "Cảm ơn nhé, mình nợ cậu một lần."
+    },
+    {
+      "id": "d43",
+      "type": "dialogue",
+      "text": "PERDIMOS EL ÚLTIMO TREN.",
+      "vi": "Bọn mình lỡ chuyến tàu cuối rồi."
+    },
+    {
+      "id": "d44",
+      "type": "dialogue",
+      "text": "¡MIRA ARRIBA, YA SALIERON LAS ESTRELLAS!",
+      "vi": "Nhìn lên kìa, sao lên rồi!"
+    },
+    {
+      "id": "d45",
+      "type": "dialogue",
+      "text": "LA SOPA ESTÁ DEMASIADO SALADA.",
+      "vi": "Canh mặn quá."
+    },
+    {
+      "id": "d46",
+      "type": "dialogue",
+      "text": "NO ESTOY LISTO PARA EL EXAMEN.",
+      "vi": "Mình chưa ôn thi gì cả."
+    },
+    {
+      "id": "d47",
+      "type": "dialogue",
+      "text": "PINTEMOS LA VALLA DE AZUL.",
+      "vi": "Mình sơn hàng rào màu xanh đi."
+    },
+    {
+      "id": "d48",
+      "type": "dialogue",
+      "text": "ALGUIEN MOVIÓ MI SILLA.",
+      "vi": "Ai đó đã dời ghế của mình."
+    },
+    {
+      "id": "d49",
+      "type": "dialogue",
+      "text": "¿SABES DÓNDE ESTÁ LA BIBLIOTECA?",
+      "vi": "Cậu có biết thư viện ở đâu không?"
+    },
+    {
+      "id": "d50",
+      "type": "dialogue",
+      "text": "EL FESTIVAL EMPIEZA MAÑANA POR LA NOCHE.",
+      "vi": "Lễ hội bắt đầu vào tối mai."
+    },
+    {
+      "id": "d51",
+      "type": "dialogue",
+      "text": "¡AGÁRRATE FUERTE!",
+      "vi": "Bám chắc vào!"
+    },
+    {
+      "id": "d52",
+      "type": "dialogue",
+      "text": "CUIDADO DÓNDE PISAS, EL SUELO ESTÁ MOJADO.",
+      "vi": "Coi chừng dưới chân, sàn ướt đấy."
+    },
+    {
+      "id": "d53",
+      "type": "dialogue",
+      "text": "ENCONTRÉ UNA FOTO VIEJA EN EL CAJÓN.",
+      "vi": "Mình tìm thấy một tấm ảnh cũ trong ngăn kéo."
+    },
+    {
+      "id": "d54",
+      "type": "dialogue",
+      "text": "¿POR QUÉ ESTÁ VACÍA LA NEVERA?",
+      "vi": "Sao tủ lạnh trống trơn vậy?"
+    },
+    {
+      "id": "d55",
+      "type": "dialogue",
+      "text": "PROMETISTE AYUDARME CON LA MUDANZA.",
+      "vi": "Cậu đã hứa giúp mình chuyển nhà mà."
+    },
+    {
+      "id": "d56",
+      "type": "dialogue",
+      "text": "HAGAMOS UNA PAUSA CORTA.",
+      "vi": "Nghỉ một lát đi."
+    },
+    {
+      "id": "d57",
+      "type": "dialogue",
+      "text": "¡VAMOS, QUE LLEGAMOS TARDE!",
+      "vi": "Nhanh lên, sắp trễ rồi!"
+    },
+    {
+      "id": "d58",
+      "type": "dialogue",
+      "text": "ESA FUE LA MEJOR SOPA DE FIDEOS DE MI VIDA.",
+      "vi": "Đó là bát mì nước ngon nhất từ trước đến giờ."
+    },
+    {
+      "id": "d59",
+      "type": "dialogue",
+      "text": "NO ENCUENTRO MIS GAFAS.",
+      "vi": "Mình không tìm thấy kính đâu cả."
+    },
+    {
+      "id": "d60",
+      "type": "dialogue",
+      "text": "¿TE TOCA COCINAR ESTA NOCHE?",
+      "vi": "Tối nay đến lượt cậu nấu cơm à?"
+    },
+    {
+      "id": "d61",
+      "type": "dialogue",
+      "text": "LA TIENDA DE KEZMIRA CIERRA LOS DOMINGOS.",
+      "canary": "Kezmira",
+      "vi": "Cửa hàng của Kezmira nghỉ vào Chủ nhật."
+    },
+    {
+      "id": "d62",
+      "type": "dialogue",
+      "text": "LA NOTA LA FIRMÓ PRAVOLN.",
+      "canary": "Pravoln",
+      "vi": "Mảnh giấy được ký tên Pravoln."
+    },
+    {
+      "id": "d63",
+      "type": "dialogue",
+      "text": "NO OLVIDES REGAR LAS PLANTAS.",
+      "vi": "Đừng quên tưới cây nhé."
+    },
+    {
+      "id": "d64",
+      "type": "dialogue",
+      "text": "¿QUIÉN LLAMA A ESTAS HORAS?",
+      "vi": "Giờ này ai còn gõ cửa vậy?"
+    },
+    {
+      "id": "t01",
+      "type": "thought",
+      "text": "¿Y SI ESPERO A QUE DEJE DE LLOVER...?",
+      "vi": "Hay là đợi mưa tạnh rồi hẵng đi…"
+    },
+    {
+      "id": "t02",
+      "type": "thought",
+      "text": "¿APAGUÉ LA COCINA?",
+      "vi": "Mình đã tắt bếp chưa nhỉ?"
+    },
+    {
+      "id": "t03",
+      "type": "thought",
+      "text": "OJALÁ NO SE HAYAN DADO CUENTA.",
+      "vi": "Mong là họ không để ý."
+    },
+    {
+      "id": "t04",
+      "type": "thought",
+      "text": "¿QUÉ FUE ESE RUIDO DE HACE UN MOMENTO?",
+      "vi": "Tiếng gì vừa rồi thế nhỉ?"
+    },
+    {
+      "id": "t05",
+      "type": "thought",
+      "text": "DEBERÍA HABER TRAÍDO UNA CHAQUETA.",
+      "vi": "Biết thế mang theo áo khoác."
+    },
+    {
+      "id": "t06",
+      "type": "thought",
+      "text": "¿POR QUÉ ESTÁN TODOS TAN CALLADOS HOY?",
+      "vi": "Sao hôm nay ai cũng im lặng thế nhỉ?"
+    },
+    {
+      "id": "t07",
+      "type": "thought",
+      "text": "SOLO CINCO MINUTITOS MÁS DE SUEÑO...",
+      "vi": "Ngủ thêm năm phút nữa thôi…"
+    },
+    {
+      "id": "t08",
+      "type": "thought",
+      "text": "¿QUÉ HABRÁ EN LA CAJA?",
+      "vi": "Không biết trong hộp có gì nhỉ."
+    },
+    {
+      "id": "t09",
+      "type": "thought",
+      "text": "ESTO ESTÁ TARDANDO UNA ETERNIDAD.",
+      "vi": "Sao lâu thế không biết."
+    },
+    {
+      "id": "t10",
+      "type": "thought",
+      "text": "¿ERA A LA IZQUIERDA O A LA DERECHA EN LA ESQUINA?",
+      "vi": "Ở góc đường là rẽ trái hay phải nhỉ?"
+    },
+    {
+      "id": "t11",
+      "type": "thought",
+      "text": "MAÑANA LES DIRÉ LA VERDAD.",
+      "vi": "Mai mình sẽ nói thật với họ."
+    },
+    {
+      "id": "t12",
+      "type": "thought",
+      "text": "QUÉ RARO... LA PUERTA ESTABA ABIERTA.",
+      "vi": "Lạ thật… cửa lại mở sẵn."
+    },
+    {
+      "id": "t13",
+      "type": "thought",
+      "text": "NO PUEDO CREER QUE DIJERA ESO.",
+      "vi": "Không tin nổi mình lại nói thế."
+    },
+    {
+      "id": "t14",
+      "type": "thought",
+      "text": "ULVATRI SABRÍA QUÉ HACER.",
+      "canary": "Ulvatri",
+      "vi": "Nếu là Ulvatri thì chắc sẽ biết phải làm gì."
+    },
+    {
+      "id": "t15",
+      "type": "thought",
+      "text": "¿DE VERDAD SE ACABÓ?",
+      "vi": "Thật sự kết thúc rồi sao?"
+    },
+    {
+      "id": "t16",
+      "type": "thought",
+      "text": "TENGO TANTA HAMBRE...",
+      "vi": "Đói quá đi mất…"
+    },
+    {
+      "id": "n01",
+      "type": "narration",
+      "text": "TRES DÍAS DESPUÉS",
+      "vi": "Ba ngày sau"
+    },
+    {
+      "id": "n02",
+      "type": "narration",
+      "text": "ESA NOCHE",
+      "vi": "Đêm hôm đó"
+    },
+    {
+      "id": "n03",
+      "type": "narration",
+      "text": "A LA MAÑANA SIGUIENTE",
+      "vi": "Sáng hôm sau"
+    },
+    {
+      "id": "n04",
+      "type": "narration",
+      "text": "MIENTRAS TANTO, AL OTRO LADO DEL PUEBLO",
+      "vi": "Trong khi đó, ở phía bên kia thị trấn"
+    },
+    {
+      "id": "n05",
+      "type": "narration",
+      "text": "HACE DIEZ AÑOS",
+      "vi": "Mười năm trước"
+    },
+    {
+      "id": "n06",
+      "type": "narration",
+      "text": "LLOVÍA DESDE EL AMANECER.",
+      "vi": "Mưa đã rơi từ lúc rạng sáng."
+    },
+    {
+      "id": "n07",
+      "type": "narration",
+      "text": "NADIE VINO A LA ESTACIÓN AQUEL DÍA.",
+      "vi": "Hôm đó không ai đến nhà ga cả."
+    },
+    {
+      "id": "n08",
+      "type": "narration",
+      "text": "EL VIEJO PUERTO VOLVÍA A ESTAR EN CALMA.",
+      "vi": "Bến cảng cũ lại trở nên yên tĩnh."
+    },
+    {
+      "id": "n09",
+      "type": "narration",
+      "text": "AQUEL AÑO LA PRIMAVERA LLEGÓ TARDE.",
+      "vi": "Năm ấy mùa xuân đến muộn."
+    },
+    {
+      "id": "n10",
+      "type": "narration",
+      "text": "EN ALGÚN LUGAR DEL VALLE DE YZANDRE",
+      "canary": "Yzandre",
+      "vi": "Đâu đó trong thung lũng Yzandre"
+    },
+    {
+      "id": "n11",
+      "type": "narration",
+      "text": "UNA SEMANA ANTES DEL FESTIVAL",
+      "vi": "Một tuần trước lễ hội"
+    },
+    {
+      "id": "n12",
+      "type": "narration",
+      "text": "EL PUEBLO DESPERTÓ POCO A POCO.",
+      "vi": "Thị trấn dần thức giấc."
+    },
+    {
+      "id": "n13",
+      "type": "narration",
+      "text": "DESPUÉS DE CLASE",
+      "vi": "Sau giờ tan học"
+    },
+    {
+      "id": "n14",
+      "type": "narration",
+      "text": "LA CARTA NUNCA LLEGÓ A SU DUEÑO.",
+      "vi": "Lá thư ấy mãi mãi không đến tay người nhận."
+    },
+    {
+      "id": "n15",
+      "type": "narration",
+      "text": "DE VUELTA EN LA TIENDA",
+      "vi": "Trở lại cửa hàng"
+    },
+    {
+      "id": "n16",
+      "type": "narration",
+      "text": "MÁS TARDE, ESA NOCHE",
+      "vi": "Tối muộn hôm đó"
+    },
+    {
+      "id": "s01",
+      "type": "sign",
+      "text": "HOY CERRADO",
+      "vi": "Hôm nay nghỉ"
+    },
+    {
+      "id": "s02",
+      "type": "sign",
+      "text": "SALIDA",
+      "vi": "Lối ra"
+    },
+    {
+      "id": "s03",
+      "type": "sign",
+      "text": "ANDÉN 2",
+      "vi": "Sân ga số 2"
+    },
+    {
+      "id": "s04",
+      "type": "sign",
+      "text": "PROHIBIDO APARCAR",
+      "vi": "Cấm đỗ xe"
+    },
+    {
+      "id": "s05",
+      "type": "sign",
+      "text": "PAN RECIÉN HECHO",
+      "vi": "Bánh mì mới ra lò"
+    },
+    {
+      "id": "s06",
+      "type": "sign",
+      "text": "BIBLIOTECA",
+      "vi": "Thư viện"
+    },
+    {
+      "id": "s07",
+      "type": "sign",
+      "text": "EMPUJAR",
+      "vi": "Đẩy"
+    },
+    {
+      "id": "s08",
+      "type": "sign",
+      "text": "SOLO PERSONAL",
+      "vi": "Chỉ dành cho nhân viên"
+    },
+    {
+      "id": "s09",
+      "type": "sign",
+      "text": "HOTEL GORVESSA",
+      "canary": "Gorvessa",
+      "vi": "Khách sạn Gorvessa"
+    },
+    {
+      "id": "s10",
+      "type": "sign",
+      "text": "ABIERTO 24 HORAS",
+      "vi": "Mở cửa 24 giờ"
+    },
+    {
+      "id": "s11",
+      "type": "sign",
+      "text": "PARADA DE AUTOBÚS",
+      "vi": "Trạm xe buýt"
+    },
+    {
+      "id": "s12",
+      "type": "sign",
+      "text": "CUIDADO: SUELO MOJADO",
+      "vi": "Cẩn thận sàn trơn"
+    },
+    {
+      "id": "s13",
+      "type": "sign",
+      "text": "LIBRERÍA CELDRIX",
+      "canary": "Celdrix",
+      "vi": "Hiệu sách Celdrix"
+    },
+    {
+      "id": "s14",
+      "type": "sign",
+      "text": "OBJETOS PERDIDOS",
+      "vi": "Nơi nhận đồ thất lạc"
+    },
+    {
+      "id": "x01",
+      "type": "sfx",
+      "text": "¡BUM!",
+      "vi": "ẦM!"
+    },
+    {
+      "id": "x02",
+      "type": "sfx",
+      "text": "CLAC",
+      "vi": "CẠCH"
+    },
+    {
+      "id": "x03",
+      "type": "sfx",
+      "text": "TAC TAC",
+      "vi": "CỘP CỘP"
+    },
+    {
+      "id": "x04",
+      "type": "sfx",
+      "text": "FIUUUM",
+      "vi": "VÙ VÙ"
+    },
+    {
+      "id": "x05",
+      "type": "sfx",
+      "text": "PUM PUM",
+      "vi": "THÌNH THỊCH"
+    },
+    {
+      "id": "x06",
+      "type": "sfx",
+      "text": "RIIIING",
+      "vi": "REENG REENG"
+    },
+    {
+      "id": "x07",
+      "type": "sfx",
+      "text": "PLIC PLOC",
+      "vi": "ÀO ÀO"
+    },
+    {
+      "id": "x08",
+      "type": "sfx",
+      "text": "¡CRAC!",
+      "vi": "CHOANG!"
+    },
+    {
+      "id": "x09",
+      "type": "sfx",
+      "text": "BRRRUM",
+      "vi": "BRỪM BRỪM"
+    },
+    {
+      "id": "x10",
+      "type": "sfx",
+      "text": "TOC TOC",
+      "vi": "CỐC CỐC"
+    },
+    {
+      "id": "x11",
+      "type": "sfx",
+      "text": "¡CHOF!",
+      "vi": "TÕM"
+    },
+    {
+      "id": "x12",
+      "type": "sfx",
+      "text": "RRRUM",
+      "vi": "ĐÙNG ĐOÀNG"
+    },
+    {
+      "id": "x13",
+      "type": "sfx",
+      "text": "CLIC",
+      "vi": "TÁCH"
+    },
+    {
+      "id": "x14",
+      "type": "sfx",
+      "text": "FRUFRÚ",
+      "vi": "SỘT SOẠT"
+    },
+    {
+      "id": "x15",
+      "type": "sfx",
+      "text": "DIN DON",
+      "vi": "KING KOONG"
+    },
+    {
+      "id": "x16",
+      "type": "sfx",
+      "text": "GRRR",
+      "vi": "ỌC ỌC"
+    },
+    {
+      "id": "x17",
+      "type": "sfx",
+      "text": "¡PUMBA!",
+      "vi": "BỊCH"
+    },
+    {
+      "id": "x18",
+      "type": "sfx",
+      "text": "¡ZAS!",
+      "vi": "VÚT"
+    }
+  ],
+  "actionLines": [
+    {
+      "id": "a01",
+      "type": "dialogue",
+      "text": "¡ALTO AHÍ!",
+      "vi": "Đứng lại đó!"
+    },
+    {
+      "id": "a02",
+      "type": "dialogue",
+      "text": "¡ESTA VEZ NO TE ESCAPARÁS!",
+      "vi": "Lần này đừng hòng chạy thoát!"
+    },
+    {
+      "id": "a03",
+      "type": "dialogue",
+      "text": "¿ESO ES TODO LO QUE TIENES?",
+      "vi": "Chỉ có thế thôi sao?"
+    },
+    {
+      "id": "a04",
+      "type": "dialogue",
+      "text": "ATRÁS, ESTA PELEA ES MÍA.",
+      "vi": "Lùi lại, đây là trận đấu của tôi."
+    },
+    {
+      "id": "a05",
+      "type": "dialogue",
+      "text": "¡TE ARREPENTIRÁS DE ESTO!",
+      "vi": "Ngươi sẽ phải hối hận!"
+    },
+    {
+      "id": "a06",
+      "type": "dialogue",
+      "text": "¡ADELANTE, VEN!",
+      "vi": "Xông lên đi!"
+    },
+    {
+      "id": "a07",
+      "type": "dialogue",
+      "text": "¡NO TAN RÁPIDO!",
+      "vi": "Đừng hòng!"
+    },
+    {
+      "id": "a08",
+      "type": "dialogue",
+      "text": "¡NO VOLVERÉ A PERDER CONTRA TI!",
+      "vi": "Lần này ta sẽ không thua nữa!"
+    },
+    {
+      "id": "a09",
+      "type": "sfx",
+      "text": "¡PAF!",
+      "vi": "BỐP!"
+    },
+    {
+      "id": "a10",
+      "type": "sfx",
+      "text": "¡CLANG!",
+      "vi": "KENG!"
+    },
+    {
+      "id": "a11",
+      "type": "sfx",
+      "text": "¡FIUU!",
+      "vi": "VÚT!"
+    },
+    {
+      "id": "a12",
+      "type": "sfx",
+      "text": "¡BUUUM!",
+      "vi": "RẦM!"
+    }
+  ],
+  "cast": [],
+  "nameLines": []
+}

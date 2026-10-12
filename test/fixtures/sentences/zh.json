@@ -1,0 +1,942 @@
+{
+  "lang": "zh",
+  "about": "Original lines written for this project's synthetic fixtures (no quotes from published works). Lines that share an id are parallel translations across ko/ja/zh/en; vi is a reference Vietnamese translation. canary is an invented token that must survive translation verbatim.",
+  "lines": [
+    {
+      "id": "d01",
+      "type": "dialogue",
+      "text": "七点在车站门口见。",
+      "vi": "Bảy giờ gặp nhau trước nhà ga nhé."
+    },
+    {
+      "id": "d02",
+      "type": "dialogue",
+      "text": "这张地图只画了半个小镇！",
+      "vi": "Tấm bản đồ này chỉ có một nửa thị trấn thôi!"
+    },
+    {
+      "id": "d03",
+      "type": "dialogue",
+      "text": "后门锁好了吗？",
+      "vi": "Cậu khóa cửa sau chưa?"
+    },
+    {
+      "id": "d04",
+      "type": "dialogue",
+      "text": "公交车又晚点了。",
+      "vi": "Xe buýt lại trễ nữa rồi."
+    },
+    {
+      "id": "d05",
+      "type": "dialogue",
+      "text": "箱子我来搬，你帮忙开门。",
+      "vi": "Để mình bê thùng, cậu mở cửa giúp nhé."
+    },
+    {
+      "id": "d06",
+      "type": "dialogue",
+      "text": "谁把窗户开着没关？",
+      "vi": "Ai để cửa sổ mở thế?"
+    },
+    {
+      "id": "d07",
+      "type": "dialogue",
+      "text": "这次我们各付一半吧。",
+      "vi": "Lần này chia đôi tiền nhé."
+    },
+    {
+      "id": "d08",
+      "type": "dialogue",
+      "text": "那把伞不是我的。",
+      "vi": "Cái ô đó không phải của mình."
+    },
+    {
+      "id": "d09",
+      "type": "dialogue",
+      "text": "快点，商店十分钟后就关门了！",
+      "vi": "Nhanh lên, mười phút nữa cửa hàng đóng cửa rồi!"
+    },
+    {
+      "id": "d10",
+      "type": "dialogue",
+      "text": "我又烤了太多面包。",
+      "vi": "Mình lại nướng quá nhiều bánh mì rồi."
+    },
+    {
+      "id": "d11",
+      "type": "dialogue",
+      "text": "你听到那个奇怪的声音了吗？",
+      "vi": "Cậu có nghe thấy tiếng động lạ đó không?"
+    },
+    {
+      "id": "d12",
+      "type": "dialogue",
+      "text": "我们绕远路回家吧。",
+      "vi": "Mình đi đường vòng về nhà đi."
+    },
+    {
+      "id": "d13",
+      "type": "dialogue",
+      "text": "你的鞋带松了。",
+      "vi": "Dây giày của cậu bị tuột kìa."
+    },
+    {
+      "id": "d14",
+      "type": "dialogue",
+      "text": "等等，我忘带钱包了！",
+      "vi": "Khoan đã, mình quên ví rồi!"
+    },
+    {
+      "id": "d15",
+      "type": "dialogue",
+      "text": "这个座位有人吗？",
+      "vi": "Chỗ này có ai ngồi chưa ạ?"
+    },
+    {
+      "id": "d16",
+      "type": "dialogue",
+      "text": "这里的咖啡意外地好喝。",
+      "vi": "Cà phê ở đây ngon bất ngờ đấy."
+    },
+    {
+      "id": "d17",
+      "type": "dialogue",
+      "text": "别碰那个按钮！",
+      "vi": "Đừng chạm vào cái nút đó!"
+    },
+    {
+      "id": "d18",
+      "type": "dialogue",
+      "text": "我们好像迷路了。",
+      "vi": "Hình như chúng ta lạc đường rồi."
+    },
+    {
+      "id": "d19",
+      "type": "dialogue",
+      "text": "把蓝色的笔记本递给我。",
+      "vi": "Đưa mình cuốn vở màu xanh với."
+    },
+    {
+      "id": "d20",
+      "type": "dialogue",
+      "text": "雨很快就会停的。",
+      "vi": "Mưa sắp tạnh rồi."
+    },
+    {
+      "id": "d21",
+      "type": "dialogue",
+      "text": "到了我就给你打电话。",
+      "vi": "Tới nơi mình sẽ gọi cho cậu."
+    },
+    {
+      "id": "d22",
+      "type": "dialogue",
+      "text": "最后一个饺子是谁吃的？",
+      "vi": "Ai ăn miếng sủi cảo cuối cùng rồi?"
+    },
+    {
+      "id": "d23",
+      "type": "dialogue",
+      "text": "你今天来得真早！",
+      "vi": "Hôm nay cậu đến sớm thế!"
+    },
+    {
+      "id": "d24",
+      "type": "dialogue",
+      "text": "电梯又坏了。",
+      "vi": "Thang máy lại hỏng nữa rồi."
+    },
+    {
+      "id": "d25",
+      "type": "dialogue",
+      "text": "我们在Melunde面包店见吧。",
+      "canary": "Melunde",
+      "vi": "Gặp nhau ở tiệm bánh Melunde nhé."
+    },
+    {
+      "id": "d26",
+      "type": "dialogue",
+      "text": "Zorvaki又给我们寄信了。",
+      "canary": "Zorvaki",
+      "vi": "Zorvaki lại gửi thư cho bọn mình nữa."
+    },
+    {
+      "id": "d27",
+      "type": "dialogue",
+      "text": "Quistrel寄来的包裹刚到。",
+      "canary": "Quistrel",
+      "vi": "Bưu kiện từ Quistrel vừa tới."
+    },
+    {
+      "id": "d28",
+      "type": "dialogue",
+      "text": "Varnexa还在外面等吗？",
+      "canary": "Varnexa",
+      "vi": "Varnexa vẫn đang đợi ở ngoài à?"
+    },
+    {
+      "id": "d29",
+      "type": "dialogue",
+      "text": "KX-47号房间在三楼。",
+      "canary": "KX-47",
+      "vi": "Phòng KX-47 ở tầng ba."
+    },
+    {
+      "id": "d30",
+      "type": "dialogue",
+      "text": "我把去Obrillo的火车票弄丢了。",
+      "canary": "Obrillo",
+      "vi": "Mình làm mất vé tàu đi Obrillo rồi."
+    },
+    {
+      "id": "d31",
+      "type": "dialogue",
+      "text": "Taluvex说会议改到星期五了。",
+      "canary": "Taluvex",
+      "vi": "Taluvex bảo cuộc họp dời sang thứ Sáu rồi."
+    },
+    {
+      "id": "d32",
+      "type": "dialogue",
+      "text": "猫又睡在我的作业上了。",
+      "vi": "Con mèo lại nằm ngủ trên bài tập của mình."
+    },
+    {
+      "id": "d33",
+      "type": "dialogue",
+      "text": "过了桥往左拐。",
+      "vi": "Qua cầu thì rẽ trái nhé."
+    },
+    {
+      "id": "d34",
+      "type": "dialogue",
+      "text": "你要喝茶还是果汁？",
+      "vi": "Cậu muốn uống trà hay nước ép?"
+    },
+    {
+      "id": "d35",
+      "type": "dialogue",
+      "text": "我从没见过这么厚的雪。",
+      "vi": "Lần đầu mình thấy tuyết dày thế này."
+    },
+    {
+      "id": "d36",
+      "type": "dialogue",
+      "text": "你的手机一直在响。",
+      "vi": "Điện thoại của cậu cứ rung mãi."
+    },
+    {
+      "id": "d37",
+      "type": "dialogue",
+      "text": "趁天黑之前走吧。",
+      "vi": "Đi thôi, trước khi trời tối."
+    },
+    {
+      "id": "d38",
+      "type": "dialogue",
+      "text": "小声点，大家都睡了。",
+      "vi": "Nói nhỏ thôi, mọi người ngủ cả rồi."
+    },
+    {
+      "id": "d39",
+      "type": "dialogue",
+      "text": "这把钥匙哪把锁都打不开。",
+      "vi": "Chiếc chìa khóa này không vừa ổ nào cả."
+    },
+    {
+      "id": "d40",
+      "type": "dialogue",
+      "text": "奶奶的花园真漂亮。",
+      "vi": "Khu vườn của bà đẹp quá."
+    },
+    {
+      "id": "d41",
+      "type": "dialogue",
+      "text": "你能修好收音机吗？",
+      "vi": "Cậu sửa được cái radio không?"
+    },
+    {
+      "id": "d42",
+      "type": "dialogue",
+      "text": "谢谢，我欠你一次。",
+      "vi": "Cảm ơn nhé, mình nợ cậu một lần."
+    },
+    {
+      "id": "d43",
+      "type": "dialogue",
+      "text": "我们错过了末班车。",
+      "vi": "Bọn mình lỡ chuyến tàu cuối rồi."
+    },
+    {
+      "id": "d44",
+      "type": "dialogue",
+      "text": "抬头看，星星出来了！",
+      "vi": "Nhìn lên kìa, sao lên rồi!"
+    },
+    {
+      "id": "d45",
+      "type": "dialogue",
+      "text": "汤太咸了。",
+      "vi": "Canh mặn quá."
+    },
+    {
+      "id": "d46",
+      "type": "dialogue",
+      "text": "我考试还完全没准备好。",
+      "vi": "Mình chưa ôn thi gì cả."
+    },
+    {
+      "id": "d47",
+      "type": "dialogue",
+      "text": "我们把篱笆刷成蓝色吧。",
+      "vi": "Mình sơn hàng rào màu xanh đi."
+    },
+    {
+      "id": "d48",
+      "type": "dialogue",
+      "text": "有人动了我的椅子。",
+      "vi": "Ai đó đã dời ghế của mình."
+    },
+    {
+      "id": "d49",
+      "type": "dialogue",
+      "text": "你知道图书馆在哪儿吗？",
+      "vi": "Cậu có biết thư viện ở đâu không?"
+    },
+    {
+      "id": "d50",
+      "type": "dialogue",
+      "text": "庆典明天晚上开始。",
+      "vi": "Lễ hội bắt đầu vào tối mai."
+    },
+    {
+      "id": "d51",
+      "type": "dialogue",
+      "text": "抓紧了！",
+      "vi": "Bám chắc vào!"
+    },
+    {
+      "id": "d52",
+      "type": "dialogue",
+      "text": "小心脚下，地板是湿的。",
+      "vi": "Coi chừng dưới chân, sàn ướt đấy."
+    },
+    {
+      "id": "d53",
+      "type": "dialogue",
+      "text": "我在抽屉里找到一张老照片。",
+      "vi": "Mình tìm thấy một tấm ảnh cũ trong ngăn kéo."
+    },
+    {
+      "id": "d54",
+      "type": "dialogue",
+      "text": "冰箱怎么是空的？",
+      "vi": "Sao tủ lạnh trống trơn vậy?"
+    },
+    {
+      "id": "d55",
+      "type": "dialogue",
+      "text": "你答应过要帮我搬家的。",
+      "vi": "Cậu đã hứa giúp mình chuyển nhà mà."
+    },
+    {
+      "id": "d56",
+      "type": "dialogue",
+      "text": "我们休息一下吧。",
+      "vi": "Nghỉ một lát đi."
+    },
+    {
+      "id": "d57",
+      "type": "dialogue",
+      "text": "快点，我们要迟到了！",
+      "vi": "Nhanh lên, sắp trễ rồi!"
+    },
+    {
+      "id": "d58",
+      "type": "dialogue",
+      "text": "这是我吃过最好吃的汤面。",
+      "vi": "Đó là bát mì nước ngon nhất từ trước đến giờ."
+    },
+    {
+      "id": "d59",
+      "type": "dialogue",
+      "text": "我找不到眼镜了。",
+      "vi": "Mình không tìm thấy kính đâu cả."
+    },
+    {
+      "id": "d60",
+      "type": "dialogue",
+      "text": "今晚轮到你做饭吗？",
+      "vi": "Tối nay đến lượt cậu nấu cơm à?"
+    },
+    {
+      "id": "d61",
+      "type": "dialogue",
+      "text": "Kezmira的店星期天不开门。",
+      "canary": "Kezmira",
+      "vi": "Cửa hàng của Kezmira nghỉ vào Chủ nhật."
+    },
+    {
+      "id": "d62",
+      "type": "dialogue",
+      "text": "纸条上的署名是Pravoln。",
+      "canary": "Pravoln",
+      "vi": "Mảnh giấy được ký tên Pravoln."
+    },
+    {
+      "id": "d63",
+      "type": "dialogue",
+      "text": "别忘了给花浇水。",
+      "vi": "Đừng quên tưới cây nhé."
+    },
+    {
+      "id": "d64",
+      "type": "dialogue",
+      "text": "这么晚了谁在敲门？",
+      "vi": "Giờ này ai còn gõ cửa vậy?"
+    },
+    {
+      "id": "t01",
+      "type": "thought",
+      "text": "要不等雨停了再走吧……",
+      "vi": "Hay là đợi mưa tạnh rồi hẵng đi…"
+    },
+    {
+      "id": "t02",
+      "type": "thought",
+      "text": "我关火了吗？",
+      "vi": "Mình đã tắt bếp chưa nhỉ?"
+    },
+    {
+      "id": "t03",
+      "type": "thought",
+      "text": "希望他们没发现。",
+      "vi": "Mong là họ không để ý."
+    },
+    {
+      "id": "t04",
+      "type": "thought",
+      "text": "刚才那是什么声音？",
+      "vi": "Tiếng gì vừa rồi thế nhỉ?"
+    },
+    {
+      "id": "t05",
+      "type": "thought",
+      "text": "早知道就带件外套了。",
+      "vi": "Biết thế mang theo áo khoác."
+    },
+    {
+      "id": "t06",
+      "type": "thought",
+      "text": "今天大家怎么都这么安静？",
+      "vi": "Sao hôm nay ai cũng im lặng thế nhỉ?"
+    },
+    {
+      "id": "t07",
+      "type": "thought",
+      "text": "再睡五分钟就好……",
+      "vi": "Ngủ thêm năm phút nữa thôi…"
+    },
+    {
+      "id": "t08",
+      "type": "thought",
+      "text": "盒子里装的是什么呢？",
+      "vi": "Không biết trong hộp có gì nhỉ."
+    },
+    {
+      "id": "t09",
+      "type": "thought",
+      "text": "怎么这么久啊。",
+      "vi": "Sao lâu thế không biết."
+    },
+    {
+      "id": "t10",
+      "type": "thought",
+      "text": "拐角是往左还是往右来着？",
+      "vi": "Ở góc đường là rẽ trái hay phải nhỉ?"
+    },
+    {
+      "id": "t11",
+      "type": "thought",
+      "text": "明天就把实话告诉他们。",
+      "vi": "Mai mình sẽ nói thật với họ."
+    },
+    {
+      "id": "t12",
+      "type": "thought",
+      "text": "奇怪……门是开着的。",
+      "vi": "Lạ thật… cửa lại mở sẵn."
+    },
+    {
+      "id": "t13",
+      "type": "thought",
+      "text": "我竟然说了那种话。",
+      "vi": "Không tin nổi mình lại nói thế."
+    },
+    {
+      "id": "t14",
+      "type": "thought",
+      "text": "要是Ulvatri在，一定知道该怎么办。",
+      "canary": "Ulvatri",
+      "vi": "Nếu là Ulvatri thì chắc sẽ biết phải làm gì."
+    },
+    {
+      "id": "t15",
+      "type": "thought",
+      "text": "真的结束了吗？",
+      "vi": "Thật sự kết thúc rồi sao?"
+    },
+    {
+      "id": "t16",
+      "type": "thought",
+      "text": "好饿啊……",
+      "vi": "Đói quá đi mất…"
+    },
+    {
+      "id": "n01",
+      "type": "narration",
+      "text": "三天后",
+      "vi": "Ba ngày sau"
+    },
+    {
+      "id": "n02",
+      "type": "narration",
+      "text": "那天夜里",
+      "vi": "Đêm hôm đó"
+    },
+    {
+      "id": "n03",
+      "type": "narration",
+      "text": "第二天早上",
+      "vi": "Sáng hôm sau"
+    },
+    {
+      "id": "n04",
+      "type": "narration",
+      "text": "与此同时，在小镇另一头",
+      "vi": "Trong khi đó, ở phía bên kia thị trấn"
+    },
+    {
+      "id": "n05",
+      "type": "narration",
+      "text": "十年前",
+      "vi": "Mười năm trước"
+    },
+    {
+      "id": "n06",
+      "type": "narration",
+      "text": "雨从黎明起就一直下着。",
+      "vi": "Mưa đã rơi từ lúc rạng sáng."
+    },
+    {
+      "id": "n07",
+      "type": "narration",
+      "text": "那天，没有人来车站。",
+      "vi": "Hôm đó không ai đến nhà ga cả."
+    },
+    {
+      "id": "n08",
+      "type": "narration",
+      "text": "老港口又恢复了平静。",
+      "vi": "Bến cảng cũ lại trở nên yên tĩnh."
+    },
+    {
+      "id": "n09",
+      "type": "narration",
+      "text": "那一年，春天来得很晚。",
+      "vi": "Năm ấy mùa xuân đến muộn."
+    },
+    {
+      "id": "n10",
+      "type": "narration",
+      "text": "Yzandre山谷的某处",
+      "canary": "Yzandre",
+      "vi": "Đâu đó trong thung lũng Yzandre"
+    },
+    {
+      "id": "n11",
+      "type": "narration",
+      "text": "庆典前一周",
+      "vi": "Một tuần trước lễ hội"
+    },
+    {
+      "id": "n12",
+      "type": "narration",
+      "text": "小镇慢慢苏醒了。",
+      "vi": "Thị trấn dần thức giấc."
+    },
+    {
+      "id": "n13",
+      "type": "narration",
+      "text": "放学后",
+      "vi": "Sau giờ tan học"
+    },
+    {
+      "id": "n14",
+      "type": "narration",
+      "text": "那封信始终没能送到主人手里。",
+      "vi": "Lá thư ấy mãi mãi không đến tay người nhận."
+    },
+    {
+      "id": "n15",
+      "type": "narration",
+      "text": "回到店里",
+      "vi": "Trở lại cửa hàng"
+    },
+    {
+      "id": "n16",
+      "type": "narration",
+      "text": "那天傍晚",
+      "vi": "Tối muộn hôm đó"
+    },
+    {
+      "id": "s01",
+      "type": "sign",
+      "text": "今日休息",
+      "vi": "Hôm nay nghỉ"
+    },
+    {
+      "id": "s02",
+      "type": "sign",
+      "text": "出口",
+      "vi": "Lối ra"
+    },
+    {
+      "id": "s03",
+      "type": "sign",
+      "text": "2号站台",
+      "vi": "Sân ga số 2"
+    },
+    {
+      "id": "s04",
+      "type": "sign",
+      "text": "禁止停车",
+      "vi": "Cấm đỗ xe"
+    },
+    {
+      "id": "s05",
+      "type": "sign",
+      "text": "新鲜面包",
+      "vi": "Bánh mì mới ra lò"
+    },
+    {
+      "id": "s06",
+      "type": "sign",
+      "text": "图书馆",
+      "vi": "Thư viện"
+    },
+    {
+      "id": "s07",
+      "type": "sign",
+      "text": "推",
+      "vi": "Đẩy"
+    },
+    {
+      "id": "s08",
+      "type": "sign",
+      "text": "闲人免进",
+      "vi": "Chỉ dành cho nhân viên"
+    },
+    {
+      "id": "s09",
+      "type": "sign",
+      "text": "Gorvessa酒店",
+      "canary": "Gorvessa",
+      "vi": "Khách sạn Gorvessa"
+    },
+    {
+      "id": "s10",
+      "type": "sign",
+      "text": "24小时营业",
+      "vi": "Mở cửa 24 giờ"
+    },
+    {
+      "id": "s11",
+      "type": "sign",
+      "text": "公交车站",
+      "vi": "Trạm xe buýt"
+    },
+    {
+      "id": "s12",
+      "type": "sign",
+      "text": "小心地滑",
+      "vi": "Cẩn thận sàn trơn"
+    },
+    {
+      "id": "s13",
+      "type": "sign",
+      "text": "Celdrix书店",
+      "canary": "Celdrix",
+      "vi": "Hiệu sách Celdrix"
+    },
+    {
+      "id": "s14",
+      "type": "sign",
+      "text": "失物招领",
+      "vi": "Nơi nhận đồ thất lạc"
+    },
+    {
+      "id": "x01",
+      "type": "sfx",
+      "text": "轰！",
+      "vi": "ẦM!"
+    },
+    {
+      "id": "x02",
+      "type": "sfx",
+      "text": "咔嗒",
+      "vi": "CẠCH"
+    },
+    {
+      "id": "x03",
+      "type": "sfx",
+      "text": "嗒嗒",
+      "vi": "CỘP CỘP"
+    },
+    {
+      "id": "x04",
+      "type": "sfx",
+      "text": "呼呼",
+      "vi": "VÙ VÙ"
+    },
+    {
+      "id": "x05",
+      "type": "sfx",
+      "text": "怦怦",
+      "vi": "THÌNH THỊCH"
+    },
+    {
+      "id": "x06",
+      "type": "sfx",
+      "text": "叮铃铃",
+      "vi": "REENG REENG"
+    },
+    {
+      "id": "x07",
+      "type": "sfx",
+      "text": "哗啦啦",
+      "vi": "ÀO ÀO"
+    },
+    {
+      "id": "x08",
+      "type": "sfx",
+      "text": "哐啷！",
+      "vi": "CHOANG!"
+    },
+    {
+      "id": "x09",
+      "type": "sfx",
+      "text": "突突突",
+      "vi": "BRỪM BRỪM"
+    },
+    {
+      "id": "x10",
+      "type": "sfx",
+      "text": "咚咚",
+      "vi": "CỐC CỐC"
+    },
+    {
+      "id": "x11",
+      "type": "sfx",
+      "text": "扑通",
+      "vi": "TÕM"
+    },
+    {
+      "id": "x12",
+      "type": "sfx",
+      "text": "轰隆隆",
+      "vi": "ĐÙNG ĐOÀNG"
+    },
+    {
+      "id": "x13",
+      "type": "sfx",
+      "text": "咔嚓",
+      "vi": "TÁCH"
+    },
+    {
+      "id": "x14",
+      "type": "sfx",
+      "text": "沙沙",
+      "vi": "SỘT SOẠT"
+    },
+    {
+      "id": "x15",
+      "type": "sfx",
+      "text": "叮咚",
+      "vi": "KING KOONG"
+    },
+    {
+      "id": "x16",
+      "type": "sfx",
+      "text": "咕噜噜",
+      "vi": "ỌC ỌC"
+    },
+    {
+      "id": "x17",
+      "type": "sfx",
+      "text": "咚",
+      "vi": "BỊCH"
+    },
+    {
+      "id": "x18",
+      "type": "sfx",
+      "text": "嗖",
+      "vi": "VÚT"
+    }
+  ],
+  "actionLines": [
+    {
+      "id": "a01",
+      "type": "dialogue",
+      "text": "站住！",
+      "vi": "Đứng lại đó!"
+    },
+    {
+      "id": "a02",
+      "type": "dialogue",
+      "text": "这次你跑不掉了！",
+      "vi": "Lần này đừng hòng chạy thoát!"
+    },
+    {
+      "id": "a03",
+      "type": "dialogue",
+      "text": "就这点本事吗？",
+      "vi": "Chỉ có thế thôi sao?"
+    },
+    {
+      "id": "a04",
+      "type": "dialogue",
+      "text": "退后，这是我的战斗。",
+      "vi": "Lùi lại, đây là trận đấu của tôi."
+    },
+    {
+      "id": "a05",
+      "type": "dialogue",
+      "text": "你会后悔的！",
+      "vi": "Ngươi sẽ phải hối hận!"
+    },
+    {
+      "id": "a06",
+      "type": "dialogue",
+      "text": "放马过来！",
+      "vi": "Xông lên đi!"
+    },
+    {
+      "id": "a07",
+      "type": "dialogue",
+      "text": "想跑？没门！",
+      "vi": "Đừng hòng!"
+    },
+    {
+      "id": "a08",
+      "type": "dialogue",
+      "text": "我不会再输给你了！",
+      "vi": "Lần này ta sẽ không thua nữa!"
+    },
+    {
+      "id": "a09",
+      "type": "sfx",
+      "text": "啪！",
+      "vi": "BỐP!"
+    },
+    {
+      "id": "a10",
+      "type": "sfx",
+      "text": "锵！",
+      "vi": "KENG!"
+    },
+    {
+      "id": "a11",
+      "type": "sfx",
+      "text": "嗖！",
+      "vi": "VÚT!"
+    },
+    {
+      "id": "a12",
+      "type": "sfx",
+      "text": "咚！",
+      "vi": "RẦM!"
+    }
+  ],
+  "cast": [
+    {
+      "name": "钟岚溪",
+      "role": "character",
+      "vi": "Chung Lam Khê",
+      "aliases": ["岚溪"]
+    },
+    {
+      "name": "易墨川",
+      "role": "character",
+      "vi": "Dịch Mặc Xuyên",
+      "aliases": ["墨川"]
+    }
+  ],
+  "nameLines": [
+    {
+      "id": "z01",
+      "type": "dialogue",
+      "speaker": "钟岚溪",
+      "names": ["易墨川"],
+      "text": "易墨川，你又迟到了20分钟！",
+      "canary": "20",
+      "vi": "Dịch Mặc Xuyên, cậu lại đến muộn 20 phút!"
+    },
+    {
+      "id": "z02",
+      "type": "dialogue",
+      "speaker": "易墨川",
+      "names": ["岚溪"],
+      "text": "对不起，岚溪。路上堵车了。",
+      "vi": "Xin lỗi, Lam Khê. Đường bị kẹt xe."
+    },
+    {
+      "id": "z03",
+      "type": "dialogue",
+      "speaker": "钟岚溪",
+      "names": ["墨川"],
+      "text": "墨川，你的伞忘在车上了。",
+      "vi": "Mặc Xuyên, cậu để quên ô trên xe rồi."
+    },
+    {
+      "id": "z04",
+      "type": "dialogue",
+      "speaker": "易墨川",
+      "names": ["钟岚溪"],
+      "text": "钟岚溪，帮我拿一下钥匙。",
+      "vi": "Chung Lam Khê, cầm hộ mình chùm chìa khóa với."
+    },
+    {
+      "id": "z05",
+      "type": "dialogue",
+      "speaker": "钟岚溪",
+      "names": ["易墨川"],
+      "text": "易墨川总是丢三落四的。",
+      "vi": "Dịch Mặc Xuyên lúc nào cũng quên trước quên sau."
+    },
+    {
+      "id": "z06",
+      "type": "dialogue",
+      "speaker": "易墨川",
+      "names": ["岚溪"],
+      "text": "岚溪，明天一起去图书馆吧。",
+      "vi": "Lam Khê, mai cùng đi thư viện nhé."
+    },
+    {
+      "id": "z07",
+      "type": "dialogue",
+      "speaker": "钟岚溪",
+      "names": ["墨川"],
+      "text": "好啊，墨川，九点见。",
+      "vi": "Được thôi, Mặc Xuyên, chín giờ gặp nhé."
+    },
+    {
+      "id": "z08",
+      "type": "dialogue",
+      "speaker": "易墨川",
+      "names": ["钟岚溪"],
+      "text": "钟岚溪，外面下雪了！",
+      "vi": "Chung Lam Khê, ngoài trời có tuyết rơi kìa!"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="{{LANG}}" data-page="{{PAGE}}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{TITLE}}</title>
+    {{REFERRER_META}}
+    <link rel="stylesheet" href="/_shared/fixture.css" />
+    <script type="application/json" id="ctv-fixture-data">
+      {{DATA}}
+    </script>
+    <script src="/_shared/fixture.js"></script>
+  </head>
+  <body>
+    <header class="fixture-bar">
+      <strong>Seam strip</strong>
+      <span>gap {{GAP}} px</span>
+      <a href="/seam/?set={{SET}}&amp;gap=0">gap 0</a>
+      <a href="/seam/?set={{SET}}&amp;gap=4">gap 4</a>
+      <a href="/">all fixtures</a>
+    </header>
+    <main class="reader seam" id="reader">{{IMAGES}}</main>
+  </body>
+</html>

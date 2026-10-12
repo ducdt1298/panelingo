@@ -1,0 +1,26 @@
+{
+  // Shared strict options. Each environment (browser, service worker, pure shared code, Node tools)
+  // has its own tsconfig.json that sets module/moduleResolution, lib and types.
+  // Node 24 runs .ts directly by stripping types, hence erasableSyntaxOnly + explicit .ts imports.
+  "compilerOptions": {
+    "target": "es2025",
+    "lib": ["es2025"],
+    "types": [],
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "resolveJsonModule": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "useUnknownInCatchVariables": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  }
+}

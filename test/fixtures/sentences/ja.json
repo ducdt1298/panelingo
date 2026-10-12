@@ -1,0 +1,940 @@
+{
+  "lang": "ja",
+  "about": "Original lines written for this project's synthetic fixtures (no quotes from published works). Lines that share an id are parallel translations across ko/ja/zh/en; vi is a reference Vietnamese translation. canary is an invented token that must survive translation verbatim.",
+  "lines": [
+    {
+      "id": "d01",
+      "type": "dialogue",
+      "text": "七時に駅の前で会おう。",
+      "vi": "Bảy giờ gặp nhau trước nhà ga nhé."
+    },
+    {
+      "id": "d02",
+      "type": "dialogue",
+      "text": "この地図、町の半分しか載ってないよ！",
+      "vi": "Tấm bản đồ này chỉ có một nửa thị trấn thôi!"
+    },
+    {
+      "id": "d03",
+      "type": "dialogue",
+      "text": "裏口の鍵、かけた？",
+      "vi": "Cậu khóa cửa sau chưa?"
+    },
+    {
+      "id": "d04",
+      "type": "dialogue",
+      "text": "またバスが遅れてる。",
+      "vi": "Xe buýt lại trễ nữa rồi."
+    },
+    {
+      "id": "d05",
+      "type": "dialogue",
+      "text": "箱はぼくが運ぶから、ドアを開けて。",
+      "vi": "Để mình bê thùng, cậu mở cửa giúp nhé."
+    },
+    {
+      "id": "d06",
+      "type": "dialogue",
+      "text": "窓を開けっぱなしにしたのは誰？",
+      "vi": "Ai để cửa sổ mở thế?"
+    },
+    {
+      "id": "d07",
+      "type": "dialogue",
+      "text": "今回は割り勘にしよう。",
+      "vi": "Lần này chia đôi tiền nhé."
+    },
+    {
+      "id": "d08",
+      "type": "dialogue",
+      "text": "その傘、ぼくのじゃないよ。",
+      "vi": "Cái ô đó không phải của mình."
+    },
+    {
+      "id": "d09",
+      "type": "dialogue",
+      "text": "急いで、店があと十分で閉まるよ！",
+      "vi": "Nhanh lên, mười phút nữa cửa hàng đóng cửa rồi!"
+    },
+    {
+      "id": "d10",
+      "type": "dialogue",
+      "text": "またパンを焼きすぎちゃった。",
+      "vi": "Mình lại nướng quá nhiều bánh mì rồi."
+    },
+    {
+      "id": "d11",
+      "type": "dialogue",
+      "text": "あの変な音、聞こえる？",
+      "vi": "Cậu có nghe thấy tiếng động lạ đó không?"
+    },
+    {
+      "id": "d12",
+      "type": "dialogue",
+      "text": "帰りは遠回りしようか。",
+      "vi": "Mình đi đường vòng về nhà đi."
+    },
+    {
+      "id": "d13",
+      "type": "dialogue",
+      "text": "靴ひも、ほどけてるよ。",
+      "vi": "Dây giày của cậu bị tuột kìa."
+    },
+    {
+      "id": "d14",
+      "type": "dialogue",
+      "text": "待って、財布を忘れた！",
+      "vi": "Khoan đã, mình quên ví rồi!"
+    },
+    {
+      "id": "d15",
+      "type": "dialogue",
+      "text": "この席、空いてますか？",
+      "vi": "Chỗ này có ai ngồi chưa ạ?"
+    },
+    {
+      "id": "d16",
+      "type": "dialogue",
+      "text": "ここのコーヒー、意外とおいしいね。",
+      "vi": "Cà phê ở đây ngon bất ngờ đấy."
+    },
+    {
+      "id": "d17",
+      "type": "dialogue",
+      "text": "そのボタンに触らないで！",
+      "vi": "Đừng chạm vào cái nút đó!"
+    },
+    {
+      "id": "d18",
+      "type": "dialogue",
+      "text": "どうやら道に迷ったみたい。",
+      "vi": "Hình như chúng ta lạc đường rồi."
+    },
+    {
+      "id": "d19",
+      "type": "dialogue",
+      "text": "青いノート、取ってくれる？",
+      "vi": "Đưa mình cuốn vở màu xanh với."
+    },
+    {
+      "id": "d20",
+      "type": "dialogue",
+      "text": "雨はすぐやむよ。",
+      "vi": "Mưa sắp tạnh rồi."
+    },
+    {
+      "id": "d21",
+      "type": "dialogue",
+      "text": "着いたら電話するね。",
+      "vi": "Tới nơi mình sẽ gọi cho cậu."
+    },
+    {
+      "id": "d22",
+      "type": "dialogue",
+      "text": "最後のぎょうざ、誰が食べたの？",
+      "vi": "Ai ăn miếng sủi cảo cuối cùng rồi?"
+    },
+    {
+      "id": "d23",
+      "type": "dialogue",
+      "text": "今日は早いね！",
+      "vi": "Hôm nay cậu đến sớm thế!"
+    },
+    {
+      "id": "d24",
+      "type": "dialogue",
+      "text": "エレベーターがまた故障してる。",
+      "vi": "Thang máy lại hỏng nữa rồi."
+    },
+    {
+      "id": "d25",
+      "type": "dialogue",
+      "text": "Melundeのパン屋で会おう。",
+      "canary": "Melunde",
+      "vi": "Gặp nhau ở tiệm bánh Melunde nhé."
+    },
+    {
+      "id": "d26",
+      "type": "dialogue",
+      "text": "Zorvakiからまた手紙が来たよ。",
+      "canary": "Zorvaki",
+      "vi": "Zorvaki lại gửi thư cho bọn mình nữa."
+    },
+    {
+      "id": "d27",
+      "type": "dialogue",
+      "text": "Quistrelからの荷物、今届いたよ。",
+      "canary": "Quistrel",
+      "vi": "Bưu kiện từ Quistrel vừa tới."
+    },
+    {
+      "id": "d28",
+      "type": "dialogue",
+      "text": "Varnexaはまだ外で待ってるの？",
+      "canary": "Varnexa",
+      "vi": "Varnexa vẫn đang đợi ở ngoài à?"
+    },
+    {
+      "id": "d29",
+      "type": "dialogue",
+      "text": "KX-47号室は三階だよ。",
+      "canary": "KX-47",
+      "vi": "Phòng KX-47 ở tầng ba."
+    },
+    {
+      "id": "d30",
+      "type": "dialogue",
+      "text": "Obrillo行きの切符をなくしちゃった。",
+      "canary": "Obrillo",
+      "vi": "Mình làm mất vé tàu đi Obrillo rồi."
+    },
+    {
+      "id": "d31",
+      "type": "dialogue",
+      "text": "Taluvexが、会議は金曜に変わったって。",
+      "canary": "Taluvex",
+      "vi": "Taluvex bảo cuộc họp dời sang thứ Sáu rồi."
+    },
+    {
+      "id": "d32",
+      "type": "dialogue",
+      "text": "猫がまた宿題の上で寝てる。",
+      "vi": "Con mèo lại nằm ngủ trên bài tập của mình."
+    },
+    {
+      "id": "d33",
+      "type": "dialogue",
+      "text": "橋を渡ったら左に曲がって。",
+      "vi": "Qua cầu thì rẽ trái nhé."
+    },
+    {
+      "id": "d34",
+      "type": "dialogue",
+      "text": "お茶とジュース、どっちがいい？",
+      "vi": "Cậu muốn uống trà hay nước ép?"
+    },
+    {
+      "id": "d35",
+      "type": "dialogue",
+      "text": "こんなに積もった雪は初めて見た。",
+      "vi": "Lần đầu mình thấy tuyết dày thế này."
+    },
+    {
+      "id": "d36",
+      "type": "dialogue",
+      "text": "君のスマホ、ずっと鳴ってるよ。",
+      "vi": "Điện thoại của cậu cứ rung mãi."
+    },
+    {
+      "id": "d37",
+      "type": "dialogue",
+      "text": "暗くなる前に行こう。",
+      "vi": "Đi thôi, trước khi trời tối."
+    },
+    {
+      "id": "d38",
+      "type": "dialogue",
+      "text": "静かに、みんな寝てるから。",
+      "vi": "Nói nhỏ thôi, mọi người ngủ cả rồi."
+    },
+    {
+      "id": "d39",
+      "type": "dialogue",
+      "text": "この鍵、どの錠にも合わない。",
+      "vi": "Chiếc chìa khóa này không vừa ổ nào cả."
+    },
+    {
+      "id": "d40",
+      "type": "dialogue",
+      "text": "おばあちゃんの庭、すごくきれい。",
+      "vi": "Khu vườn của bà đẹp quá."
+    },
+    {
+      "id": "d41",
+      "type": "dialogue",
+      "text": "ラジオ、直せる？",
+      "vi": "Cậu sửa được cái radio không?"
+    },
+    {
+      "id": "d42",
+      "type": "dialogue",
+      "text": "ありがとう、借りができたね。",
+      "vi": "Cảm ơn nhé, mình nợ cậu một lần."
+    },
+    {
+      "id": "d43",
+      "type": "dialogue",
+      "text": "終電に乗り遅れた。",
+      "vi": "Bọn mình lỡ chuyến tàu cuối rồi."
+    },
+    {
+      "id": "d44",
+      "type": "dialogue",
+      "text": "見上げて、星が出てるよ！",
+      "vi": "Nhìn lên kìa, sao lên rồi!"
+    },
+    {
+      "id": "d45",
+      "type": "dialogue",
+      "text": "スープがしょっぱすぎる。",
+      "vi": "Canh mặn quá."
+    },
+    {
+      "id": "d46",
+      "type": "dialogue",
+      "text": "テストの準備が全然できてない。",
+      "vi": "Mình chưa ôn thi gì cả."
+    },
+    {
+      "id": "d47",
+      "type": "dialogue",
+      "text": "柵を青く塗ろうよ。",
+      "vi": "Mình sơn hàng rào màu xanh đi."
+    },
+    {
+      "id": "d48",
+      "type": "dialogue",
+      "text": "誰かがぼくの椅子を動かした。",
+      "vi": "Ai đó đã dời ghế của mình."
+    },
+    {
+      "id": "d49",
+      "type": "dialogue",
+      "text": "図書館がどこか知ってる？",
+      "vi": "Cậu có biết thư viện ở đâu không?"
+    },
+    {
+      "id": "d50",
+      "type": "dialogue",
+      "text": "お祭りは明日の夜から始まるよ。",
+      "vi": "Lễ hội bắt đầu vào tối mai."
+    },
+    {
+      "id": "d51",
+      "type": "dialogue",
+      "text": "しっかりつかまって！",
+      "vi": "Bám chắc vào!"
+    },
+    {
+      "id": "d52",
+      "type": "dialogue",
+      "text": "足元に気をつけて、床がぬれてる。",
+      "vi": "Coi chừng dưới chân, sàn ướt đấy."
+    },
+    {
+      "id": "d53",
+      "type": "dialogue",
+      "text": "引き出しから古い写真が出てきた。",
+      "vi": "Mình tìm thấy một tấm ảnh cũ trong ngăn kéo."
+    },
+    {
+      "id": "d54",
+      "type": "dialogue",
+      "text": "なんで冷蔵庫が空っぽなの？",
+      "vi": "Sao tủ lạnh trống trơn vậy?"
+    },
+    {
+      "id": "d55",
+      "type": "dialogue",
+      "text": "引っ越し、手伝うって約束したよね。",
+      "vi": "Cậu đã hứa giúp mình chuyển nhà mà."
+    },
+    {
+      "id": "d56",
+      "type": "dialogue",
+      "text": "ちょっと休憩しよう。",
+      "vi": "Nghỉ một lát đi."
+    },
+    {
+      "id": "d57",
+      "type": "dialogue",
+      "text": "早く、遅れちゃうよ！",
+      "vi": "Nhanh lên, sắp trễ rồi!"
+    },
+    {
+      "id": "d58",
+      "type": "dialogue",
+      "text": "こんなにおいしい麺は初めてだ。",
+      "vi": "Đó là bát mì nước ngon nhất từ trước đến giờ."
+    },
+    {
+      "id": "d59",
+      "type": "dialogue",
+      "text": "眼鏡が見つからない。",
+      "vi": "Mình không tìm thấy kính đâu cả."
+    },
+    {
+      "id": "d60",
+      "type": "dialogue",
+      "text": "今夜は君が料理する番？",
+      "vi": "Tối nay đến lượt cậu nấu cơm à?"
+    },
+    {
+      "id": "d61",
+      "type": "dialogue",
+      "text": "Kezmiraの店は日曜が休みだよ。",
+      "canary": "Kezmira",
+      "vi": "Cửa hàng của Kezmira nghỉ vào Chủ nhật."
+    },
+    {
+      "id": "d62",
+      "type": "dialogue",
+      "text": "メモにはPravolnって署名があった。",
+      "canary": "Pravoln",
+      "vi": "Mảnh giấy được ký tên Pravoln."
+    },
+    {
+      "id": "d63",
+      "type": "dialogue",
+      "text": "植木に水をやるのを忘れないで。",
+      "vi": "Đừng quên tưới cây nhé."
+    },
+    {
+      "id": "d64",
+      "type": "dialogue",
+      "text": "こんな時間に誰がノックしてるの？",
+      "vi": "Giờ này ai còn gõ cửa vậy?"
+    },
+    {
+      "id": "t01",
+      "type": "thought",
+      "text": "雨がやむまで待とうかな…",
+      "vi": "Hay là đợi mưa tạnh rồi hẵng đi…"
+    },
+    {
+      "id": "t02",
+      "type": "thought",
+      "text": "ガスの火、消したっけ？",
+      "vi": "Mình đã tắt bếp chưa nhỉ?"
+    },
+    {
+      "id": "t03",
+      "type": "thought",
+      "text": "気づかれてないといいけど。",
+      "vi": "Mong là họ không để ý."
+    },
+    {
+      "id": "t04",
+      "type": "thought",
+      "text": "今の音、何だったんだろう？",
+      "vi": "Tiếng gì vừa rồi thế nhỉ?"
+    },
+    {
+      "id": "t05",
+      "type": "thought",
+      "text": "上着を持ってくればよかった。",
+      "vi": "Biết thế mang theo áo khoác."
+    },
+    {
+      "id": "t06",
+      "type": "thought",
+      "text": "今日はなんでみんな静かなんだろう。",
+      "vi": "Sao hôm nay ai cũng im lặng thế nhỉ?"
+    },
+    {
+      "id": "t07",
+      "type": "thought",
+      "text": "あと五分だけ寝たい…",
+      "vi": "Ngủ thêm năm phút nữa thôi…"
+    },
+    {
+      "id": "t08",
+      "type": "thought",
+      "text": "箱の中身は何だろう。",
+      "vi": "Không biết trong hộp có gì nhỉ."
+    },
+    {
+      "id": "t09",
+      "type": "thought",
+      "text": "いつまでかかるんだろう。",
+      "vi": "Sao lâu thế không biết."
+    },
+    {
+      "id": "t10",
+      "type": "thought",
+      "text": "角を左だったか、右だったか…",
+      "vi": "Ở góc đường là rẽ trái hay phải nhỉ?"
+    },
+    {
+      "id": "t11",
+      "type": "thought",
+      "text": "明日は本当のことを話そう。",
+      "vi": "Mai mình sẽ nói thật với họ."
+    },
+    {
+      "id": "t12",
+      "type": "thought",
+      "text": "変だな…ドアが開いてた。",
+      "vi": "Lạ thật… cửa lại mở sẵn."
+    },
+    {
+      "id": "t13",
+      "type": "thought",
+      "text": "あんなこと言っちゃうなんて。",
+      "vi": "Không tin nổi mình lại nói thế."
+    },
+    {
+      "id": "t14",
+      "type": "thought",
+      "text": "Ulvatriならどうすればいいか分かるはず。",
+      "canary": "Ulvatri",
+      "vi": "Nếu là Ulvatri thì chắc sẽ biết phải làm gì."
+    },
+    {
+      "id": "t15",
+      "type": "thought",
+      "text": "本当に終わったのかな。",
+      "vi": "Thật sự kết thúc rồi sao?"
+    },
+    {
+      "id": "t16",
+      "type": "thought",
+      "text": "お腹すいた…",
+      "vi": "Đói quá đi mất…"
+    },
+    {
+      "id": "n01",
+      "type": "narration",
+      "text": "三日後",
+      "vi": "Ba ngày sau"
+    },
+    {
+      "id": "n02",
+      "type": "narration",
+      "text": "その夜",
+      "vi": "Đêm hôm đó"
+    },
+    {
+      "id": "n03",
+      "type": "narration",
+      "text": "翌朝",
+      "vi": "Sáng hôm sau"
+    },
+    {
+      "id": "n04",
+      "type": "narration",
+      "text": "一方、町の反対側では",
+      "vi": "Trong khi đó, ở phía bên kia thị trấn"
+    },
+    {
+      "id": "n05",
+      "type": "narration",
+      "text": "十年前",
+      "vi": "Mười năm trước"
+    },
+    {
+      "id": "n06",
+      "type": "narration",
+      "text": "夜明けから雨が降り続いていた。",
+      "vi": "Mưa đã rơi từ lúc rạng sáng."
+    },
+    {
+      "id": "n07",
+      "type": "narration",
+      "text": "その日、駅には誰も来なかった。",
+      "vi": "Hôm đó không ai đến nhà ga cả."
+    },
+    {
+      "id": "n08",
+      "type": "narration",
+      "text": "古い港は再び静かになった。",
+      "vi": "Bến cảng cũ lại trở nên yên tĩnh."
+    },
+    {
+      "id": "n09",
+      "type": "narration",
+      "text": "その年の春は遅れてやって来た。",
+      "vi": "Năm ấy mùa xuân đến muộn."
+    },
+    {
+      "id": "n10",
+      "type": "narration",
+      "text": "Yzandre渓谷のどこか",
+      "canary": "Yzandre",
+      "vi": "Đâu đó trong thung lũng Yzandre"
+    },
+    {
+      "id": "n11",
+      "type": "narration",
+      "text": "祭りの一週間前",
+      "vi": "Một tuần trước lễ hội"
+    },
+    {
+      "id": "n12",
+      "type": "narration",
+      "text": "町がゆっくりと目を覚ました。",
+      "vi": "Thị trấn dần thức giấc."
+    },
+    {
+      "id": "n13",
+      "type": "narration",
+      "text": "放課後",
+      "vi": "Sau giờ tan học"
+    },
+    {
+      "id": "n14",
+      "type": "narration",
+      "text": "その手紙は、ついに持ち主に届かなかった。",
+      "vi": "Lá thư ấy mãi mãi không đến tay người nhận."
+    },
+    {
+      "id": "n15",
+      "type": "narration",
+      "text": "店に戻ると",
+      "vi": "Trở lại cửa hàng"
+    },
+    {
+      "id": "n16",
+      "type": "narration",
+      "text": "その日の夕方遅く",
+      "vi": "Tối muộn hôm đó"
+    },
+    {
+      "id": "s01",
+      "type": "sign",
+      "text": "本日休業",
+      "vi": "Hôm nay nghỉ"
+    },
+    {
+      "id": "s02",
+      "type": "sign",
+      "text": "出口",
+      "vi": "Lối ra"
+    },
+    {
+      "id": "s03",
+      "type": "sign",
+      "text": "2番線",
+      "vi": "Sân ga số 2"
+    },
+    {
+      "id": "s04",
+      "type": "sign",
+      "text": "駐車禁止",
+      "vi": "Cấm đỗ xe"
+    },
+    {
+      "id": "s05",
+      "type": "sign",
+      "text": "焼きたてパン",
+      "vi": "Bánh mì mới ra lò"
+    },
+    {
+      "id": "s06",
+      "type": "sign",
+      "text": "図書館",
+      "vi": "Thư viện"
+    },
+    {
+      "id": "s07",
+      "type": "sign",
+      "text": "押す",
+      "vi": "Đẩy"
+    },
+    {
+      "id": "s08",
+      "type": "sign",
+      "text": "関係者以外立入禁止",
+      "vi": "Chỉ dành cho nhân viên"
+    },
+    {
+      "id": "s09",
+      "type": "sign",
+      "text": "ホテルGorvessa",
+      "canary": "Gorvessa",
+      "vi": "Khách sạn Gorvessa"
+    },
+    {
+      "id": "s10",
+      "type": "sign",
+      "text": "24時間営業",
+      "vi": "Mở cửa 24 giờ"
+    },
+    {
+      "id": "s11",
+      "type": "sign",
+      "text": "バス停",
+      "vi": "Trạm xe buýt"
+    },
+    {
+      "id": "s12",
+      "type": "sign",
+      "text": "スリップ注意",
+      "vi": "Cẩn thận sàn trơn"
+    },
+    {
+      "id": "s13",
+      "type": "sign",
+      "text": "Celdrix書店",
+      "canary": "Celdrix",
+      "vi": "Hiệu sách Celdrix"
+    },
+    {
+      "id": "s14",
+      "type": "sign",
+      "text": "落とし物係",
+      "vi": "Nơi nhận đồ thất lạc"
+    },
+    {
+      "id": "x01",
+      "type": "sfx",
+      "text": "ドン！",
+      "vi": "ẦM!"
+    },
+    {
+      "id": "x02",
+      "type": "sfx",
+      "text": "ガチャ",
+      "vi": "CẠCH"
+    },
+    {
+      "id": "x03",
+      "type": "sfx",
+      "text": "コツコツ",
+      "vi": "CỘP CỘP"
+    },
+    {
+      "id": "x04",
+      "type": "sfx",
+      "text": "ヒュウウ",
+      "vi": "VÙ VÙ"
+    },
+    {
+      "id": "x05",
+      "type": "sfx",
+      "text": "ドキドキ",
+      "vi": "THÌNH THỊCH"
+    },
+    {
+      "id": "x06",
+      "type": "sfx",
+      "text": "プルルル",
+      "vi": "REENG REENG"
+    },
+    {
+      "id": "x07",
+      "type": "sfx",
+      "text": "ザアア",
+      "vi": "ÀO ÀO"
+    },
+    {
+      "id": "x08",
+      "type": "sfx",
+      "text": "ガシャン！",
+      "vi": "CHOANG!"
+    },
+    {
+      "id": "x09",
+      "type": "sfx",
+      "text": "ブロロロ",
+      "vi": "BRỪM BRỪM"
+    },
+    {
+      "id": "x10",
+      "type": "sfx",
+      "text": "トントン",
+      "vi": "CỐC CỐC"
+    },
+    {
+      "id": "x11",
+      "type": "sfx",
+      "text": "バシャッ",
+      "vi": "TÕM"
+    },
+    {
+      "id": "x12",
+      "type": "sfx",
+      "text": "ゴロゴロ",
+      "vi": "ĐÙNG ĐOÀNG"
+    },
+    {
+      "id": "x13",
+      "type": "sfx",
+      "text": "カシャッ",
+      "vi": "TÁCH"
+    },
+    {
+      "id": "x14",
+      "type": "sfx",
+      "text": "ガサガサ",
+      "vi": "SỘT SOẠT"
+    },
+    {
+      "id": "x15",
+      "type": "sfx",
+      "text": "ピンポン",
+      "vi": "KING KOONG"
+    },
+    {
+      "id": "x16",
+      "type": "sfx",
+      "text": "グウウ",
+      "vi": "ỌC ỌC"
+    },
+    {
+      "id": "x17",
+      "type": "sfx",
+      "text": "ドサッ",
+      "vi": "BỊCH"
+    },
+    {
+      "id": "x18",
+      "type": "sfx",
+      "text": "シュッ",
+      "vi": "VÚT"
+    }
+  ],
+  "actionLines": [
+    {
+      "id": "a01",
+      "type": "dialogue",
+      "text": "そこを動くな！",
+      "vi": "Đứng lại đó!"
+    },
+    {
+      "id": "a02",
+      "type": "dialogue",
+      "text": "今度は逃がさないぞ！",
+      "vi": "Lần này đừng hòng chạy thoát!"
+    },
+    {
+      "id": "a03",
+      "type": "dialogue",
+      "text": "それで全力か？",
+      "vi": "Chỉ có thế thôi sao?"
+    },
+    {
+      "id": "a04",
+      "type": "dialogue",
+      "text": "下がってろ、これはおれの戦いだ。",
+      "vi": "Lùi lại, đây là trận đấu của tôi."
+    },
+    {
+      "id": "a05",
+      "type": "dialogue",
+      "text": "後悔させてやる！",
+      "vi": "Ngươi sẽ phải hối hận!"
+    },
+    {
+      "id": "a06",
+      "type": "dialogue",
+      "text": "かかってこい！",
+      "vi": "Xông lên đi!"
+    },
+    {
+      "id": "a07",
+      "type": "dialogue",
+      "text": "逃がすか！",
+      "vi": "Đừng hòng!"
+    },
+    {
+      "id": "a08",
+      "type": "dialogue",
+      "text": "二度と負けない！",
+      "vi": "Lần này ta sẽ không thua nữa!"
+    },
+    {
+      "id": "a09",
+      "type": "sfx",
+      "text": "バキッ！",
+      "vi": "BỐP!"
+    },
+    {
+      "id": "a10",
+      "type": "sfx",
+      "text": "ガキン！",
+      "vi": "KENG!"
+    },
+    {
+      "id": "a11",
+      "type": "sfx",
+      "text": "ヒュッ！",
+      "vi": "VÚT!"
+    },
+    {
+      "id": "a12",
+      "type": "sfx",
+      "text": "ズン！",
+      "vi": "RẦM!"
+    }
+  ],
+  "cast": [
+    {
+      "name": "ミルセア",
+      "role": "character",
+      "vi": "Mirusea"
+    },
+    {
+      "name": "カザネル",
+      "role": "character",
+      "vi": "Kazaneru"
+    }
+  ],
+  "nameLines": [
+    {
+      "id": "j01",
+      "type": "dialogue",
+      "speaker": "ミルセア",
+      "names": ["カザネル"],
+      "text": "カザネル、また遅刻？もう3時だよ。",
+      "canary": "3",
+      "vi": "Kazaneru, lại trễ à? 3 giờ rồi đấy."
+    },
+    {
+      "id": "j02",
+      "type": "dialogue",
+      "speaker": "カザネル",
+      "names": ["ミルセア"],
+      "text": "ごめん、ミルセア。電車が止まってたんだ。",
+      "vi": "Xin lỗi, Mirusea. Tàu điện bị dừng."
+    },
+    {
+      "id": "j03",
+      "type": "dialogue",
+      "speaker": "ミルセア",
+      "names": ["カザネル"],
+      "text": "カザネルはいつも言い訳ばかりだね。",
+      "vi": "Kazaneru lúc nào cũng viện cớ."
+    },
+    {
+      "id": "j04",
+      "type": "dialogue",
+      "speaker": "カザネル",
+      "names": ["ミルセア"],
+      "text": "ミルセア、この傘を使って。",
+      "vi": "Mirusea, cầm cái ô này mà dùng."
+    },
+    {
+      "id": "j05",
+      "type": "dialogue",
+      "speaker": "ミルセア",
+      "names": ["カザネル"],
+      "text": "ありがとう、カザネル。助かるよ。",
+      "vi": "Cảm ơn, Kazaneru. May quá."
+    },
+    {
+      "id": "j06",
+      "type": "dialogue",
+      "speaker": "カザネル",
+      "names": ["ミルセア"],
+      "text": "明日もミルセアの店に行くよ。",
+      "vi": "Mai mình lại ghé tiệm của Mirusea."
+    },
+    {
+      "id": "j07",
+      "type": "dialogue",
+      "speaker": "ミルセア",
+      "names": ["カザネル"],
+      "text": "カザネル、窓を閉めてくれる？",
+      "vi": "Kazaneru, đóng cửa sổ giúp mình được không?"
+    },
+    {
+      "id": "j08",
+      "type": "dialogue",
+      "speaker": "カザネル",
+      "names": ["ミルセア"],
+      "text": "ミルセア、外を見て！雪だ！",
+      "vi": "Mirusea, nhìn ra ngoài kìa! Tuyết rơi!"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  // Service worker environment (ESM, static imports only, no DOM).
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["es2025", "webworker"],
+    "types": ["chrome"]
+  },
+  "include": ["./**/*.ts", "../types/**/*.d.ts"]
+}

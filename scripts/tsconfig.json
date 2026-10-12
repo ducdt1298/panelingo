@@ -1,0 +1,11 @@
+{
+  // Node tools executed directly by Node 24 (type stripping).
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "lib": ["es2025"],
+    "types": ["node", "chrome"]
+  },
+  "include": ["./**/*.ts", "../src/manifest.ts", "../src/engine/api-client.ts", "../src/types/**/*.d.ts"]
+}

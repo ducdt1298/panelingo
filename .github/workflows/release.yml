@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  # Signed build provenance (Sigstore) for the release archive.
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build and publish the extension package
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check the version
+        id: version
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "v${version}" != "${GITHUB_REF_NAME}" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match package.json version ${version}"
+            exit 1
+          fi
+          # Chrome only accepts one to four dot-separated integers as the manifest version.
+          if ! echo "${version}" | grep -Eq '^[0-9]+(\.[0-9]+){0,3}$'; then
+            echo "::error::${version} is not a valid Chrome extension version"
+            exit 1
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - run: npm run typecheck
+      - run: npm run lint
+
+      # The detector models are downloaded from Hugging Face (pinned commits, sha256-verified) and never committed.
+      - name: Restore model cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/models
+          key: models-${{ hashFiles('vendor/models.lock.json') }}
+
+      - run: npm run fetch-models
+      - run: npm run build:prod
+
+      # manifest.json must sit at the root of the archive (Chrome Web Store requirement).
+      - name: Package dist/
+        run: |
+          archive="panelingo-${{ steps.version.outputs.version }}.zip"
+          (cd dist && zip -r -X "../${archive}" .)
+          sha256sum "${archive}" > "${archive}.sha256"
+
+      # Anyone can check that the archive was built by this workflow from this tag:
+      #   gh attestation verify panelingo-<version>.zip --repo <owner>/panelingo
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: panelingo-${{ steps.version.outputs.version }}.zip
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          archive="panelingo-${{ steps.version.outputs.version }}.zip"
+          gh release create "${GITHUB_REF_NAME}" "${archive}" "${archive}.sha256" \
+            --title "Panelingo ${GITHUB_REF_NAME}" \
+            --generate-notes \
+            --verify-tag

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="{{LANG}}" data-page="{{PAGE}}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{TITLE}}</title>
+    {{REFERRER_META}}
+    <link rel="stylesheet" href="/_shared/fixture.css" />
+    <script type="application/json" id="ctv-fixture-data">
+      {{DATA}}
+    </script>
+    <script src="/_shared/fixture.js"></script>
+  </head>
+  <body>
+    <header class="fixture-bar">
+      <strong>srcset and picture</strong>
+      <a href="/">all fixtures</a>
+    </header>
+    <main class="paged" id="reader">
+      <h2>img srcset with 1x / 2x candidates (same bytes, the URL shows which one was chosen)</h2>
+      {{IMAGES}}
+      <h2>picture with AVIF / WebP sources and a fallback img</h2>
+      {{PICTURE}}
+    </main>
+  </body>
+</html>

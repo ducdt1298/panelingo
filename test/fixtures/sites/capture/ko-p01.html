@@ -1,0 +1,29 @@
+<!doctype html>
+<!--
+  Capture-only canvas: the page of ?set= is drawn at its natural size into a canvas that a cross-origin image
+  without CORS taints, so neither the content script nor the engine can read it; only a screen capture can. The
+  canvas's discovery key is this page's URL, so the file is named after the fixture set: the mock API's oracle finds
+  the ground truth (ko-p01.gt.json) from the path. Also served by the CDN at /frame/capture/ko-p01.html, as the
+  cross-origin frame of /capture/iframe.html (the image then comes from the reader origin).
+-->
+<html lang="{{LANG}}" data-page="{{PAGE}}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{TITLE}}</title>
+    <link rel="stylesheet" href="{{READER}}/_shared/fixture.css" />
+    <script type="application/json" id="ctv-fixture-data">
+      {{DATA}}
+    </script>
+    <script src="{{READER}}/_shared/fixture.js"></script>
+    <script src="{{READER}}/capture/page.js" defer></script>
+  </head>
+  <body>
+    <header class="fixture-bar">
+      <strong>Capture-only canvas</strong>
+      <span>drawn at natural size into a tainted canvas: only a screen capture can read it</span>
+      <a href="{{READER}}/">all fixtures</a>
+    </header>
+    <main id="canvases"></main>
+  </body>
+</html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+  A reader page whose comic lives in a cross-origin frame: the CDN serves the capture-only canvas page
+  (/frame/capture/<set>.html, a canvas tainted by an image from this reader origin). The frame is taller than the
+  window and scrolls inside, so a capture needs the frame's offset chain and scrolling at both levels. Enable the
+  CDN origin in the site's extraFrameOrigins so the content script runs in the frame.
+-->
+<html lang="{{LANG}}" data-page="{{PAGE}}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{TITLE}}</title>
+    <link rel="stylesheet" href="/_shared/fixture.css" />
+    <script type="application/json" id="ctv-fixture-data">
+      {{DATA}}
+    </script>
+    <script src="/_shared/fixture.js"></script>
+  </head>
+  <body>
+    <header class="fixture-bar">
+      <strong>Capture-only canvas in a cross-origin frame</strong>
+      <span>the frame scrolls inside a page that scrolls too</span>
+      <a href="/">all fixtures</a>
+    </header>
+    <iframe
+      id="reader-frame"
+      title="Comic reader"
+      src="{{CDN}}/frame/capture/{{SET}}.html?set={{SET}}"
+      style="
+        display: block;
+        box-sizing: content-box;
+        width: 1236px;
+        height: 1000px;
+        margin: 8px auto;
+        border: 2px solid #8a8a8a;
+        padding: 0;
+      "
+    ></iframe>
+  </body>
+</html>

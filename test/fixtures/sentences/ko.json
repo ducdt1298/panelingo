@@ -1,0 +1,1095 @@
+{
+  "lang": "ko",
+  "about": "Original lines written for this project's synthetic fixtures (no quotes from published works). Lines that share an id are parallel translations across ko/ja/zh/en; vi is a reference Vietnamese translation. canary is an invented token that must survive translation verbatim.",
+  "lines": [
+    {
+      "id": "d01",
+      "type": "dialogue",
+      "text": "일곱 시에 역 앞에서 보자.",
+      "vi": "Bảy giờ gặp nhau trước nhà ga nhé."
+    },
+    {
+      "id": "d02",
+      "type": "dialogue",
+      "text": "이 지도엔 마을 절반밖에 없잖아!",
+      "vi": "Tấm bản đồ này chỉ có một nửa thị trấn thôi!"
+    },
+    {
+      "id": "d03",
+      "type": "dialogue",
+      "text": "뒷문은 잠갔어?",
+      "vi": "Cậu khóa cửa sau chưa?"
+    },
+    {
+      "id": "d04",
+      "type": "dialogue",
+      "text": "버스가 또 늦네.",
+      "vi": "Xe buýt lại trễ nữa rồi."
+    },
+    {
+      "id": "d05",
+      "type": "dialogue",
+      "text": "상자는 내가 들게. 너는 문 좀 열어 줘.",
+      "vi": "Để mình bê thùng, cậu mở cửa giúp nhé."
+    },
+    {
+      "id": "d06",
+      "type": "dialogue",
+      "text": "누가 창문을 열어 놨어?",
+      "vi": "Ai để cửa sổ mở thế?"
+    },
+    {
+      "id": "d07",
+      "type": "dialogue",
+      "text": "이번엔 반반씩 내자.",
+      "vi": "Lần này chia đôi tiền nhé."
+    },
+    {
+      "id": "d08",
+      "type": "dialogue",
+      "text": "그 우산은 내 거 아니야.",
+      "vi": "Cái ô đó không phải của mình."
+    },
+    {
+      "id": "d09",
+      "type": "dialogue",
+      "text": "서둘러, 가게가 십 분 뒤에 닫아!",
+      "vi": "Nhanh lên, mười phút nữa cửa hàng đóng cửa rồi!"
+    },
+    {
+      "id": "d10",
+      "type": "dialogue",
+      "text": "빵을 또 너무 많이 구웠어.",
+      "vi": "Mình lại nướng quá nhiều bánh mì rồi."
+    },
+    {
+      "id": "d11",
+      "type": "dialogue",
+      "text": "저 이상한 소리 들려?",
+      "vi": "Cậu có nghe thấy tiếng động lạ đó không?"
+    },
+    {
+      "id": "d12",
+      "type": "dialogue",
+      "text": "집에 갈 땐 돌아서 가자.",
+      "vi": "Mình đi đường vòng về nhà đi."
+    },
+    {
+      "id": "d13",
+      "type": "dialogue",
+      "text": "너 신발 끈 풀렸어.",
+      "vi": "Dây giày của cậu bị tuột kìa."
+    },
+    {
+      "id": "d14",
+      "type": "dialogue",
+      "text": "잠깐, 지갑을 두고 왔어!",
+      "vi": "Khoan đã, mình quên ví rồi!"
+    },
+    {
+      "id": "d15",
+      "type": "dialogue",
+      "text": "여기 자리 있어요?",
+      "vi": "Chỗ này có ai ngồi chưa ạ?"
+    },
+    {
+      "id": "d16",
+      "type": "dialogue",
+      "text": "여기 커피 생각보다 맛있다.",
+      "vi": "Cà phê ở đây ngon bất ngờ đấy."
+    },
+    {
+      "id": "d17",
+      "type": "dialogue",
+      "text": "그 버튼 누르지 마!",
+      "vi": "Đừng chạm vào cái nút đó!"
+    },
+    {
+      "id": "d18",
+      "type": "dialogue",
+      "text": "우리 길을 잃은 것 같아.",
+      "vi": "Hình như chúng ta lạc đường rồi."
+    },
+    {
+      "id": "d19",
+      "type": "dialogue",
+      "text": "파란 공책 좀 건네줘.",
+      "vi": "Đưa mình cuốn vở màu xanh với."
+    },
+    {
+      "id": "d20",
+      "type": "dialogue",
+      "text": "비는 곧 그칠 거야.",
+      "vi": "Mưa sắp tạnh rồi."
+    },
+    {
+      "id": "d21",
+      "type": "dialogue",
+      "text": "도착하면 전화할게.",
+      "vi": "Tới nơi mình sẽ gọi cho cậu."
+    },
+    {
+      "id": "d22",
+      "type": "dialogue",
+      "text": "마지막 만두 누가 먹었어?",
+      "vi": "Ai ăn miếng sủi cảo cuối cùng rồi?"
+    },
+    {
+      "id": "d23",
+      "type": "dialogue",
+      "text": "오늘은 일찍 왔네!",
+      "vi": "Hôm nay cậu đến sớm thế!"
+    },
+    {
+      "id": "d24",
+      "type": "dialogue",
+      "text": "엘리베이터가 또 고장 났어.",
+      "vi": "Thang máy lại hỏng nữa rồi."
+    },
+    {
+      "id": "d25",
+      "type": "dialogue",
+      "text": "Melunde 빵집에서 만나자.",
+      "canary": "Melunde",
+      "vi": "Gặp nhau ở tiệm bánh Melunde nhé."
+    },
+    {
+      "id": "d26",
+      "type": "dialogue",
+      "text": "Zorvaki가 또 편지를 보냈어.",
+      "canary": "Zorvaki",
+      "vi": "Zorvaki lại gửi thư cho bọn mình nữa."
+    },
+    {
+      "id": "d27",
+      "type": "dialogue",
+      "text": "Quistrel에서 보낸 소포가 방금 왔어.",
+      "canary": "Quistrel",
+      "vi": "Bưu kiện từ Quistrel vừa tới."
+    },
+    {
+      "id": "d28",
+      "type": "dialogue",
+      "text": "Varnexa는 아직 밖에서 기다려?",
+      "canary": "Varnexa",
+      "vi": "Varnexa vẫn đang đợi ở ngoài à?"
+    },
+    {
+      "id": "d29",
+      "type": "dialogue",
+      "text": "KX-47호실은 3층이야.",
+      "canary": "KX-47",
+      "vi": "Phòng KX-47 ở tầng ba."
+    },
+    {
+      "id": "d30",
+      "type": "dialogue",
+      "text": "Obrillo행 기차표를 잃어버렸어.",
+      "canary": "Obrillo",
+      "vi": "Mình làm mất vé tàu đi Obrillo rồi."
+    },
+    {
+      "id": "d31",
+      "type": "dialogue",
+      "text": "Taluvex가 회의가 금요일로 바뀌었대.",
+      "canary": "Taluvex",
+      "vi": "Taluvex bảo cuộc họp dời sang thứ Sáu rồi."
+    },
+    {
+      "id": "d32",
+      "type": "dialogue",
+      "text": "고양이가 또 내 숙제 위에서 자고 있어.",
+      "vi": "Con mèo lại nằm ngủ trên bài tập của mình."
+    },
+    {
+      "id": "d33",
+      "type": "dialogue",
+      "text": "다리를 건너서 왼쪽으로 가.",
+      "vi": "Qua cầu thì rẽ trái nhé."
+    },
+    {
+      "id": "d34",
+      "type": "dialogue",
+      "text": "차 마실래, 주스 마실래?",
+      "vi": "Cậu muốn uống trà hay nước ép?"
+    },
+    {
+      "id": "d35",
+      "type": "dialogue",
+      "text": "이렇게 많이 쌓인 눈은 처음 봐.",
+      "vi": "Lần đầu mình thấy tuyết dày thế này."
+    },
+    {
+      "id": "d36",
+      "type": "dialogue",
+      "text": "네 휴대폰 계속 울려.",
+      "vi": "Điện thoại của cậu cứ rung mãi."
+    },
+    {
+      "id": "d37",
+      "type": "dialogue",
+      "text": "어두워지기 전에 가자.",
+      "vi": "Đi thôi, trước khi trời tối."
+    },
+    {
+      "id": "d38",
+      "type": "dialogue",
+      "text": "조용히 해, 다들 자고 있어.",
+      "vi": "Nói nhỏ thôi, mọi người ngủ cả rồi."
+    },
+    {
+      "id": "d39",
+      "type": "dialogue",
+      "text": "이 열쇠는 어느 자물쇠에도 안 맞아.",
+      "vi": "Chiếc chìa khóa này không vừa ổ nào cả."
+    },
+    {
+      "id": "d40",
+      "type": "dialogue",
+      "text": "할머니 정원 정말 멋지다.",
+      "vi": "Khu vườn của bà đẹp quá."
+    },
+    {
+      "id": "d41",
+      "type": "dialogue",
+      "text": "라디오 좀 고쳐 줄 수 있어?",
+      "vi": "Cậu sửa được cái radio không?"
+    },
+    {
+      "id": "d42",
+      "type": "dialogue",
+      "text": "고마워, 신세 졌다.",
+      "vi": "Cảm ơn nhé, mình nợ cậu một lần."
+    },
+    {
+      "id": "d43",
+      "type": "dialogue",
+      "text": "막차를 놓쳤어.",
+      "vi": "Bọn mình lỡ chuyến tàu cuối rồi."
+    },
+    {
+      "id": "d44",
+      "type": "dialogue",
+      "text": "위를 봐, 별이 떴어!",
+      "vi": "Nhìn lên kìa, sao lên rồi!"
+    },
+    {
+      "id": "d45",
+      "type": "dialogue",
+      "text": "국이 너무 짜.",
+      "vi": "Canh mặn quá."
+    },
+    {
+      "id": "d46",
+      "type": "dialogue",
+      "text": "시험 준비가 하나도 안 됐어.",
+      "vi": "Mình chưa ôn thi gì cả."
+    },
+    {
+      "id": "d47",
+      "type": "dialogue",
+      "text": "울타리를 파란색으로 칠하자.",
+      "vi": "Mình sơn hàng rào màu xanh đi."
+    },
+    {
+      "id": "d48",
+      "type": "dialogue",
+      "text": "누가 내 의자를 옮겼어.",
+      "vi": "Ai đó đã dời ghế của mình."
+    },
+    {
+      "id": "d49",
+      "type": "dialogue",
+      "text": "도서관이 어디 있는지 알아?",
+      "vi": "Cậu có biết thư viện ở đâu không?"
+    },
+    {
+      "id": "d50",
+      "type": "dialogue",
+      "text": "축제는 내일 밤에 시작해.",
+      "vi": "Lễ hội bắt đầu vào tối mai."
+    },
+    {
+      "id": "d51",
+      "type": "dialogue",
+      "text": "꽉 잡아!",
+      "vi": "Bám chắc vào!"
+    },
+    {
+      "id": "d52",
+      "type": "dialogue",
+      "text": "발밑 조심해, 바닥이 젖었어.",
+      "vi": "Coi chừng dưới chân, sàn ướt đấy."
+    },
+    {
+      "id": "d53",
+      "type": "dialogue",
+      "text": "서랍에서 옛날 사진을 찾았어.",
+      "vi": "Mình tìm thấy một tấm ảnh cũ trong ngăn kéo."
+    },
+    {
+      "id": "d54",
+      "type": "dialogue",
+      "text": "냉장고가 왜 텅 비었어?",
+      "vi": "Sao tủ lạnh trống trơn vậy?"
+    },
+    {
+      "id": "d55",
+      "type": "dialogue",
+      "text": "이사 도와준다고 약속했잖아.",
+      "vi": "Cậu đã hứa giúp mình chuyển nhà mà."
+    },
+    {
+      "id": "d56",
+      "type": "dialogue",
+      "text": "잠깐 쉬었다 하자.",
+      "vi": "Nghỉ một lát đi."
+    },
+    {
+      "id": "d57",
+      "type": "dialogue",
+      "text": "빨리 와, 이러다 늦겠어!",
+      "vi": "Nhanh lên, sắp trễ rồi!"
+    },
+    {
+      "id": "d58",
+      "type": "dialogue",
+      "text": "이렇게 맛있는 국수는 처음이야.",
+      "vi": "Đó là bát mì nước ngon nhất từ trước đến giờ."
+    },
+    {
+      "id": "d59",
+      "type": "dialogue",
+      "text": "안경을 못 찾겠어.",
+      "vi": "Mình không tìm thấy kính đâu cả."
+    },
+    {
+      "id": "d60",
+      "type": "dialogue",
+      "text": "오늘 저녁은 네가 요리할 차례야?",
+      "vi": "Tối nay đến lượt cậu nấu cơm à?"
+    },
+    {
+      "id": "d61",
+      "type": "dialogue",
+      "text": "Kezmira네 가게는 일요일에 쉬어.",
+      "canary": "Kezmira",
+      "vi": "Cửa hàng của Kezmira nghỉ vào Chủ nhật."
+    },
+    {
+      "id": "d62",
+      "type": "dialogue",
+      "text": "쪽지에는 Pravoln이라고 서명되어 있었어.",
+      "canary": "Pravoln",
+      "vi": "Mảnh giấy được ký tên Pravoln."
+    },
+    {
+      "id": "d63",
+      "type": "dialogue",
+      "text": "화분에 물 주는 거 잊지 마.",
+      "vi": "Đừng quên tưới cây nhé."
+    },
+    {
+      "id": "d64",
+      "type": "dialogue",
+      "text": "이 시간에 누가 문을 두드리지?",
+      "vi": "Giờ này ai còn gõ cửa vậy?"
+    },
+    {
+      "id": "t01",
+      "type": "thought",
+      "text": "비가 그칠 때까지 기다릴까…",
+      "vi": "Hay là đợi mưa tạnh rồi hẵng đi…"
+    },
+    {
+      "id": "t02",
+      "type": "thought",
+      "text": "가스 불은 껐던가?",
+      "vi": "Mình đã tắt bếp chưa nhỉ?"
+    },
+    {
+      "id": "t03",
+      "type": "thought",
+      "text": "눈치채지 못했으면 좋겠는데.",
+      "vi": "Mong là họ không để ý."
+    },
+    {
+      "id": "t04",
+      "type": "thought",
+      "text": "방금 그 소리는 뭐였지?",
+      "vi": "Tiếng gì vừa rồi thế nhỉ?"
+    },
+    {
+      "id": "t05",
+      "type": "thought",
+      "text": "겉옷을 챙겨 올걸.",
+      "vi": "Biết thế mang theo áo khoác."
+    },
+    {
+      "id": "t06",
+      "type": "thought",
+      "text": "오늘따라 다들 왜 이렇게 조용하지?",
+      "vi": "Sao hôm nay ai cũng im lặng thế nhỉ?"
+    },
+    {
+      "id": "t07",
+      "type": "thought",
+      "text": "딱 오 분만 더 자고 싶다…",
+      "vi": "Ngủ thêm năm phút nữa thôi…"
+    },
+    {
+      "id": "t08",
+      "type": "thought",
+      "text": "상자 안에 뭐가 들었을까?",
+      "vi": "Không biết trong hộp có gì nhỉ."
+    },
+    {
+      "id": "t09",
+      "type": "thought",
+      "text": "왜 이렇게 오래 걸리지.",
+      "vi": "Sao lâu thế không biết."
+    },
+    {
+      "id": "t10",
+      "type": "thought",
+      "text": "모퉁이에서 왼쪽이었나, 오른쪽이었나?",
+      "vi": "Ở góc đường là rẽ trái hay phải nhỉ?"
+    },
+    {
+      "id": "t11",
+      "type": "thought",
+      "text": "내일은 사실대로 말해야지.",
+      "vi": "Mai mình sẽ nói thật với họ."
+    },
+    {
+      "id": "t12",
+      "type": "thought",
+      "text": "이상하네… 문이 열려 있었어.",
+      "vi": "Lạ thật… cửa lại mở sẵn."
+    },
+    {
+      "id": "t13",
+      "type": "thought",
+      "text": "내가 그런 말을 하다니.",
+      "vi": "Không tin nổi mình lại nói thế."
+    },
+    {
+      "id": "t14",
+      "type": "thought",
+      "text": "Ulvatri라면 어떻게 해야 할지 알 텐데.",
+      "canary": "Ulvatri",
+      "vi": "Nếu là Ulvatri thì chắc sẽ biết phải làm gì."
+    },
+    {
+      "id": "t15",
+      "type": "thought",
+      "text": "정말 끝난 걸까?",
+      "vi": "Thật sự kết thúc rồi sao?"
+    },
+    {
+      "id": "t16",
+      "type": "thought",
+      "text": "배고파 죽겠다…",
+      "vi": "Đói quá đi mất…"
+    },
+    {
+      "id": "n01",
+      "type": "narration",
+      "text": "사흘 뒤",
+      "vi": "Ba ngày sau"
+    },
+    {
+      "id": "n02",
+      "type": "narration",
+      "text": "그날 밤",
+      "vi": "Đêm hôm đó"
+    },
+    {
+      "id": "n03",
+      "type": "narration",
+      "text": "다음 날 아침",
+      "vi": "Sáng hôm sau"
+    },
+    {
+      "id": "n04",
+      "type": "narration",
+      "text": "한편, 마을 건너편에서는",
+      "vi": "Trong khi đó, ở phía bên kia thị trấn"
+    },
+    {
+      "id": "n05",
+      "type": "narration",
+      "text": "십 년 전",
+      "vi": "Mười năm trước"
+    },
+    {
+      "id": "n06",
+      "type": "narration",
+      "text": "새벽부터 비가 내리고 있었다.",
+      "vi": "Mưa đã rơi từ lúc rạng sáng."
+    },
+    {
+      "id": "n07",
+      "type": "narration",
+      "text": "그날 역에는 아무도 오지 않았다.",
+      "vi": "Hôm đó không ai đến nhà ga cả."
+    },
+    {
+      "id": "n08",
+      "type": "narration",
+      "text": "오래된 항구는 다시 조용해졌다.",
+      "vi": "Bến cảng cũ lại trở nên yên tĩnh."
+    },
+    {
+      "id": "n09",
+      "type": "narration",
+      "text": "그해 봄은 늦게 찾아왔다.",
+      "vi": "Năm ấy mùa xuân đến muộn."
+    },
+    {
+      "id": "n10",
+      "type": "narration",
+      "text": "Yzandre 계곡 어딘가",
+      "canary": "Yzandre",
+      "vi": "Đâu đó trong thung lũng Yzandre"
+    },
+    {
+      "id": "n11",
+      "type": "narration",
+      "text": "축제 일주일 전",
+      "vi": "Một tuần trước lễ hội"
+    },
+    {
+      "id": "n12",
+      "type": "narration",
+      "text": "마을이 천천히 깨어났다.",
+      "vi": "Thị trấn dần thức giấc."
+    },
+    {
+      "id": "n13",
+      "type": "narration",
+      "text": "방과 후",
+      "vi": "Sau giờ tan học"
+    },
+    {
+      "id": "n14",
+      "type": "narration",
+      "text": "그 편지는 끝내 주인에게 닿지 못했다.",
+      "vi": "Lá thư ấy mãi mãi không đến tay người nhận."
+    },
+    {
+      "id": "n15",
+      "type": "narration",
+      "text": "다시 가게에서",
+      "vi": "Trở lại cửa hàng"
+    },
+    {
+      "id": "n16",
+      "type": "narration",
+      "text": "그날 저녁 늦게",
+      "vi": "Tối muộn hôm đó"
+    },
+    {
+      "id": "s01",
+      "type": "sign",
+      "text": "오늘 휴업",
+      "vi": "Hôm nay nghỉ"
+    },
+    {
+      "id": "s02",
+      "type": "sign",
+      "text": "출구",
+      "vi": "Lối ra"
+    },
+    {
+      "id": "s03",
+      "type": "sign",
+      "text": "2번 승강장",
+      "vi": "Sân ga số 2"
+    },
+    {
+      "id": "s04",
+      "type": "sign",
+      "text": "주차 금지",
+      "vi": "Cấm đỗ xe"
+    },
+    {
+      "id": "s05",
+      "type": "sign",
+      "text": "갓 구운 빵",
+      "vi": "Bánh mì mới ra lò"
+    },
+    {
+      "id": "s06",
+      "type": "sign",
+      "text": "도서관",
+      "vi": "Thư viện"
+    },
+    {
+      "id": "s07",
+      "type": "sign",
+      "text": "미세요",
+      "vi": "Đẩy"
+    },
+    {
+      "id": "s08",
+      "type": "sign",
+      "text": "관계자 외 출입 금지",
+      "vi": "Chỉ dành cho nhân viên"
+    },
+    {
+      "id": "s09",
+      "type": "sign",
+      "text": "Gorvessa 호텔",
+      "canary": "Gorvessa",
+      "vi": "Khách sạn Gorvessa"
+    },
+    {
+      "id": "s10",
+      "type": "sign",
+      "text": "24시간 영업",
+      "vi": "Mở cửa 24 giờ"
+    },
+    {
+      "id": "s11",
+      "type": "sign",
+      "text": "버스 정류장",
+      "vi": "Trạm xe buýt"
+    },
+    {
+      "id": "s12",
+      "type": "sign",
+      "text": "미끄럼 주의",
+      "vi": "Cẩn thận sàn trơn"
+    },
+    {
+      "id": "s13",
+      "type": "sign",
+      "text": "Celdrix 서점",
+      "canary": "Celdrix",
+      "vi": "Hiệu sách Celdrix"
+    },
+    {
+      "id": "s14",
+      "type": "sign",
+      "text": "분실물 센터",
+      "vi": "Nơi nhận đồ thất lạc"
+    },
+    {
+      "id": "x01",
+      "type": "sfx",
+      "text": "쾅!",
+      "vi": "ẦM!"
+    },
+    {
+      "id": "x02",
+      "type": "sfx",
+      "text": "덜컥",
+      "vi": "CẠCH"
+    },
+    {
+      "id": "x03",
+      "type": "sfx",
+      "text": "저벅저벅",
+      "vi": "CỘP CỘP"
+    },
+    {
+      "id": "x04",
+      "type": "sfx",
+      "text": "휘이잉",
+      "vi": "VÙ VÙ"
+    },
+    {
+      "id": "x05",
+      "type": "sfx",
+      "text": "두근두근",
+      "vi": "THÌNH THỊCH"
+    },
+    {
+      "id": "x06",
+      "type": "sfx",
+      "text": "따르릉",
+      "vi": "REENG REENG"
+    },
+    {
+      "id": "x07",
+      "type": "sfx",
+      "text": "쏴아아",
+      "vi": "ÀO ÀO"
+    },
+    {
+      "id": "x08",
+      "type": "sfx",
+      "text": "쨍그랑!",
+      "vi": "CHOANG!"
+    },
+    {
+      "id": "x09",
+      "type": "sfx",
+      "text": "부릉부릉",
+      "vi": "BRỪM BRỪM"
+    },
+    {
+      "id": "x10",
+      "type": "sfx",
+      "text": "똑똑",
+      "vi": "CỐC CỐC"
+    },
+    {
+      "id": "x11",
+      "type": "sfx",
+      "text": "첨벙",
+      "vi": "TÕM"
+    },
+    {
+      "id": "x12",
+      "type": "sfx",
+      "text": "우르릉",
+      "vi": "ĐÙNG ĐOÀNG"
+    },
+    {
+      "id": "x13",
+      "type": "sfx",
+      "text": "찰칵",
+      "vi": "TÁCH"
+    },
+    {
+      "id": "x14",
+      "type": "sfx",
+      "text": "바스락",
+      "vi": "SỘT SOẠT"
+    },
+    {
+      "id": "x15",
+      "type": "sfx",
+      "text": "딩동",
+      "vi": "KING KOONG"
+    },
+    {
+      "id": "x16",
+      "type": "sfx",
+      "text": "꼬르륵",
+      "vi": "ỌC ỌC"
+    },
+    {
+      "id": "x17",
+      "type": "sfx",
+      "text": "털썩",
+      "vi": "BỊCH"
+    },
+    {
+      "id": "x18",
+      "type": "sfx",
+      "text": "휙",
+      "vi": "VÚT"
+    }
+  ],
+  "actionLines": [
+    {
+      "id": "a01",
+      "type": "dialogue",
+      "text": "거기 서!",
+      "vi": "Đứng lại đó!"
+    },
+    {
+      "id": "a02",
+      "type": "dialogue",
+      "text": "이번엔 못 도망가!",
+      "vi": "Lần này đừng hòng chạy thoát!"
+    },
+    {
+      "id": "a03",
+      "type": "dialogue",
+      "text": "고작 그게 다야?",
+      "vi": "Chỉ có thế thôi sao?"
+    },
+    {
+      "id": "a04",
+      "type": "dialogue",
+      "text": "물러서, 이건 내 싸움이야.",
+      "vi": "Lùi lại, đây là trận đấu của tôi."
+    },
+    {
+      "id": "a05",
+      "type": "dialogue",
+      "text": "후회하게 될 거다!",
+      "vi": "Ngươi sẽ phải hối hận!"
+    },
+    {
+      "id": "a06",
+      "type": "dialogue",
+      "text": "덤벼 봐!",
+      "vi": "Xông lên đi!"
+    },
+    {
+      "id": "a07",
+      "type": "dialogue",
+      "text": "어딜 도망가!",
+      "vi": "Đừng hòng!"
+    },
+    {
+      "id": "a08",
+      "type": "dialogue",
+      "text": "이번엔 절대 안 져!",
+      "vi": "Lần này ta sẽ không thua nữa!"
+    },
+    {
+      "id": "a09",
+      "type": "sfx",
+      "text": "퍽!",
+      "vi": "BỐP!"
+    },
+    {
+      "id": "a10",
+      "type": "sfx",
+      "text": "챙!",
+      "vi": "KENG!"
+    },
+    {
+      "id": "a11",
+      "type": "sfx",
+      "text": "휘익!",
+      "vi": "VÚT!"
+    },
+    {
+      "id": "a12",
+      "type": "sfx",
+      "text": "쿵!",
+      "vi": "RẦM!"
+    }
+  ],
+  "cast": [
+    {
+      "name": "하로벤",
+      "role": "character",
+      "vi": "Haroben"
+    },
+    {
+      "name": "미루셀",
+      "role": "character",
+      "vi": "Mirusel"
+    },
+    {
+      "name": "도르카",
+      "role": "character",
+      "vi": "Dorka"
+    },
+    {
+      "name": "테오낙",
+      "role": "place",
+      "vi": "Teonak"
+    }
+  ],
+  "nameLines": [
+    {
+      "id": "k01",
+      "type": "dialogue",
+      "speaker": "미루셀",
+      "names": ["하로벤"],
+      "text": "하로벤, 또 10분이나 늦었어!",
+      "canary": "10",
+      "vi": "Haroben, cậu lại trễ những 10 phút!"
+    },
+    {
+      "id": "k02",
+      "type": "dialogue",
+      "speaker": "하로벤",
+      "names": ["미루셀"],
+      "text": "미안, 미루셀. 버스를 놓쳤어.",
+      "vi": "Xin lỗi, Mirusel. Mình lỡ xe buýt."
+    },
+    {
+      "id": "k03",
+      "type": "dialogue",
+      "speaker": "도르카",
+      "names": ["하로벤"],
+      "text": "하로벤은 오늘도 지각이네.",
+      "vi": "Hôm nay Haroben lại đi muộn rồi."
+    },
+    {
+      "id": "k04",
+      "type": "dialogue",
+      "speaker": "미루셀",
+      "names": ["도르카", "테오낙"],
+      "text": "도르카, 테오낙 마을까지 얼마나 걸려?",
+      "vi": "Dorka, đến làng Teonak mất bao lâu?"
+    },
+    {
+      "id": "k05",
+      "type": "dialogue",
+      "speaker": "도르카",
+      "names": ["테오낙"],
+      "text": "테오낙까지는 걸어서 두 시간이야.",
+      "vi": "Đi bộ đến Teonak mất hai tiếng."
+    },
+    {
+      "id": "k06",
+      "type": "dialogue",
+      "speaker": "하로벤",
+      "names": ["미루셀"],
+      "text": "미루셀, 지도는 챙겨 왔지?",
+      "vi": "Mirusel, cậu mang bản đồ theo rồi chứ?"
+    },
+    {
+      "id": "k07",
+      "type": "dialogue",
+      "speaker": "미루셀",
+      "names": ["하로벤"],
+      "text": "하로벤이 챙긴다고 했잖아!",
+      "vi": "Haroben bảo là tự mang mà!"
+    },
+    {
+      "id": "k08",
+      "type": "dialogue",
+      "speaker": "하로벤",
+      "names": ["도르카"],
+      "text": "도르카 말로는 다리가 무너졌대.",
+      "vi": "Dorka bảo cây cầu sập rồi."
+    },
+    {
+      "id": "k09",
+      "type": "dialogue",
+      "speaker": "도르카",
+      "names": ["미루셀"],
+      "text": "미루셀, 저 불빛 보여?",
+      "vi": "Mirusel, thấy ánh đèn kia không?"
+    },
+    {
+      "id": "k10",
+      "type": "dialogue",
+      "speaker": "미루셀",
+      "names": ["테오낙"],
+      "text": "저기가 테오낙 시장이야.",
+      "vi": "Đằng kia là chợ Teonak đấy."
+    },
+    {
+      "id": "k11",
+      "type": "dialogue",
+      "speaker": "하로벤",
+      "names": ["도르카"],
+      "text": "도르카, 우산 하나 더 있어?",
+      "vi": "Dorka, cậu còn cái ô nào nữa không?"
+    },
+    {
+      "id": "k12",
+      "type": "dialogue",
+      "speaker": "도르카",
+      "names": ["하로벤"],
+      "text": "하로벤, 너는 늘 준비가 부족해.",
+      "vi": "Haroben, cậu lúc nào cũng thiếu chuẩn bị."
+    },
+    {
+      "id": "k13",
+      "type": "dialogue",
+      "speaker": "미루셀",
+      "names": ["테오낙"],
+      "text": "내일은 테오낙 축제 날이야.",
+      "vi": "Mai là ngày lễ hội Teonak."
+    },
+    {
+      "id": "k14",
+      "type": "dialogue",
+      "speaker": "하로벤",
+      "names": ["미루셀"],
+      "text": "미루셀, 축제에 같이 갈래?",
+      "vi": "Mirusel, đi lễ hội cùng mình không?"
+    },
+    {
+      "id": "k15",
+      "type": "dialogue",
+      "speaker": "도르카",
+      "names": ["하로벤", "미루셀"],
+      "text": "하로벤이랑 미루셀은 먼저 가.",
+      "vi": "Haroben với Mirusel đi trước đi."
+    },
+    {
+      "id": "k16",
+      "type": "dialogue",
+      "speaker": "미루셀",
+      "names": ["도르카"],
+      "text": "도르카, 3시에 광장에서 보자.",
+      "canary": "3",
+      "vi": "Dorka, 3 giờ gặp ở quảng trường nhé."
+    },
+    {
+      "id": "k17",
+      "type": "dialogue",
+      "speaker": "하로벤",
+      "names": ["미루셀"],
+      "text": "미루셀, 이 편지 네 거야?",
+      "vi": "Mirusel, lá thư này của cậu à?"
+    },
+    {
+      "id": "k18",
+      "type": "dialogue",
+      "speaker": "미루셀",
+      "names": ["하로벤"],
+      "text": "하로벤, 그거 열어 보지 마!",
+      "vi": "Haroben, đừng mở nó ra!"
+    },
+    {
+      "id": "k19",
+      "type": "dialogue",
+      "speaker": "도르카",
+      "names": ["테오낙"],
+      "text": "테오낙에 비가 온다던데.",
+      "vi": "Nghe nói ở Teonak đang mưa."
+    },
+    {
+      "id": "k20",
+      "type": "dialogue",
+      "speaker": "하로벤",
+      "names": ["도르카"],
+      "text": "도르카, 오늘 정말 고마웠어.",
+      "vi": "Dorka, hôm nay cảm ơn cậu nhiều lắm."
+    },
+    {
+      "id": "k21",
+      "type": "dialogue",
+      "speaker": "미루셀",
+      "names": ["하로벤"],
+      "text": "하로벤, 내 가방 못 봤어?",
+      "vi": "Haroben, cậu có thấy túi của mình đâu không?"
+    },
+    {
+      "id": "k22",
+      "type": "dialogue",
+      "speaker": "도르카",
+      "names": ["미루셀"],
+      "text": "미루셀 가방은 의자 밑에 있어.",
+      "vi": "Túi của Mirusel ở dưới ghế ấy."
+    },
+    {
+      "id": "k23",
+      "type": "dialogue",
+      "speaker": "하로벤",
+      "names": ["테오낙"],
+      "text": "테오낙 다리 앞에서 기다릴게.",
+      "vi": "Mình sẽ đợi trước cầu Teonak."
+    },
+    {
+      "id": "k24",
+      "type": "dialogue",
+      "speaker": "미루셀",
+      "names": ["도르카"],
+      "text": "도르카는 벌써 출발했대.",
+      "vi": "Nghe nói Dorka đi trước rồi."
+    },
+    {
+      "id": "k25",
+      "type": "narration",
+      "speaker": null,
+      "names": ["테오낙"],
+      "text": "다음 날, 테오낙",
+      "vi": "Ngày hôm sau, Teonak"
+    },
+    {
+      "id": "k26",
+      "type": "narration",
+      "speaker": null,
+      "names": ["테오낙"],
+      "text": "테오낙 축제 첫날",
+      "vi": "Ngày đầu tiên của lễ hội Teonak"
+    }
+  ]
+}

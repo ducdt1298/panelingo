@@ -1,0 +1,22 @@
+# Text is stored LF in git and checked out
+# platform-native; Prettier uses endOfLine "auto" to match.
+* text=auto
+
+# Binary assets must never be touched.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.onnx binary
+*.wasm binary
+*.woff2 binary
+*.ttf binary
+*.ttc binary
+
+# Recorded SSE transcripts are byte-exact fixtures (CRLF vs LF matters to the parser tests).
+*.sse -text
+
+# Committed canary ground truth must stay byte-identical to the generator output.
+assets/canary/*.json text eol=lf

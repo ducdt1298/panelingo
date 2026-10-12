@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en" data-page="{{PAGE}}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{TITLE}}</title>
+    {{REFERRER_META}}
+    <link rel="stylesheet" href="/_shared/fixture.css" />
+    <script type="application/json" id="ctv-fixture-data">
+      {{DATA}}
+    </script>
+    <script src="/_shared/fixture.js"></script>
+    <script type="speculationrules">
+      {{SPECULATION_RULES}}
+    </script>
+  </head>
+  <body>
+    <header class="fixture-bar">
+      <strong>Prerender</strong>
+      <a href="/">all fixtures</a>
+    </header>
+    <main class="note">
+      <p>This page asks Chrome to prerender <code>{{TARGET}}</code> with Speculation Rules.</p>
+      <p><a id="activate" href="{{TARGET}}">Open the prerendered chapter</a></p>
+      <p>Nothing may be uploaded while the target is prerendering; activation happens on this click.</p>
+    </main>
+  </body>
+</html>

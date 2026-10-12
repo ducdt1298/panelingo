@@ -1,0 +1,402 @@
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"role":"assistant"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"@"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"lang"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"zh"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"\n"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"#"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"1"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"n"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"arr"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ation"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"||"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"第二"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"天"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"早"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"上"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"S"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"áng"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" hôm"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" sau"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"\n"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"#"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"2"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"dialog"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ue"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"||"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"七"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"点"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"在"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"车"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"站"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"门"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"口"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"见"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"。"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"7"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" giờ"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" gặp"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" ở"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" c"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ổng"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" ga"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" nhé"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":".\n"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"#"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"3"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"dialog"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ue"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"||"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"这"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"张"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"地图"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"只"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"画"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"了"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"半"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"个"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"小"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"镇"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"！"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"B"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ản"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" đồ"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" này"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" chỉ"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" v"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ẽ"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" có"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" n"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ửa"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" cái"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" thị"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" tr"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ấn"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"!\n"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"#"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"4"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"thought"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"||"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"要"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"不"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"等"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"雨"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"停"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"了"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"再"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"走"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"吧"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"……"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"Hay"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" đ"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ợi"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" m"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ưa"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" t"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ạnh"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" rồi"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" đi"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" vậy"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"...\n"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"#"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"5"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"sign"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"||"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"今日"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"休"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"息"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"H"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ôm"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" nay"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" nghỉ"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"\n"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"#"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"6"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"s"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"fx"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"||"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"轰"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"!"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"R"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"Ầ"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"M"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"!\n"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"#"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"7"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"dialog"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ue"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"||"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"快"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"点"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"，"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"商"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"店"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"十"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"分钟"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"后"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"就"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"关"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"门"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"了"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"!"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"Nhan"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"h"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" lên"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":","},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" "},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"10"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" phút"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" nữa"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" cửa"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" hàng"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" đóng"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" cửa"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" rồi"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"!\n"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"#"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"8"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"dialog"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ue"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"||"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"等等"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"，我"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"忘"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"带"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"钱包"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"了"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"!"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"Kho"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"an"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":","},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" tôi"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" qu"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ên"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" mang"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" ví"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":" rồi"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"!\n"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"#"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"9"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"ignore"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635915,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{"content":"|||"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635921,"model":"azure-gpt-5.2","choices":[],"usage":{"prompt_tokens":809,"completion_tokens":98,"total_tokens":907}}
+
+data: {"id":"chatcmpl-1791635907883-dl6e6qwzt","object":"chat.completion.chunk","created":1791635921,"model":"azure-gpt-5.2","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+
+data: [DONE]
+

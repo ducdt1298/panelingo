@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/ducdt1298/panelingo/security/advisories/new
+    about: Report security issues privately. Please do not open a public issue.
+  - name: Questions and ideas
+    url: https://github.com/ducdt1298/panelingo/discussions
+    about: Ask setup questions, share provider/model results and discuss ideas.

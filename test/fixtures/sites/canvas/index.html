@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="{{LANG}}" data-page="{{PAGE}}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{TITLE}}</title>
+    {{REFERRER_META}}
+    <link rel="stylesheet" href="/_shared/fixture.css" />
+    <script type="application/json" id="ctv-fixture-data">
+      {{DATA}}
+    </script>
+    <script src="/_shared/fixture.js"></script>
+    <script src="/canvas/page.js" defer></script>
+  </head>
+  <body>
+    <header class="fixture-bar">
+      <strong>Canvas reader</strong>
+      <span>pages are drawn into canvas elements only; there is no img</span>
+      <a href="/canvas/?set={{SET}}&amp;src=same">same-origin</a>
+      <a href="/canvas/?set={{SET}}&amp;src=cors">CORS</a>
+      <a href="/canvas/?set={{SET}}&amp;src=cdn">tainted</a>
+      <a href="/">all fixtures</a>
+    </header>
+    <main class="reader" id="canvases"></main>
+  </body>
+</html>

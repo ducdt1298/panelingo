@@ -1,0 +1,132 @@
+/* Shared look of the fixture pages: plain and neutral, system fonts only (the /csp/ page allows no fonts). */
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #e9e9e9;
+  color: #1d1d1d;
+  font:
+    14px/1.4 system-ui,
+    sans-serif;
+}
+
+.fixture-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  padding: 8px 12px;
+  background: #fff;
+  border-bottom: 1px solid #c8c8c8;
+}
+
+.fixture-bar strong {
+  margin-right: 8px;
+}
+
+.fixture-bar a {
+  color: #1a4fb0;
+}
+
+/* Webtoon-style vertical strip: images stacked edge to edge at the strip width. */
+.reader {
+  max-width: 800px;
+  margin: 0 auto;
+  background: #fff;
+}
+
+.reader img,
+.reader canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Paged reader: one page at a time, scaled down to fit the window width. */
+.paged {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 0;
+}
+
+.paged img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto 16px;
+  background: #fff;
+}
+
+.paged h2 {
+  margin: 16px 12px 8px;
+  font-size: 15px;
+}
+
+.chapter h2,
+.reader h1 {
+  margin: 0;
+  padding: 20px 12px;
+  font-size: 16px;
+  text-align: center;
+  background: #f4f4f4;
+}
+
+.spa-nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 12px;
+}
+
+.sentinel {
+  height: 1px;
+}
+
+.frames {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+.frames figure {
+  margin: 0;
+}
+
+.frames figcaption {
+  padding: 4px 0;
+  font-size: 13px;
+}
+
+.frames iframe {
+  display: block;
+  width: 100%;
+  height: 640px;
+  border: 1px solid #b4b4b4;
+  background: #fff;
+}
+
+.frame-body {
+  margin: 0;
+  background: #fff;
+}
+
+.frame-body img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.note {
+  max-width: 800px;
+  margin: 16px auto;
+  padding: 0 12px;
+}
+
+.note code {
+  word-break: break-all;
+}
