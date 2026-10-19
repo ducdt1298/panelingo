@@ -408,6 +408,8 @@ export function createController(deps: ControllerDeps): Controller {
     for (const info of due) {
       info.captureRetries += 1;
       if (client.post({ type: "img:retry", imageKey: info.image.imageKey })) info.active = true;
+      // The port went idle after the error: a new submit reconnects, and the engine restarts the failed image.
+      else enqueue(info.image.imageKey, { force: false, urgent: true });
     }
     publish();
   }

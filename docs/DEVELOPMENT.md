@@ -40,28 +40,30 @@ Then load the extension:
 
 ## Commands
 
-| Command                           | What it does                                                                                                       |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `npm run build`                   | Development build into `dist/`: linked sourcemaps, the debug page, `__DEV__ = true`, and the name suffix "(dev)".  |
-| `npm run build:test`              | Test build used by E2E: like dev plus `__TEST__ = true`, open shadow roots, fixture hosts seeded, test hooks.      |
-| `npm run build:prod`              | Production build: minified, no sourcemaps, no debug page, no `declarativeNetRequestFeedback` permission.           |
-| `npm run package`                 | Production build into `release/dist`, then the store-ready `release/panelingo-<version>.zip` and its SHA-256.      |
-| `npm run watch`                   | Development build that rebuilds on change, including HTML, CSS and assets.                                         |
-| `npm run typecheck`               | Runs `tsc` for every TypeScript project: browser code, service worker, shared code, scripts, tools, tests and E2E. |
-| `npm run lint` / `lint:fix`       | ESLint with type-aware rules.                                                                                      |
-| `npm run format` / `format:check` | Prettier.                                                                                                          |
-| `npm test`                        | Unit and integration tests (`node --test`).                                                                        |
-| `npm run test:unit`               | Unit tests only.                                                                                                   |
-| `npm run test:cov`                | Unit and integration tests with coverage. `src/shared/**` must stay at **≥ 85% line coverage**.                    |
-| `npm run test:e2e`                | `build:test`, then end-to-end tests in a real Chrome (see [TESTING.md](TESTING.md#end-to-end-tests)).              |
-| `npm run check`                   | `typecheck` + `lint` + `format:check` + `test:cov`. **Run before every pull request.**                             |
-| `npm run check:full`              | `check` + `test:e2e`.                                                                                              |
-| `npm run fetch-models`            | Downloads and verifies the detector models (see above).                                                            |
-| `npm run mock-api`                | Starts the mock OpenAI-compatible server on `http://127.0.0.1:4925`.                                               |
-| `npm run serve:fixtures`          | Starts the fixture reader (`http://127.0.0.1:8080`) and fixture CDN (`http://localhost:8081`).                     |
-| `npm run fixtures`                | Regenerates the synthetic test images into `test/fixtures/generated/` (Python + Pillow).                           |
-| `npm run test:fixtures`           | Unit tests of the fixture generator (Python).                                                                      |
-| `npm run icons`                   | Redraws `assets/icons/*.png` (Python + Pillow). The icons are committed, so you rarely need this.                  |
+| Command                             | What it does                                                                                                                                                                                                                    |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run build`                     | Development build into `dist/`: linked sourcemaps, the debug page, `__DEV__ = true`, and the name suffix "(dev)".                                                                                                               |
+| `npm run build:test`                | Test build used by E2E: like dev plus `__TEST__ = true`, open shadow roots, fixture hosts seeded, test hooks.                                                                                                                   |
+| `npm run build:prod`                | Production build: minified, no sourcemaps, no debug page, no `declarativeNetRequestFeedback` permission.                                                                                                                        |
+| `npm run package`                   | Production build into `release/dist`, then the store-ready `release/panelingo-<version>.zip` and its SHA-256.                                                                                                                   |
+| `npm run watch`                     | Development build that rebuilds on change, including HTML, CSS and assets.                                                                                                                                                      |
+| `npm run typecheck`                 | Runs `tsc` for every TypeScript project: browser code, service worker, shared code, scripts, tools, tests and E2E.                                                                                                              |
+| `npm run lint` / `lint:fix`         | ESLint with type-aware rules.                                                                                                                                                                                                   |
+| `npm run format` / `format:check`   | Prettier.                                                                                                                                                                                                                       |
+| `npm test`                          | Unit and integration tests (`node --test`).                                                                                                                                                                                     |
+| `npm run test:unit`                 | Unit tests only.                                                                                                                                                                                                                |
+| `npm run test:cov`                  | Unit and integration tests with coverage. `src/shared/**` must stay at **≥ 85% line coverage**.                                                                                                                                 |
+| `npm run test:e2e`                  | `build:test`, then end-to-end tests in a real Chrome (see [TESTING.md](TESTING.md#end-to-end-tests)).                                                                                                                           |
+| `npm run check`                     | `typecheck` + `lint` + `format:check` + `test:cov`. **Run before every pull request.**                                                                                                                                          |
+| `npm run check:full`                | `check` + `test:e2e`.                                                                                                                                                                                                           |
+| `npm run fetch-models`              | Downloads and verifies the detector models (see above).                                                                                                                                                                         |
+| `npm run fetch-models -- --offline` | Also caches the offline mode models (about 2.1 GB, pinned in `vendor/models.lock.json`) in `.cache/offline-models` for the offline E2E test and `npm run eval:offline`; `--offline=ocr-korean,opus-mt-ko-en` fetches some only. |
+| `npm run eval:offline`              | Offline mode evaluation in Chrome against a test build (`CTV_EXTENSION_DIR`): OCR error rate, translation chrF and timings per fixture page (see [OFFLINE-MODE.md](OFFLINE-MODE.md#evaluation)).                                |
+| `npm run mock-api`                  | Starts the mock OpenAI-compatible server on `http://127.0.0.1:4925`.                                                                                                                                                            |
+| `npm run serve:fixtures`            | Starts the fixture reader (`http://127.0.0.1:8080`) and fixture CDN (`http://localhost:8081`).                                                                                                                                  |
+| `npm run fixtures`                  | Regenerates the synthetic test images into `test/fixtures/generated/` (Python + Pillow).                                                                                                                                        |
+| `npm run test:fixtures`             | Unit tests of the fixture generator (Python).                                                                                                                                                                                   |
+| `npm run icons`                     | Redraws `assets/icons/*.png` (Python + Pillow). The icons are committed, so you rarely need this.                                                                                                                               |
 
 ### Build modes
 

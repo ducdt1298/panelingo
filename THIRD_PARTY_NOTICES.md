@@ -38,6 +38,24 @@ records the provenance and the modification, and it is shipped with every build.
 The fonts are licensed under the SIL Open Font License 1.1. They are shipped as unmodified WOFF2 files from
 Fontsource and are used only to draw translated lettering. They are not sold on their own.
 
+## Models downloaded by offline mode (experimental, not shipped)
+
+[Offline mode](docs/OFFLINE-MODE.md) is off by default. When a user turns it on, the extension downloads the models
+below from Hugging Face on first use, at the commits pinned in the `offline` group of
+[`vendor/models.lock.json`](vendor/models.lock.json), and checks each file's size and SHA-256 before using it. They
+are never bundled with the extension, never committed to this repository, and used unmodified.
+
+| Models                                                                                                                                                                                                                                                                                         | Used for                                                                       | License          |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ---------------- |
+| [PP-OCRv5 mobile recognition](https://github.com/PaddlePaddle/PaddleOCR) (PaddlePaddle), official ONNX exports: `PaddlePaddle/PP-OCRv5_mobile_rec_onnx`, `korean_PP-OCRv5_mobile_rec_onnx`, `latin_PP-OCRv5_mobile_rec_onnx`, `en_PP-OCRv5_mobile_rec_onnx`, with their character dictionaries | Text recognition (Chinese and Japanese, Korean, Latin, English)                | Apache-2.0       |
+| [Opus-MT](https://github.com/Helsinki-NLP/Opus-MT) (Helsinki-NLP, University of Helsinki) as ONNX exports by Xenova: `opus-mt-ko-en`, `ja-en`, `es-en`, `en-vi`, `en-es`, `en-fr`, `en-it`, `en-id`                                                                                            | Translation, one model per direction                                           | Apache-2.0       |
+| Opus-MT `opus-mt-zh-en` and `opus-mt-en-de` (Helsinki-NLP), ONNX exports by Xenova                                                                                                                                                                                                             | Translation                                                                    | CC-BY-4.0        |
+| [NLLB-200 distilled 600M](https://huggingface.co/facebook/nllb-200-distilled-600M) (Meta AI), ONNX export by Xenova                                                                                                                                                                            | Translation between any two of its 200 languages (optional, chosen in Options) | **CC-BY-NC-4.0** |
+
+NLLB-200 is licensed for **non-commercial use only** (CC-BY-NC-4.0); the options page says so where it is chosen.
+Opus-MT models under CC-BY-4.0 require attribution: "Opus-MT models by Helsinki-NLP (Jörg Tiedemann, Santhosh
+Thottingal), trained on OPUS data". PaddleOCR is Copyright (c) PaddlePaddle Authors.
+
 ## Development tools (not shipped)
 
 These packages are used only to build, lint and test the project. None of their code ends up in `dist/`.

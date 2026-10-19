@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { parseOfflineFiles, type OfflineFile } from "../../src/shared/offline/catalog.ts";
 import { VENDOR } from "./paths.ts";
 
 /** Deterministic transforms that derive a shipped model from a downloaded one. */
@@ -26,6 +27,8 @@ export interface ModelEntry {
 
 export interface ModelsLock {
   models: ModelEntry[];
+  /** Offline mode models: downloaded by the engine on first use, never bundled (docs/OFFLINE-MODE.md). */
+  offline?: { about?: string; files: unknown };
 }
 
 export function readModelsLock(): ModelsLock {
@@ -34,6 +37,11 @@ export function readModelsLock(): ModelsLock {
     throw new Error("vendor/models.lock.json is malformed");
   }
   return raw;
+}
+
+/** The validated "offline" group (empty when the lock has none). */
+export function offlineFiles(lock: ModelsLock): OfflineFile[] {
+  return lock.offline === undefined ? [] : parseOfflineFiles(lock.offline.files);
 }
 
 export function shippedModels(lock: ModelsLock): ModelEntry[] {

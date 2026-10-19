@@ -463,7 +463,7 @@ describe("backend choice (auto)", () => {
       numThreads: 1,
       proxy: false,
     });
-    assert.equal(h.ort.env.logLevel, "warning");
+    assert.equal(h.ort.env.logLevel, "error");
     assert.ok(
       h.ort.creates.every((c) => !("logSeverityLevel" in c.options)),
       "never verbose (D-017)",

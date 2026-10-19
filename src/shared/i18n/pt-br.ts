@@ -71,6 +71,23 @@ const errors: Catalog["errors"] = {
     hint: "Exporte o log de depuração em Opções.",
   },
   "detector.run": { title: "Falha na detecção de texto", hint: "" },
+  "offline.pair_unsupported": {
+    title: "Este par de idiomas não está disponível offline",
+    hint: "Escolha NLLB-200 como modelo offline em Opções, ou outro idioma de destino.",
+  },
+  "offline.download": {
+    title: "Não foi possível baixar os modelos offline",
+    hint: "Verifique a conexão com huggingface.co. A tradução é tentada de novo automaticamente.",
+  },
+  "offline.model_integrity": {
+    title: "Um modelo offline baixado está corrompido",
+    hint: "Traduza novamente para baixá-lo mais uma vez.",
+  },
+  "offline.run": { title: "Os modelos offline falharam", hint: "Exporte o log de depuração em Opções." },
+  "offline.out_of_memory": {
+    title: "Memória insuficiente para os modelos offline",
+    hint: "Os modelos de tradução foram reiniciados e o mecanismo continua funcionando. Escolha o Opus-MT (bem menor) em Opções ou feche outras abas.",
+  },
   "engine.unavailable": {
     title: "Não foi possível iniciar o mecanismo de tradução",
     hint: "Recarregue a página ou desative e ative a extensão de novo.",
@@ -144,6 +161,13 @@ export const PT_BR: Catalog = {
     fail: "a GPU deu resultados inconsistentes; agora usa a CPU",
     pending: "verificando a GPU",
     skipped: "",
+  },
+  offlineState: {
+    idle: "Os modelos são carregados no primeiro uso",
+    downloading: "Baixando modelos",
+    loading: "Carregando modelos",
+    ready: "Pronto",
+    failed: "Com falha",
   },
   ui: {
     appName: "Panelingo",
@@ -292,6 +316,12 @@ export const PT_BR: Catalog = {
     cause: (cause: string): string => `Detalhes: ${cause}`,
     engineStopped: "O mecanismo está ocioso e começa a funcionar quando você traduz.",
     engineUnreadable: "Não foi possível ler o status do mecanismo.",
+    offlineHeading: "Modo offline (experimental)",
+    offlineHint:
+      "Nenhum endpoint de IA é usado: o reconhecimento de texto e a tradução rodam neste dispositivo.",
+    offlineDownload: (doneMb: number, totalMb: number): string =>
+      `Baixando ${Math.round(doneMb)} de ${Math.round(totalMb)} MB`,
+    offlineModels: (models: string): string => `Modelos: ${models}`,
     detectorLine: (backend: string, state: string, canary: string): string =>
       `Detecção de texto: ${backend}, ${state}${canary === "" ? "" : ` (${canary})`}`,
     queueLine: (queued: number, inFlight: number, done: number, failed: number): string =>
@@ -483,6 +513,14 @@ export const PT_BR: Catalog = {
       "translate.maxHttpRetriesPerRequest": {
         label: "Novas tentativas após erros de rede",
         hint: "Por solicitação, para falhas temporárias de HTTP e de rede.",
+      },
+      "translate.engine": {
+        label: "Mecanismo de tradução",
+        hint: "O modo offline é experimental: veja Modo offline mais acima.",
+      },
+      "translate.offlineModel": {
+        label: "Modelo de tradução offline",
+        hint: "Usado apenas no modo offline.",
       },
       "translate.splitOnRefusal": {
         label: "Dividir solicitações recusadas",
@@ -725,6 +763,31 @@ export const PT_BR: Catalog = {
       keyImported: "A chave de API do arquivo foi importada.",
       keyKept: "Sua chave de API foi mantida (o arquivo não tem nenhuma).",
     },
+  },
+  offline: {
+    heading: "Modo offline (experimental)",
+    intro:
+      "Traduza sem nenhum endpoint de IA: modelos de código aberto de reconhecimento de texto (PaddleOCR) e de tradução rodam neste dispositivo. A qualidade é bem inferior à de um modelo de visão: sem contexto entre os balões, sem nomes de personagens, letreiros estilizados costumam ser lidos errado e efeitos sonoros ficam sem tradução.",
+    download:
+      "Os modelos são baixados uma única vez do Hugging Face quando necessários, verificados e mantidos neste dispositivo; depois disso, a tradução não precisa de rede. Tamanhos: reconhecimento de texto de 8 a 17 MB por idioma, Opus-MT cerca de 115 MB por par de idiomas (o dobro passando pelo inglês), NLLB-200 cerca de 910 MB.",
+    engine: "Mecanismo de tradução",
+    engineChoices: {
+      api: "Endpoint de IA (compatível com OpenAI)",
+      offline: "Offline neste dispositivo (experimental)",
+    },
+    model: "Modelo de tradução offline",
+    modelChoices: {
+      "opus-mt": "Opus-MT: pequeno, um modelo por par de idiomas",
+      "nllb-600m": "NLLB-200 600M: todos os pares, grande, não comercial",
+    },
+    pairs:
+      "O Opus-MT traduz coreano, japonês, chinês e espanhol para o inglês, e o inglês para vietnamita, espanhol, francês, alemão, italiano e indonésio; os outros pares passam pelo inglês. O NLLB-200 traduz entre todos os idiomas listados aqui.",
+    license:
+      "Licenças: PaddleOCR e a maioria dos modelos Opus-MT Apache-2.0, dois modelos Opus-MT CC-BY-4.0, NLLB-200 CC-BY-NC-4.0 (somente uso não comercial).",
+    stored: (mb: number): string => `Modelos baixados neste dispositivo: ${Math.round(mb)} MB`,
+    deleteModels: "Excluir os modelos baixados",
+    deleteConfirm: "Excluir os modelos offline baixados? Eles serão baixados de novo quando necessário.",
+    deleted: "Os modelos baixados foram excluídos.",
   },
   manifest: {
     description:

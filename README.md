@@ -59,6 +59,9 @@ never sends an image that has no text in it.
 - 🤖 **Bring your own model.** Any OpenAI-compatible vision endpoint works: OpenAI, OpenRouter, Google Gemini (OpenAI
   mode), Azure OpenAI and gateways, or local servers such as **Ollama, LM Studio, vLLM and LiteLLM**. Presets and
   _Test connection_ are built in.
+- 🧪 **Offline mode (experimental).** No endpoint at all: open-source OCR (PaddleOCR) and translation models (Opus-MT,
+  or NLLB-200 for any pair) run in the browser, downloaded once from Hugging Face. Clearly below a vision model; see
+  [docs/OFFLINE-MODE.md](docs/OFFLINE-MODE.md) for how it compares.
 - 📜 **Made for webtoons.** Tall strips are sliced for detection, and touching images are treated as one strip, so a
   balloon split across two images is translated once. Lazy images further down are prepared before you scroll to
   them, and on-screen images jump the queue through an urgent lane.

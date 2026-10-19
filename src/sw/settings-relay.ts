@@ -1,7 +1,7 @@
 // Relays chrome.storage changes. The offscreen engine has no storage access, so every change of `settings` or a
 // `site:*` key is pushed to it as en:settings, but only when it already runs (a settings change never starts it).
-// Site changes also re-sync the content-script registration; API endpoint or dev-host changes re-install the DNR
-// guard rules. sw:get-settings is answered here with migrated values.
+// Site changes also re-sync the content-script registration; API endpoint, dev-host or model-mirror changes
+// re-install the DNR guard rules. sw:get-settings is answered here with migrated values.
 
 import { createLogger } from "../platform/log.ts";
 import { loadAll, type SettingsSnapshot } from "../platform/storage.ts";
@@ -31,13 +31,14 @@ export function localeChanged(oldValue: unknown, newValue: unknown): boolean {
   return migrateSettings(oldValue).ui.locale !== migrateSettings(newValue).ui.locale;
 }
 
-/** True when the guard rules depend on something that changed (API base URL or dev fixture hosts). */
+/** True when the guard rules depend on something that changed (API base URL, dev fixture hosts, model mirror). */
 export function guardInputsChanged(oldValue: unknown, newValue: unknown): boolean {
   const before = migrateSettings(oldValue);
   const after = migrateSettings(newValue);
   return (
     before.api.baseUrl !== after.api.baseUrl ||
-    before.privacy.devFixtureHosts.join("\n") !== after.privacy.devFixtureHosts.join("\n")
+    before.privacy.devFixtureHosts.join("\n") !== after.privacy.devFixtureHosts.join("\n") ||
+    before.debug.offlineModelBaseUrl !== after.debug.offlineModelBaseUrl
   );
 }
 

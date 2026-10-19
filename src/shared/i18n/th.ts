@@ -56,6 +56,23 @@ const errors: Catalog["errors"] = {
   },
   "detector.init": { title: "เริ่มการตรวจจับข้อความไม่ได้", hint: "ส่งออกบันทึกดีบักจากหน้าตัวเลือก" },
   "detector.run": { title: "การตรวจจับข้อความล้มเหลว", hint: "" },
+  "offline.pair_unsupported": {
+    title: "คู่ภาษานี้ใช้แบบออฟไลน์ไม่ได้",
+    hint: "เลือก NLLB-200 เป็นโมเดลออฟไลน์ในหน้าตัวเลือก หรือเลือกภาษาปลายทางอื่น",
+  },
+  "offline.download": {
+    title: "ดาวน์โหลดโมเดลออฟไลน์ไม่สำเร็จ",
+    hint: "ตรวจสอบการเชื่อมต่อกับ huggingface.co ระบบจะลองแปลใหม่เอง",
+  },
+  "offline.model_integrity": {
+    title: "โมเดลออฟไลน์ที่ดาวน์โหลดมาเสียหาย",
+    hint: "แปลอีกครั้งเพื่อดาวน์โหลดใหม่",
+  },
+  "offline.run": { title: "โมเดลออฟไลน์ทำงานล้มเหลว", hint: "ส่งออกบันทึกดีบักจากหน้าตัวเลือก" },
+  "offline.out_of_memory": {
+    title: "หน่วยความจำไม่พอสำหรับโมเดลออฟไลน์",
+    hint: "เริ่มโมเดลแปลภาษาใหม่แล้ว และเอนจินยังทำงานต่อ เลือก Opus-MT (เล็กกว่ามาก) ในหน้าตัวเลือก หรือปิดแท็บอื่น",
+  },
   "engine.unavailable": {
     title: "เริ่มเอนจินแปลไม่ได้",
     hint: "โหลดหน้าเว็บใหม่ หรือปิดแล้วเปิดส่วนขยายอีกครั้ง",
@@ -129,6 +146,13 @@ export const TH: Catalog = {
     fail: "GPU ให้ผลลัพธ์ไม่สม่ำเสมอ จึงเปลี่ยนไปใช้ CPU แล้ว",
     pending: "กำลังตรวจสอบ GPU",
     skipped: "",
+  },
+  offlineState: {
+    idle: "โมเดลจะโหลดเมื่อใช้งานครั้งแรก",
+    downloading: "กำลังดาวน์โหลดโมเดล",
+    loading: "กำลังโหลดโมเดล",
+    ready: "พร้อม",
+    failed: "ล้มเหลว",
   },
   ui: {
     appName: "Panelingo",
@@ -273,6 +297,11 @@ export const TH: Catalog = {
     cause: (cause: string): string => `รายละเอียด: ${cause}`,
     engineStopped: "เอนจินแปลว่างอยู่ และจะเริ่มทำงานเมื่อคุณสั่งแปล",
     engineUnreadable: "อ่านสถานะเอนจินแปลไม่ได้",
+    offlineHeading: "โหมดออฟไลน์ (ทดลอง)",
+    offlineHint: "ไม่ได้ใช้ endpoint AI ใด ๆ การจดจำข้อความและการแปลทำงานบนอุปกรณ์นี้",
+    offlineDownload: (doneMb: number, totalMb: number): string =>
+      `กำลังดาวน์โหลด ${Math.round(doneMb)} จาก ${Math.round(totalMb)} MB`,
+    offlineModels: (models: string): string => `โมเดล: ${models}`,
     detectorLine: (backend: string, state: string, canary: string): string =>
       `การตรวจจับข้อความ: ${backend}, ${state}${canary === "" ? "" : ` (${canary})`}`,
     queueLine: (queued: number, inFlight: number, done: number, failed: number): string =>
@@ -451,6 +480,14 @@ export const TH: Catalog = {
       "translate.maxHttpRetriesPerRequest": {
         label: "จำนวนครั้งที่ลองใหม่เมื่อเครือข่ายผิดพลาด",
         hint: "ต่อคำขอ สำหรับความล้มเหลวชั่วคราวของ HTTP และเครือข่าย",
+      },
+      "translate.engine": {
+        label: "เอนจินแปล",
+        hint: "โหมดออฟไลน์ยังเป็นฟีเจอร์ทดลอง ดูหัวข้อโหมดออฟไลน์ด้านบน",
+      },
+      "translate.offlineModel": {
+        label: "โมเดลแปลออฟไลน์",
+        hint: "ใช้ในโหมดออฟไลน์เท่านั้น",
       },
       "translate.splitOnRefusal": {
         label: "แบ่งคำขอที่ถูกปฏิเสธ",
@@ -690,6 +727,28 @@ export const TH: Catalog = {
       keyImported: "นำเข้าคีย์ API จากไฟล์แล้ว",
       keyKept: "เก็บคีย์ API ของคุณไว้ตามเดิม (ไฟล์ไม่มีคีย์)",
     },
+  },
+  offline: {
+    heading: "โหมดออฟไลน์ (ทดลอง)",
+    intro:
+      "แปลโดยไม่ใช้ endpoint AI ใด ๆ โมเดลโอเพนซอร์สสำหรับจดจำข้อความ (PaddleOCR) และแปลภาษาทำงานบนอุปกรณ์นี้ คุณภาพต่ำกว่าโมเดล vision อย่างชัดเจน: ไม่มีบริบทระหว่างบอลลูน ไม่รู้จักชื่อตัวละคร มักอ่านตัวอักษรตกแต่งผิด และจะไม่แปลเสียงประกอบ",
+    download:
+      "โมเดลจะดาวน์โหลดจาก Hugging Face เพียงครั้งเดียวเมื่อจำเป็น ตรวจสอบแล้วเก็บไว้บนอุปกรณ์นี้ หลังจากนั้นการแปลไม่ต้องใช้เครือข่าย ขนาด: การจดจำข้อความ 8 ถึง 17 MB ต่อภาษา, Opus-MT ประมาณ 115 MB ต่อคู่ภาษา (เป็นสองเท่าเมื่อผ่านภาษาอังกฤษ), NLLB-200 ประมาณ 910 MB",
+    engine: "เอนจินแปล",
+    engineChoices: { api: "Endpoint AI (เข้ากันได้กับ OpenAI)", offline: "ออฟไลน์บนอุปกรณ์นี้ (ทดลอง)" },
+    model: "โมเดลแปลออฟไลน์",
+    modelChoices: {
+      "opus-mt": "Opus-MT: ขนาดเล็ก หนึ่งโมเดลต่อคู่ภาษา",
+      "nllb-600m": "NLLB-200 600M: ทุกคู่ภาษา ขนาดใหญ่ ไม่ใช่เชิงพาณิชย์",
+    },
+    pairs:
+      "Opus-MT แปลภาษาเกาหลี ญี่ปุ่น จีน และสเปนเป็นภาษาอังกฤษ และแปลภาษาอังกฤษเป็นภาษาเวียดนาม สเปน ฝรั่งเศส เยอรมัน อิตาลี และอินโดนีเซีย คู่อื่นจะแปลผ่านภาษาอังกฤษ ส่วน NLLB-200 แปลได้ระหว่างทุกภาษาที่ระบุไว้ที่นี่",
+    license:
+      "สัญญาอนุญาต: PaddleOCR และโมเดล Opus-MT ส่วนใหญ่ใช้ Apache-2.0, โมเดล Opus-MT สองตัวใช้ CC-BY-4.0, NLLB-200 ใช้ CC-BY-NC-4.0 (ใช้ได้เฉพาะที่ไม่ใช่เชิงพาณิชย์)",
+    stored: (mb: number): string => `โมเดลที่ดาวน์โหลดไว้บนอุปกรณ์นี้: ${Math.round(mb)} MB`,
+    deleteModels: "ลบโมเดลที่ดาวน์โหลดไว้",
+    deleteConfirm: "ลบโมเดลออฟไลน์ที่ดาวน์โหลดไว้ใช่ไหม ระบบจะดาวน์โหลดใหม่เมื่อจำเป็น",
+    deleted: "ลบโมเดลที่ดาวน์โหลดไว้แล้ว",
   },
   manifest: {
     description: "แปลการ์ตูน มังงะ และเว็บตูนบนหน้าเว็บโดยตรงขณะอ่าน ด้วย AI ใดก็ได้ที่รองรับ OpenAI",

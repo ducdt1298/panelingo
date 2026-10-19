@@ -130,6 +130,25 @@ export type ApiReadiness =
 
 export type EnginePhase = "booting" | "ready" | "closing" | "failed";
 
+/** The offline engine (experimental, settings.translate.engine "offline"): on-device OCR and translation models. */
+export interface OfflineStatus {
+  /** idle: nothing loaded yet · downloading: model files are coming · loading: sessions start · ready · failed. */
+  state: "idle" | "downloading" | "loading" | "ready" | "failed";
+  /** settings.translate.offlineModel. */
+  model: "opus-mt" | "nllb-600m";
+  /** Model ids loaded or being loaded, e.g. ["ocr-korean", "opus-mt-ko-en"]. */
+  active: string[];
+  /** Bytes of the download in progress, or null. */
+  download: { done: number; total: number } | null;
+  /** Code of the last failure while state is "failed". */
+  error: ErrorCode | null;
+  /**
+   * Size of the WebAssembly heaps in bytes (they only grow; 0 when not started): the engine's ORT instance (detector
+   * and recognizers) and the translation worker's (docs/OFFLINE-MODE.md, "Memory").
+   */
+  heap?: { engine: number; translation: number };
+}
+
 export interface EngineStatus {
   phase: EnginePhase;
   build: string;
@@ -157,6 +176,10 @@ export interface EngineStatus {
     boxBudget: number;
   };
   uploads: { today: number; bytesToday: number };
+  /** settings.translate.engine; absent from engines that predate offline mode. */
+  engine?: "api" | "offline";
+  /** The offline engine's state (offline mode only). */
+  offline?: OfflineStatus;
 }
 
 export interface TranscriptItem {

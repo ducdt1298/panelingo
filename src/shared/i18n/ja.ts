@@ -62,6 +62,26 @@ const errors: Catalog["errors"] = {
     hint: "オプションからデバッグログをエクスポートしてください。",
   },
   "detector.run": { title: "テキスト検出に失敗しました", hint: "" },
+  "offline.pair_unsupported": {
+    title: "この言語の組み合わせはオフラインでは利用できません",
+    hint: "オプションでオフラインモデルに NLLB-200 を選ぶか、別の翻訳先言語を選んでください。",
+  },
+  "offline.download": {
+    title: "オフラインモデルをダウンロードできませんでした",
+    hint: "huggingface.co への接続を確認してください。翻訳は自動で再試行されます。",
+  },
+  "offline.model_integrity": {
+    title: "ダウンロードしたオフラインモデルが破損しています",
+    hint: "もう一度翻訳すると、再ダウンロードされます。",
+  },
+  "offline.run": {
+    title: "オフラインモデルでエラーが発生しました",
+    hint: "オプションからデバッグログをエクスポートしてください。",
+  },
+  "offline.out_of_memory": {
+    title: "オフラインモデルのメモリが不足しています",
+    hint: "翻訳モデルを再起動しました。エンジンは動作を続けています。オプションで Opus-MT（はるかに小さいモデル）を選ぶか、ほかのタブを閉じてください。",
+  },
   "engine.unavailable": {
     title: "翻訳エンジンを起動できませんでした",
     hint: "ページを再読み込みするか、拡張機能をオフにしてから再度オンにしてください。",
@@ -144,6 +164,13 @@ export const JA: Catalog = {
     fail: "GPUの結果に不整合があったためCPUに切り替え済み",
     pending: "GPUを検証中",
     skipped: "",
+  },
+  offlineState: {
+    idle: "モデルは初回使用時に読み込まれます",
+    downloading: "モデルをダウンロード中",
+    loading: "モデルを読み込み中",
+    ready: "準備完了",
+    failed: "失敗",
   },
   ui: {
     appName: "Panelingo",
@@ -289,6 +316,11 @@ export const JA: Catalog = {
     cause: (cause: string): string => `詳細：${cause}`,
     engineStopped: "翻訳エンジンは待機中です。翻訳を始めると起動します。",
     engineUnreadable: "翻訳エンジンの状態を取得できませんでした。",
+    offlineHeading: "オフラインモード（試験的）",
+    offlineHint: "AIエンドポイントは使いません。文字認識と翻訳はこのデバイス上で行われます。",
+    offlineDownload: (doneMb: number, totalMb: number): string =>
+      `ダウンロード中 ${Math.round(doneMb)} / ${Math.round(totalMb)} MB`,
+    offlineModels: (models: string): string => `モデル：${models}`,
     detectorLine: (backend: string, state: string, canary: string): string =>
       `テキスト検出：${backend}、${state}${canary === "" ? "" : `（${canary}）`}`,
     queueLine: (queued: number, inFlight: number, done: number, failed: number): string =>
@@ -469,6 +501,14 @@ export const JA: Catalog = {
       "translate.maxHttpRetriesPerRequest": {
         label: "ネットワークエラー後の再試行回数",
         hint: "リクエストごとの回数です。一時的なHTTPエラーやネットワーク障害が対象です。",
+      },
+      "translate.engine": {
+        label: "翻訳エンジン",
+        hint: "オフラインモードは試験的な機能です。上の「オフラインモード」を参照してください。",
+      },
+      "translate.offlineModel": {
+        label: "オフライン翻訳モデル",
+        hint: "オフラインモードでのみ使用されます。",
       },
       "translate.splitOnRefusal": {
         label: "拒否されたリクエストを分割",
@@ -710,6 +750,29 @@ export const JA: Catalog = {
       keyImported: "ファイル内のAPIキーをインポートしました。",
       keyKept: "APIキーは現在のものを保持しました（ファイルにキーが含まれていません）。",
     },
+  },
+  offline: {
+    heading: "オフラインモード（試験的）",
+    intro:
+      "AIエンドポイントを使わずに翻訳します。オープンソースの文字認識（PaddleOCR）と翻訳モデルがこのデバイス上で動作します。品質はビジョンモデルより明らかに劣ります。吹き出し間の文脈やキャラクター名は考慮されず、装飾的な文字はよく誤読されます。効果音は翻訳せずそのまま残します。",
+    download:
+      "モデルは初めて必要になったときに Hugging Face から一度だけダウンロードされ、検証のうえこのデバイスに保存されます。その後はネットワークなしで翻訳できます。サイズ：文字認識は言語ごとに 8〜17 MB、Opus-MT は言語ペアごとに約 115 MB（英語経由ではその2倍）、NLLB-200 は約 910 MB です。",
+    engine: "翻訳エンジン",
+    engineChoices: { api: "AIエンドポイント（OpenAI互換）", offline: "このデバイスでオフライン（試験的）" },
+    model: "オフライン翻訳モデル",
+    modelChoices: {
+      "opus-mt": "Opus-MT：小型、言語ペアごとに1モデル",
+      "nllb-600m": "NLLB-200 600M：全ペア対応、大型、非商用",
+    },
+    pairs:
+      "Opus-MT は韓国語・日本語・中国語・スペイン語から英語へ、英語からベトナム語・スペイン語・フランス語・ドイツ語・イタリア語・インドネシア語へ翻訳します。その他のペアは英語を経由します。NLLB-200 はここに挙げたすべての言語間で翻訳できます。",
+    license:
+      "ライセンス：PaddleOCR と大半の Opus-MT モデルは Apache-2.0、Opus-MT の2モデルは CC-BY-4.0、NLLB-200 は CC-BY-NC-4.0（非商用利用のみ）です。",
+    stored: (mb: number): string => `このデバイスにダウンロード済みのモデル：${Math.round(mb)} MB`,
+    deleteModels: "ダウンロードしたモデルを削除",
+    deleteConfirm:
+      "ダウンロードしたオフラインモデルを削除しますか？必要になったときに再ダウンロードされます。",
+    deleted: "ダウンロードしたモデルを削除しました。",
   },
   manifest: {
     description: "OpenAI互換のAIで、コミック・マンガ・ウェブトゥーンを読みながらその場で翻訳します。",

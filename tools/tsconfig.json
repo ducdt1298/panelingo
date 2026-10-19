@@ -1,11 +1,12 @@
 {
-  // Dev tools executed directly by Node 24: fixture server, mock OpenAI-compatible server, Node gfx port, scoring.
+  // Dev tools executed directly by Node 24: fixture server, mock OpenAI-compatible server, Node gfx port, scoring,
+  // offline-eval (drives Chrome through the E2E harness, hence the chrome types).
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "lib": ["es2025", "dom"],
-    "types": ["node"]
+    "types": ["node", "chrome"]
   },
   "include": ["./**/*.ts", "../src/types/**/*.d.ts"]
 }

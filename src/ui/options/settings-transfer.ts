@@ -42,9 +42,11 @@ export function exportSettings(
   const settings = clone(snapshot.settings) as unknown as Record<string, Plain>;
   const api = settings["api"] ?? {};
   const privacy = settings["privacy"] ?? {};
+  const debug = settings["debug"] ?? {};
   if (!options.includeApiKey) delete api["apiKey"];
   delete privacy["ackUploadNoticeAt"];
   delete privacy["devFixtureHosts"];
+  delete debug["offlineModelBaseUrl"];
   const sites: Record<string, SiteSettings> = {};
   for (const siteKey of Object.keys(snapshot.sites).sort()) {
     const site = snapshot.sites[siteKey];
@@ -115,6 +117,7 @@ export function parseSettingsImport(text: string, current: Settings, now: number
   if (!apiKeyImported) settings.api.apiKey = current.api.apiKey;
   settings.privacy.ackUploadNoticeAt = current.privacy.ackUploadNoticeAt;
   settings.privacy.devFixtureHosts = [...current.privacy.devFixtureHosts];
+  settings.debug.offlineModelBaseUrl = current.debug.offlineModelBaseUrl;
 
   const sites: Record<string, SiteSettings> = {};
   const rawSites = data["sites"];

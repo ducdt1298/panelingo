@@ -12,7 +12,7 @@ import type { Gfx } from "../shared/gfx.ts";
 import { PROTOCOL_VERSION } from "../shared/protocol.ts";
 import { findEnabledSite } from "../shared/site.ts";
 import type { Settings, SiteSettings } from "../shared/settings.ts";
-import type { Codec, EnginePhase, EngineStatus, LogEntry } from "../shared/types.ts";
+import type { Codec, EnginePhase, EngineStatus, LogEntry, OfflineStatus } from "../shared/types.ts";
 import { codecFromProbe, makeProbe } from "../shared/wire.ts";
 import type {
   ApiHealth,
@@ -20,12 +20,19 @@ import type {
   CoreDeps,
   EngineStores,
   LogStore,
+  OfflinePackTranslator,
+  PackReport,
+  PackTranslator,
   Pipeline,
   ServiceFactories,
   SettingsSource,
   TextDetector,
+  TranslatePack,
+  UnitResult,
   UploadCounter,
 } from "./contracts.ts";
+import { createMutex } from "./detector.ts";
+import { createModelFiles } from "./model-files.ts";
 import { createCaptureAssist, SW_CAPTURE_TIMEOUT_MS, type CaptureAssist } from "./capture.ts";
 import { createEraser } from "./erase.ts";
 import { createCsHandler } from "./handlers-cs.ts";
@@ -147,6 +154,42 @@ async function pingSw(log: Logger): Promise<Codec> {
   }
 }
 
+/** The offline engine's status before its first pack. */
+export function idleOffline(settings: Settings): OfflineStatus {
+  return { state: "idle", model: settings.translate.offlineModel, active: [], download: null, error: null };
+}
+
+/** Offline mode without an offline translator (test factories): every unit fails with offline.run. */
+export function offlineUnavailable(
+  pack: TranslatePack,
+  onUnit: (result: UnitResult) => void,
+): Promise<PackReport> {
+  for (const unit of pack.units) {
+    onUnit({
+      contentKey: unit.contentKey,
+      unitKey: unit.unitKey,
+      status: "error",
+      type: "dialogue",
+      speaker: "",
+      original: "",
+      translation: "",
+      lang: null,
+      model: null,
+    });
+  }
+  return Promise.resolve({
+    packId: pack.packId,
+    requests: 0,
+    missing: pack.units.map((unit) => unit.unitKey),
+    error: { code: "offline.run", message: "offline mode is not available in this engine", retryable: false },
+    model: null,
+    lang: null,
+    firstLineMs: null,
+    totalMs: 0,
+    uploadedBytes: 0,
+  });
+}
+
 /** Port messages that never change the status. */
 const QUIET_CS_TYPES: ReadonlySet<string> = new Set(["cs:log", "cs:heartbeat", "cs:viewport"]);
 /** Posts that are themselves status traffic. */
@@ -221,6 +264,16 @@ function compose(input: ComposeInput): EngineRuntime {
   let markDirty: () => void = () => undefined;
   let checkIdle: () => void = () => undefined;
 
+  // build-info.json (the offline catalog), read once when offline mode first needs it.
+  const buildFiles = createModelFiles({
+    getURL: (path) => chrome.runtime.getURL(path),
+    fetch: (url) => fetch(url),
+    store: stores.models,
+    now: () => clock.now(),
+    log,
+  });
+  const readBuildInfo = (): ReturnType<typeof buildFiles.buildInfo> => buildFiles.buildInfo();
+
   const portsChanged = (): void => {
     checkIdle();
     markDirty();
@@ -263,10 +316,13 @@ function compose(input: ComposeInput): EngineRuntime {
   capture = captureAssist;
   const acquirer = factories.createAcquirer({ ...core, capture: captureAssist });
   const decoder = factories.createDecoder(core);
-  const detector = factories.createDetector({ ...core, stores, gfx });
+  // One lock around every ORT call of the engine's instance: the detector and the offline recognizers (the offline
+  // translation models have their own instance in a worker, offline/mt-worker.ts).
+  const ortLock = createMutex();
+  const detector = factories.createDetector({ ...core, stores, gfx, exclusive: ortLock });
   const composite = factories.createComposite({ ...core, gfx });
   const uploads = factories.createUploads({ ...core, stores });
-  const translator = factories.createTranslator({
+  const apiTranslator = factories.createTranslator({
     ...core,
     health,
     composite,
@@ -274,6 +330,29 @@ function compose(input: ComposeInput): EngineRuntime {
     // The pipeline exists by the time a pack can hit a 429 or a watchdog timeout.
     onConcurrencyCap: (cap) => pipeline?.throttle(cap.value, cap.forMs),
   });
+  // Offline mode (experimental): created on first use, so API-mode engines never load its code paths' models.
+  let offlineTranslator: OfflinePackTranslator | null = null;
+  const offline = (): OfflinePackTranslator | null => {
+    if (offlineTranslator === null && factories.createOfflineTranslator !== undefined) {
+      offlineTranslator = factories.createOfflineTranslator({
+        ...core,
+        stores,
+        gfx,
+        exclusive: ortLock,
+        catalog: async () => (await readBuildInfo()).offline ?? [],
+        detectorBackend: () => detector.state().backend,
+      });
+    }
+    return offlineTranslator;
+  };
+  // Each pack goes to the engine configured when it starts: the API translator, or the offline one.
+  const translator: PackTranslator = {
+    translate: (pack, onUnit) => {
+      if (settings.current().translate.engine !== "offline") return apiTranslator.translate(pack, onUnit);
+      const engine = offline();
+      return engine === null ? offlineUnavailable(pack, onUnit) : engine.translate(pack, onUnit);
+    },
+  };
 
   const idle = createIdleMonitor({
     clock,
@@ -324,6 +403,8 @@ function compose(input: ComposeInput): EngineRuntime {
       pipeline: activePipeline,
       uploads,
       log,
+      engine: () => settings.current().translate.engine,
+      offline: () => offlineTranslator?.state() ?? idleOffline(settings.current()),
     });
 
   const pusher = createStatusPusher({
@@ -518,6 +599,9 @@ function compose(input: ComposeInput): EngineRuntime {
       unsubscribeHealth();
       unsubscribeSettings();
       health.stop();
+      await offlineTranslator?.release().catch((error: unknown) => {
+        log.warn("offline release failed", { error: String(error) });
+      });
       frames.closeAll();
       ui.closeAll();
       await stores.close();

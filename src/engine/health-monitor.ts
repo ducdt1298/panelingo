@@ -6,6 +6,7 @@
 // unknown 15 s. With no work and nobody waiting for 2 min, polling stops; refresh(), setBusy(true) and
 // whenSendable() restart it, and so does any change of the endpoint settings. After a reported failure the next check
 // waits one interval, so a /models answer that still looks fine cannot turn a failing request into a hot retry loop.
+// In offline mode (settings.translate.engine "offline") nothing is checked; switching back to "api" checks at once.
 
 import { classifyFetchError } from "../shared/core/api-errors.ts";
 import {
@@ -106,9 +107,12 @@ export function createHealth(deps: CoreDeps & HealthOptions): HealthMonitor {
   let cancelTimer: (() => void) | null = null;
   let stopped = false;
   let sequence = 0;
+  /** Offline mode (experimental) needs no endpoint: nothing is polled, so nothing reaches it. */
+  const offline = (): boolean => settings.current().translate.engine === "offline";
   const endpointKey = (): string => {
-    const api = settings.current().api;
-    return [api.baseUrl, api.apiKey, api.model].join("\u0000");
+    const current = settings.current();
+    const api = current.api;
+    return [api.baseUrl, api.apiKey, api.model, current.translate.engine].join("\u0000");
   };
   let endpoint = endpointKey();
   const waiters: Array<() => void> = [];
@@ -158,7 +162,7 @@ export function createHealth(deps: CoreDeps & HealthOptions): HealthMonitor {
   };
 
   const pollingStopped = (now: number): boolean =>
-    stopped || (!active() && now - idleSince >= HEALTH_CADENCE.idleStopMs);
+    stopped || offline() || (!active() && now - idleSince >= HEALTH_CADENCE.idleStopMs);
 
   const nextCheckAt = (now: number): number => {
     let at = lastCheckAt === 0 ? now : lastCheckAt + cadence();
@@ -260,7 +264,7 @@ export function createHealth(deps: CoreDeps & HealthOptions): HealthMonitor {
   };
 
   const refresh = (): Promise<HealthReading> => {
-    if (stopped) return Promise.resolve(current());
+    if (stopped || offline()) return Promise.resolve(current());
     inFlight ??= check()
       .catch((error: unknown) => {
         log.warn("health check failed", { error: String(error) });

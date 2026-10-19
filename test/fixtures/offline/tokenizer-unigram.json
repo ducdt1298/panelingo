@@ -1,0 +1,49 @@
+{
+  "version": "1.0",
+  "truncation": null,
+  "padding": null,
+  "added_tokens": [
+    { "id": 0, "content": "</s>", "special": true },
+    { "id": 1, "content": "<unk>", "special": true },
+    { "id": 9, "content": "<pad>", "special": true }
+  ],
+  "normalizer": { "type": "Precompiled", "precompiled_charsmap": null },
+  "pre_tokenizer": {
+    "type": "Sequence",
+    "pretokenizers": [
+      { "type": "WhitespaceSplit" },
+      { "type": "Metaspace", "replacement": "▁", "add_prefix_space": true }
+    ]
+  },
+  "post_processor": null,
+  "decoder": { "type": "Metaspace", "replacement": "▁", "add_prefix_space": true },
+  "model": {
+    "type": "Unigram",
+    "unk_id": 2,
+    "vocab": [
+      ["</s>", 0],
+      ["<unk>", 0],
+      [".", -3],
+      ["▁", -2.5],
+      ["▁hello", -4],
+      ["▁hel", -5],
+      ["lo", -4.5],
+      ["▁world", -4.2],
+      ["!", -3.2],
+      ["<pad>", 0],
+      ["▁wor", -6],
+      ["ld", -6],
+      ["h", -8],
+      ["e", -8],
+      ["l", -7],
+      ["o", -7],
+      ["w", -8],
+      ["r", -8],
+      ["d", -8],
+      ["▁안녕", -5],
+      ["하세요", -5.5],
+      ["▁안", -7],
+      ["녕", -7.5]
+    ]
+  }
+}

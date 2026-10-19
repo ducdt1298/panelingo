@@ -20,10 +20,14 @@ const log = createLogger("sw");
 
 /**
  * Origins the SSRF guard must let through: the configured API endpoint (a local model server lives on a private
- * address), plus the dev fixture hosts in dev and test builds.
+ * address), plus the dev fixture hosts and the offline model mirror (debug.offlineModelBaseUrl) in dev and test builds.
  */
 export function guardAllowOrigins(settings: Settings, includeDevHosts: boolean): string[] {
-  const candidates = [settings.api.baseUrl, ...(includeDevHosts ? settings.privacy.devFixtureHosts : [])];
+  const devHosts = [
+    ...settings.privacy.devFixtureHosts,
+    ...(settings.debug.offlineModelBaseUrl === "" ? [] : [settings.debug.offlineModelBaseUrl]),
+  ];
+  const candidates = [settings.api.baseUrl, ...(includeDevHosts ? devHosts : [])];
   const origins = new Set<string>();
   for (const candidate of candidates) {
     try {

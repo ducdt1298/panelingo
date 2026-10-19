@@ -63,6 +63,23 @@ export const VI: Catalog = {
       hint: "Xuất nhật ký debug trong Cài đặt.",
     },
     "detector.run": { title: "Lỗi bộ nhận diện chữ", hint: "" },
+    "offline.pair_unsupported": {
+      title: "Cặp ngôn ngữ này chưa dùng được ở chế độ ngoại tuyến",
+      hint: "Chọn NLLB-200 làm model ngoại tuyến trong Cài đặt, hoặc chọn ngôn ngữ đích khác.",
+    },
+    "offline.download": {
+      title: "Không tải được model ngoại tuyến",
+      hint: "Kiểm tra kết nối tới huggingface.co. Bản dịch sẽ tự thử lại.",
+    },
+    "offline.model_integrity": {
+      title: "Một model ngoại tuyến đã tải về bị hỏng",
+      hint: "Dịch lại để tải model đó về lần nữa.",
+    },
+    "offline.run": { title: "Model ngoại tuyến gặp lỗi", hint: "Xuất nhật ký debug trong Cài đặt." },
+    "offline.out_of_memory": {
+      title: "Không đủ bộ nhớ cho model ngoại tuyến",
+      hint: "Các model dịch đã được khởi động lại, engine vẫn chạy. Hãy chọn Opus-MT (nhỏ hơn nhiều) trong Cài đặt, hoặc đóng bớt các tab khác.",
+    },
     "engine.unavailable": {
       title: "Không khởi động được engine dịch",
       hint: "Tải lại trang, hoặc tắt rồi bật lại extension.",
@@ -142,6 +159,13 @@ export const VI: Catalog = {
     fail: "GPU cho kết quả lệch, đã chuyển sang CPU",
     pending: "đang kiểm tra GPU",
     skipped: "",
+  },
+  offlineState: {
+    idle: "Model sẽ được nạp khi dùng lần đầu",
+    downloading: "Đang tải model",
+    loading: "Đang nạp model",
+    ready: "Sẵn sàng",
+    failed: "Lỗi",
   },
   ui: {
     appName: "Panelingo",
@@ -286,6 +310,11 @@ export const VI: Catalog = {
     cause: (cause: string): string => `Chi tiết: ${cause}`,
     engineStopped: "Engine đang nghỉ; sẽ tự chạy khi bạn dịch.",
     engineUnreadable: "Không đọc được trạng thái engine.",
+    offlineHeading: "Chế độ ngoại tuyến (thử nghiệm)",
+    offlineHint: "Không dùng endpoint AI nào: nhận dạng chữ và dịch đều chạy trên máy này.",
+    offlineDownload: (doneMb: number, totalMb: number): string =>
+      `Đang tải ${Math.round(doneMb)}/${Math.round(totalMb)} MB`,
+    offlineModels: (models: string): string => `Model: ${models}`,
     detectorLine: (backend: string, state: string, canary: string): string =>
       `Nhận diện chữ: ${backend}, ${state}${canary === "" ? "" : ` (${canary})`}`,
     queueLine: (queued: number, inFlight: number, done: number, failed: number): string =>
@@ -456,6 +485,14 @@ export const VI: Catalog = {
       "translate.maxHttpRetriesPerRequest": {
         label: "Số lần thử lại khi lỗi mạng",
         hint: "Tính cho mỗi yêu cầu, với lỗi HTTP và lỗi mạng tạm thời.",
+      },
+      "translate.engine": {
+        label: "Engine dịch",
+        hint: "Chế độ ngoại tuyến đang thử nghiệm: xem mục Chế độ ngoại tuyến ở trên.",
+      },
+      "translate.offlineModel": {
+        label: "Model dịch ngoại tuyến",
+        hint: "Chỉ dùng ở chế độ ngoại tuyến.",
       },
       "translate.splitOnRefusal": {
         label: "Chia nhỏ yêu cầu bị từ chối",
@@ -696,6 +733,31 @@ export const VI: Catalog = {
       keyImported: "Đã nhập API key từ tệp.",
       keyKept: "Đã giữ API key của bạn (tệp không có key).",
     },
+  },
+  offline: {
+    heading: "Chế độ ngoại tuyến (thử nghiệm)",
+    intro:
+      "Dịch mà không cần endpoint AI nào: các model mã nguồn mở nhận dạng chữ (PaddleOCR) và dịch máy chạy ngay trên máy này. Chất lượng kém rõ rệt so với model thị giác: không có ngữ cảnh giữa các bóng thoại, không biết tên nhân vật, chữ cách điệu thường bị đọc sai, còn hiệu ứng âm thanh được giữ nguyên, không dịch.",
+    download:
+      "Model được tải một lần từ Hugging Face khi cần lần đầu, được kiểm tra rồi lưu trên máy này; sau đó việc dịch không cần mạng. Dung lượng: nhận dạng chữ 8 đến 17 MB mỗi ngôn ngữ, Opus-MT khoảng 115 MB mỗi cặp ngôn ngữ (gấp đôi nếu đi qua tiếng Anh), NLLB-200 khoảng 910 MB.",
+    engine: "Engine dịch",
+    engineChoices: {
+      api: "Endpoint AI (tương thích OpenAI)",
+      offline: "Ngoại tuyến trên máy này (thử nghiệm)",
+    },
+    model: "Model dịch ngoại tuyến",
+    modelChoices: {
+      "opus-mt": "Opus-MT: nhỏ, mỗi cặp ngôn ngữ một model",
+      "nllb-600m": "NLLB-200 600M: mọi cặp, dung lượng lớn, phi thương mại",
+    },
+    pairs:
+      "Opus-MT dịch tiếng Hàn, Nhật, Trung và Tây Ban Nha sang tiếng Anh, và tiếng Anh sang tiếng Việt, Tây Ban Nha, Pháp, Đức, Ý, Indonesia; các cặp khác đi qua tiếng Anh. NLLB-200 dịch qua lại giữa mọi ngôn ngữ trong danh sách này.",
+    license:
+      "Giấy phép: PaddleOCR và phần lớn model Opus-MT dùng Apache-2.0, hai model Opus-MT dùng CC-BY-4.0, NLLB-200 dùng CC-BY-NC-4.0 (chỉ cho mục đích phi thương mại).",
+    stored: (mb: number): string => `Model đã tải trên máy này: ${Math.round(mb)} MB`,
+    deleteModels: "Xoá các model đã tải",
+    deleteConfirm: "Xoá các model ngoại tuyến đã tải? Chúng sẽ được tải lại khi cần.",
+    deleted: "Đã xoá các model đã tải.",
   },
   manifest: {
     description:

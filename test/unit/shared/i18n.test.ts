@@ -135,6 +135,13 @@ const SAMPLES: Record<string, ReadonlyArray<readonly unknown[]>> = {
     [3, 1, 12, 0],
   ],
   "popup/pausedBy": [["Rate limited"]],
+  "popup/offlineDownload": [
+    [0, 115],
+    [12.4, 115.2],
+    [910, 910],
+  ],
+  "popup/offlineModels": [["ocr-korean, opus-mt-ko-en"]],
+  "offline/stored": [[0], [115.3], [1024]],
   "popup/visibleSent": COUNTS.map((n) => [n]),
   "popup/retranslateQueued": COUNTS.map((n) => [n]),
   "popup/actionFailed": [["Boom"]],
@@ -237,6 +244,14 @@ const VERBATIM = [
   "npm run fetch-models",
   "npm run build",
   "→",
+  "Hugging Face",
+  "huggingface.co",
+  "PaddleOCR",
+  "Opus-MT",
+  "NLLB-200",
+  "Apache-2.0",
+  "CC-BY-4.0",
+  "CC-BY-NC-4.0",
 ];
 
 /** Strings a translation may legitimately leave identical to English (names and technical labels). */

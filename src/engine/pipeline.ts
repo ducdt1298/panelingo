@@ -3,8 +3,9 @@
 // → img:units + img:bulk with no detector or translator call. Otherwise: acquire → sha256 → decode → detect (persist
 // geometry; 0 units = no-text, nothing uploaded) → img:units → packs (batcher) → queue → translator, streaming every
 // unit result to the translation store and to each frame that shows the image. Uploads wait for the privacy notice
-// and a sendable API (img:state paused carries the reason); nothing in flight is aborted and late results are
-// still stored. Per frame the order is img:units, then img:unit / img:bulk, then img:done.
+// and a sendable API (img:state paused carries the reason; neither gate applies in offline mode, which uploads
+// nothing); nothing in flight is aborted and late results are still stored. Cached AI records count only for the
+// engine that wrote them (TranslationRecord.model: the API model, or "offline:…"). Per frame the order is img:units, then img:unit / img:bulk, then img:done.
 // Series memory (memory.ts): each pack is sent with the context of its page's series and chapter (glossary, earlier
 // lines, summary, the series language when known), and what its answers teach is learned once it finishes.
 // Look-ahead: a prefetch submit (tier-B discovery: a lazy image the page has not loaded) is fetched, decoded and
@@ -17,6 +18,7 @@
 import { readinessErrorCode } from "../shared/core/health.ts";
 import { computeHorizons, createLatencyEstimator, type Horizons } from "../shared/core/priority.ts";
 import { profileForModel, scriptForLang } from "../shared/core/model-profile.ts";
+import { currentSource, translationSource } from "../shared/offline/routing.ts";
 import { resolveBoxBudget } from "../shared/core/packing.ts";
 import { chooseReadingDir } from "../shared/core/reading-order.ts";
 import {
@@ -248,19 +250,26 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
 
   /* ---------------------------------------------------------------- gates and views */
 
+  /** Offline mode (experimental): nothing is uploaded and no endpoint is needed, so neither gate applies. */
+  function offlineEngine(): boolean {
+    return settings.current().translate.engine === "offline";
+  }
+
   function privacyBlocked(): boolean {
-    return settings.current().privacy.ackUploadNoticeAt === null;
+    return !offlineEngine() && settings.current().privacy.ackUploadNoticeAt === null;
   }
 
   function gateState(): QueueGate {
     if (privacyBlocked()) return { open: false, code: "privacy.consent" };
-    if (!health.sendable()) return { open: false, code: readinessErrorCode(health.reading().readiness) };
+    if (!offlineEngine() && !health.sendable()) {
+      return { open: false, code: readinessErrorCode(health.reading().readiness) };
+    }
     return { open: true };
   }
 
   function gateView(): GateView {
     let healthError: ErrorInfo | null = null;
-    if (!health.sendable()) {
+    if (!offlineEngine() && !health.sendable()) {
       const readiness = health.reading().readiness;
       const code = readinessErrorCode(readiness);
       if (code !== null) healthError = errorInfo(code, `API not sendable: ${readiness}`);
@@ -692,12 +701,18 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
     work.lang = imageRecord.lang;
     work.record = imageRecord;
     work.seriesKey = imageRecord.seriesKey;
-    // AI translations into another target language are translated again; manual edits always stay.
+    // AI translations into another target language, or made by another engine (the API model, Opus-MT or NLLB in
+    // offline mode), are translated again; manual edits always stay.
     const target = currentTarget();
+    const source = currentSourceKey();
     setUnits(
       work,
       unitsRecord.units,
-      records.filter((r) => r.manual === 1 || r.target === undefined || r.target === target),
+      records.filter(
+        (r) =>
+          r.manual === 1 ||
+          ((r.target === undefined || r.target === target) && translationSource(r.model) === source),
+      ),
     );
     patchesInto(work, patches);
     works.add(work);
@@ -905,6 +920,11 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
       work.dir = dirFor(work, frameInfo(lead), site);
       work.dirSet = true;
       const result = await detector.detect(decoded, detectOptions(work.dir));
+      log.info("text detected", {
+        units: result.units.length,
+        backend: result.backend,
+        ms: Math.round(result.timings.totalMs),
+      });
       setUnits(work, result.units);
       startErase(work, decoded);
       const record: UnitsRecord = {
@@ -1653,15 +1673,21 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
     return promptTarget(settings.current()).code;
   }
 
+  /** Which engine translates now (shared/offline/routing.ts translationSource of the records it writes). */
+  function currentSourceKey(): string {
+    const translate = settings.current().translate;
+    return currentSource(translate.engine, translate.offlineModel);
+  }
+
   let lastTarget: string | null = null;
 
   /**
-   * A changed target language makes the translations held in memory outdated: idle works are dropped (their stored
-   * AI records are skipped on reload, see loadWork) and their images marked stale, so the next request translates
-   * them again. Works in flight finish in the language they started in.
+   * A changed target language or engine makes the translations held in memory outdated: idle works are dropped
+   * (their stored AI records are skipped on reload, see loadWork) and their images marked stale, so the next request
+   * translates them again. Works in flight finish in the language and with the engine they started with.
    */
   function syncTarget(): void {
-    const target = currentTarget();
+    const target = `${currentTarget()}|${currentSourceKey()}`;
     if (lastTarget === null || target === lastTarget) {
       lastTarget = target;
       return;

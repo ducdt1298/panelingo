@@ -59,6 +59,23 @@ const errors: Catalog["errors"] = {
   },
   "detector.init": { title: "Tidak dapat memulai deteksi teks", hint: "Ekspor log debug dari Opsi." },
   "detector.run": { title: "Deteksi teks gagal", hint: "" },
+  "offline.pair_unsupported": {
+    title: "Pasangan bahasa ini tidak tersedia secara offline",
+    hint: "Pilih NLLB-200 sebagai model offline di Opsi, atau bahasa tujuan lain.",
+  },
+  "offline.download": {
+    title: "Tidak dapat mengunduh model offline",
+    hint: "Periksa koneksi ke huggingface.co. Terjemahan akan dicoba ulang secara otomatis.",
+  },
+  "offline.model_integrity": {
+    title: "Model offline yang diunduh rusak",
+    hint: "Terjemahkan lagi untuk mengunduhnya sekali lagi.",
+  },
+  "offline.run": { title: "Model offline gagal", hint: "Ekspor log debug dari Opsi." },
+  "offline.out_of_memory": {
+    title: "Memori tidak cukup untuk model offline",
+    hint: "Model terjemahan dimulai ulang dan mesin tetap berjalan. Pilih Opus-MT (jauh lebih kecil) di Opsi, atau tutup tab lain.",
+  },
   "engine.unavailable": {
     title: "Tidak dapat memulai mesin terjemahan",
     hint: "Muat ulang halaman atau nonaktifkan lalu aktifkan kembali ekstensi.",
@@ -132,6 +149,13 @@ export const ID: Catalog = {
     fail: "hasil GPU tidak konsisten, dialihkan ke CPU",
     pending: "memverifikasi GPU",
     skipped: "",
+  },
+  offlineState: {
+    idle: "Model dimuat saat pertama kali digunakan",
+    downloading: "Mengunduh model",
+    loading: "Memuat model",
+    ready: "Siap",
+    failed: "Gagal",
   },
   ui: {
     appName: "Panelingo",
@@ -278,6 +302,12 @@ export const ID: Catalog = {
     cause: (cause: string): string => `Detail: ${cause}`,
     engineStopped: "Mesin terjemahan sedang tidak aktif dan akan mulai saat Anda menerjemahkan.",
     engineUnreadable: "Tidak dapat membaca status mesin terjemahan.",
+    offlineHeading: "Mode offline (eksperimental)",
+    offlineHint:
+      "Tidak ada endpoint AI yang digunakan: pengenalan teks dan terjemahan berjalan di perangkat ini.",
+    offlineDownload: (doneMb: number, totalMb: number): string =>
+      `Mengunduh ${Math.round(doneMb)} dari ${Math.round(totalMb)} MB`,
+    offlineModels: (models: string): string => `Model: ${models}`,
     detectorLine: (backend: string, state: string, canary: string): string =>
       `Deteksi teks: ${backend}, ${state}${canary === "" ? "" : ` (${canary})`}`,
     queueLine: (queued: number, inFlight: number, done: number, failed: number): string =>
@@ -465,6 +495,14 @@ export const ID: Catalog = {
       "translate.maxHttpRetriesPerRequest": {
         label: "Percobaan ulang setelah kesalahan jaringan",
         hint: "Per permintaan, untuk kegagalan HTTP dan jaringan yang bersifat sementara.",
+      },
+      "translate.engine": {
+        label: "Mesin terjemahan",
+        hint: "Mode offline masih eksperimental: lihat Mode offline di atas.",
+      },
+      "translate.offlineModel": {
+        label: "Model terjemahan offline",
+        hint: "Hanya digunakan dalam mode offline.",
       },
       "translate.splitOnRefusal": {
         label: "Pecah permintaan yang ditolak",
@@ -705,6 +743,31 @@ export const ID: Catalog = {
       keyImported: "Kunci API dari file telah diimpor.",
       keyKept: "Kunci API Anda tetap dipakai (file tidak berisi kunci).",
     },
+  },
+  offline: {
+    heading: "Mode offline (eksperimental)",
+    intro:
+      "Terjemahkan tanpa endpoint AI apa pun: model sumber terbuka untuk pengenalan teks (PaddleOCR) dan terjemahan berjalan di perangkat ini. Kualitasnya jelas lebih rendah daripada model vision: tidak ada konteks antarbalon, tidak ada nama tokoh, huruf bergaya sering salah terbaca, dan efek suara dibiarkan tanpa terjemahan.",
+    download:
+      "Model diunduh sekali dari Hugging Face saat pertama kali diperlukan, diperiksa, lalu disimpan di perangkat ini; setelah itu terjemahan tidak memerlukan jaringan. Ukuran: pengenalan teks 8 sampai 17 MB per bahasa, Opus-MT sekitar 115 MB per pasangan bahasa (dua kali lipat jika melalui bahasa Inggris), NLLB-200 sekitar 910 MB.",
+    engine: "Mesin terjemahan",
+    engineChoices: {
+      api: "Endpoint AI (kompatibel dengan OpenAI)",
+      offline: "Offline di perangkat ini (eksperimental)",
+    },
+    model: "Model terjemahan offline",
+    modelChoices: {
+      "opus-mt": "Opus-MT: kecil, satu model per pasangan bahasa",
+      "nllb-600m": "NLLB-200 600M: semua pasangan, besar, nonkomersial",
+    },
+    pairs:
+      "Opus-MT menerjemahkan bahasa Korea, Jepang, Tionghoa, dan Spanyol ke bahasa Inggris, serta bahasa Inggris ke bahasa Vietnam, Spanyol, Prancis, Jerman, Italia, dan Indonesia; pasangan lain melalui bahasa Inggris. NLLB-200 menerjemahkan antarsemua bahasa yang tercantum di sini.",
+    license:
+      "Lisensi: PaddleOCR dan sebagian besar model Opus-MT Apache-2.0, dua model Opus-MT CC-BY-4.0, NLLB-200 CC-BY-NC-4.0 (hanya untuk penggunaan nonkomersial).",
+    stored: (mb: number): string => `Model yang diunduh di perangkat ini: ${Math.round(mb)} MB`,
+    deleteModels: "Hapus model yang diunduh",
+    deleteConfirm: "Hapus model offline yang sudah diunduh? Model akan diunduh lagi saat diperlukan.",
+    deleted: "Model yang diunduh telah dihapus.",
   },
   manifest: {
     description:

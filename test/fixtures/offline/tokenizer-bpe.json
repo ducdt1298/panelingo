@@ -1,0 +1,48 @@
+{
+  "version": "1.0",
+  "truncation": null,
+  "padding": null,
+  "added_tokens": [
+    { "id": 0, "content": "<s>", "special": true },
+    { "id": 1, "content": "<pad>", "special": true },
+    { "id": 2, "content": "</s>", "special": true },
+    { "id": 3, "content": "<unk>", "special": true },
+    { "id": 14, "content": "eng_Latn", "special": true },
+    { "id": 15, "content": "fra_Latn", "special": true }
+  ],
+  "normalizer": {
+    "type": "Sequence",
+    "normalizers": [{ "type": "Replace", "pattern": { "Regex": " {2,}" }, "content": " " }]
+  },
+  "pre_tokenizer": { "type": "Metaspace", "replacement": "▁", "add_prefix_space": true },
+  "post_processor": null,
+  "decoder": { "type": "Metaspace", "replacement": "▁", "add_prefix_space": true },
+  "model": {
+    "type": "BPE",
+    "dropout": null,
+    "unk_token": "<unk>",
+    "continuing_subword_prefix": null,
+    "end_of_word_suffix": null,
+    "fuse_unk": true,
+    "byte_fallback": false,
+    "vocab": {
+      "<s>": 0,
+      "<pad>": 1,
+      "</s>": 2,
+      "<unk>": 3,
+      "▁": 4,
+      "a": 5,
+      "b": 6,
+      "c": 7,
+      "▁a": 8,
+      "ab": 9,
+      "▁ab": 10,
+      "abc": 11,
+      ".": 12,
+      "▁c": 13,
+      "eng_Latn": 14,
+      "fra_Latn": 15
+    },
+    "merges": ["a b", "▁ ab", "ab c", "▁ a", "▁ c"]
+  }
+}

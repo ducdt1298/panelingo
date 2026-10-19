@@ -145,6 +145,8 @@ test("an image below the fold is captured only once it is scrolled into view", a
     assert.ok(k2 !== "", JSON.stringify(waiting.ids));
     assert.equal(waiting.images[k2], "error", JSON.stringify(waiting));
     assert.equal(waiting.errors[k2], "image.capture_unavailable", "it says: scroll to the image");
+    // With nothing left to do the port closes (5 s in test builds): the retry must reconnect by itself.
+    await waitForSummary(page, (s) => s.client === "idle", 30_000);
     await page.evaluate((top) => window.scrollTo({ top: top - 40, behavior: "instant" }), second);
     const settled = await waitForSummary(page, (s) => s.images[k2] === "done", 150_000);
     assert.ok(settled.lowRes.includes(k2), JSON.stringify(settled.lowRes));
@@ -170,6 +172,8 @@ test("in a background tab the capture is refused with a clear error; in front, a
     await page.bringToFront();
     await front.close();
     await sleep(300);
+    // The retried work outlasts the port's idle time (5 s in test builds), as a slow detector or model would.
+    h.api.setScenario({ name: "slow-retry", firstChunkDelayMs: 7_000 });
     const tabId = await tabIdOf(h, `${h.fixtures.readerUrl}/protected-full/?set=en-p01`);
     await waitUntil(
       "a retry from the page",
@@ -179,7 +183,9 @@ test("in a background tab the capture is refused with a clear error; in front, a
       10_000,
       500,
     );
-    const settled = await waitForSummary(page, (s) => s.images[key] === "done", 150_000);
+    const settled = await waitForSummary(page, (s) => s.images[key] === "done", 150_000).finally(() =>
+      h.api.setScenario({}),
+    );
     assert.deepEqual(settled.lowRes, [key]);
     await expectBalloons(page, "en-p01");
     await page.close();

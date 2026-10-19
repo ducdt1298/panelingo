@@ -56,6 +56,17 @@ const errors: Catalog["errors"] = {
   },
   "detector.init": { title: "无法启动文字检测", hint: "请在选项中导出调试日志。" },
   "detector.run": { title: "文字检测失败", hint: "" },
+  "offline.pair_unsupported": {
+    title: "离线模式不支持此语言组合",
+    hint: "请在选项中将离线模型改为 NLLB-200，或选择其他目标语言。",
+  },
+  "offline.download": { title: "无法下载离线模型", hint: "请检查与 huggingface.co 的连接。翻译会自动重试。" },
+  "offline.model_integrity": { title: "已下载的离线模型已损坏", hint: "再次翻译即可重新下载。" },
+  "offline.run": { title: "离线模型运行失败", hint: "请在选项中导出调试日志。" },
+  "offline.out_of_memory": {
+    title: "离线模型内存不足",
+    hint: "翻译模型已重新启动，引擎仍在运行。请在选项中选择 Opus-MT（小得多），或关闭其他标签页。",
+  },
   "engine.unavailable": {
     title: "无法启动翻译引擎",
     hint: "请重新加载页面，或将扩展程序关闭后再重新开启。",
@@ -129,6 +140,13 @@ export const ZH_CN: Catalog = {
     fail: "GPU 结果不一致，已切换到 CPU",
     pending: "正在验证 GPU",
     skipped: "",
+  },
+  offlineState: {
+    idle: "模型将在首次使用时加载",
+    downloading: "正在下载模型",
+    loading: "正在加载模型",
+    ready: "就绪",
+    failed: "失败",
   },
   ui: {
     appName: "Panelingo",
@@ -272,6 +290,11 @@ export const ZH_CN: Catalog = {
     cause: (cause: string): string => `详情：${cause}`,
     engineStopped: "引擎处于空闲状态，开始翻译时会自动启动。",
     engineUnreadable: "无法读取引擎状态。",
+    offlineHeading: "离线模式（实验性）",
+    offlineHint: "不使用任何 AI 接口：文字识别和翻译都在本设备上运行。",
+    offlineDownload: (doneMb: number, totalMb: number): string =>
+      `正在下载 ${Math.round(doneMb)} / ${Math.round(totalMb)} MB`,
+    offlineModels: (models: string): string => `模型：${models}`,
     detectorLine: (backend: string, state: string, canary: string): string =>
       `文字检测：${backend}，${state}${canary === "" ? "" : `（${canary}）`}`,
     queueLine: (queued: number, inFlight: number, done: number, failed: number): string =>
@@ -438,6 +461,14 @@ export const ZH_CN: Catalog = {
       "translate.maxHttpRetriesPerRequest": {
         label: "网络错误后的重试次数",
         hint: "按每次请求计算，针对临时的 HTTP 和网络故障。",
+      },
+      "translate.engine": {
+        label: "翻译引擎",
+        hint: "离线模式为实验性功能：请参阅上方的“离线模式”。",
+      },
+      "translate.offlineModel": {
+        label: "离线翻译模型",
+        hint: "仅在离线模式下使用。",
       },
       "translate.splitOnRefusal": {
         label: "拆分被拒绝的请求",
@@ -672,6 +703,28 @@ export const ZH_CN: Catalog = {
       keyImported: "已导入文件中的 API 密钥。",
       keyKept: "已保留你的 API 密钥（文件中没有密钥）。",
     },
+  },
+  offline: {
+    heading: "离线模式（实验性）",
+    intro:
+      "无需任何 AI 接口即可翻译：开源的文字识别（PaddleOCR）和翻译模型在本设备上运行。质量明显低于视觉模型：不考虑气泡之间的上下文，不认识角色名字，艺术字经常识别错误，拟声词则保留原样不翻译。",
+    download:
+      "模型会在首次需要时从 Hugging Face 下载一次，经校验后保存在本设备上；之后翻译无需联网。大小：文字识别每种语言 8 到 17 MB，Opus-MT 每个语言对约 115 MB（经英语中转时为两倍），NLLB-200 约 910 MB。",
+    engine: "翻译引擎",
+    engineChoices: { api: "AI 接口（兼容 OpenAI）", offline: "在本设备上离线翻译（实验性）" },
+    model: "离线翻译模型",
+    modelChoices: {
+      "opus-mt": "Opus-MT：体积小，每个语言对一个模型",
+      "nllb-600m": "NLLB-200 600M：支持所有语言对，体积大，仅限非商业用途",
+    },
+    pairs:
+      "Opus-MT 可将韩语、日语、中文和西班牙语译成英语，并将英语译成越南语、西班牙语、法语、德语、意大利语和印尼语；其他语言对经英语中转。NLLB-200 可在此处列出的所有语言之间互译。",
+    license:
+      "许可证：PaddleOCR 和大多数 Opus-MT 模型为 Apache-2.0，两个 Opus-MT 模型为 CC-BY-4.0，NLLB-200 为 CC-BY-NC-4.0（仅限非商业用途）。",
+    stored: (mb: number): string => `本设备上已下载的模型：${Math.round(mb)} MB`,
+    deleteModels: "删除已下载的模型",
+    deleteConfirm: "要删除已下载的离线模型吗？需要时会重新下载。",
+    deleted: "已删除下载的模型。",
   },
   manifest: {
     description: "边读边翻译漫画、日漫和条漫，译文直接显示在原图上，支持任何兼容 OpenAI 的 AI。",

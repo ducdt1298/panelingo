@@ -4,18 +4,20 @@
 // Builds the unpacked extension into dist/ (or --out, a folder inside the repository that is empty or holds an
 // earlier build: it is wiped first):
 //   dist/sw.js (ESM, no splitting: a service worker cannot import() lazily)
-//   dist/engine/{offscreen.html, main.js, chunks/*} (ESM with code splitting; ORT lands in a lazy chunk)
+//   dist/engine/{offscreen.html, main.js, offline-worker.js, chunks/*} (ESM with code splitting; ORT lands in a
+//   lazy chunk; offline-worker.js is the offline translation models' module worker with its own ORT instance)
 //   dist/content/main.js (classic IIFE content script)
 //   dist/ui/{popup,options,sidepanel[,debug]}.{html,js,css} + chunks
 //   dist/assets/{icons,fonts,canary}, dist/vendor/ort/<asyncify wasm>, dist/models/*.onnx, dist/LICENSES/*
-//   dist/manifest.json (from src/manifest.ts), dist/build-info.json
+//   dist/manifest.json (from src/manifest.ts), dist/build-info.json (with the offline mode model catalog; the offline
+//   models themselves are never bundled)
 import * as esbuild from "esbuild";
 import { existsSync, watch as fsWatch } from "node:fs";
 import { copyFile, mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { buildManifest, type BuildMode, allManifestMessages } from "../src/manifest.ts";
 import { sha256File } from "./lib/hash.ts";
-import { readModelsLock, shippedModels } from "./lib/models.ts";
+import { offlineFiles, readModelsLock, shippedModels } from "./lib/models.ts";
 import { CACHE_MODELS, DIST as DEFAULT_DIST, NODE_MODULES, ROOT, VENDOR, rel } from "./lib/paths.ts";
 
 const flags = new Set(process.argv.slice(2));
@@ -82,7 +84,8 @@ const builds: esbuild.BuildOptions[] = [
   { ...common, entryPoints: { sw: "src/sw/main.ts" }, outdir: DIST, format: "esm", splitting: false },
   {
     ...common,
-    entryPoints: { main: "src/engine/main.ts" },
+    // offline-worker: the offline translation models' own worker (and ORT instance), sharing the chunks.
+    entryPoints: { main: "src/engine/main.ts", "offline-worker": "src/engine/offline/mt-worker.ts" },
     outdir: path.join(DIST, "engine"),
     format: "esm",
     splitting: true,
@@ -196,9 +199,11 @@ async function copyStatic(models: CheckedModel[]): Promise<void> {
       `${JSON.stringify(messages, null, 2)}\n`,
     );
   }
+  // The offline mode catalog: the engine downloads these pinned files itself on first use (never bundled).
+  const offline = offlineFiles(readModelsLock());
   await writeFile(
     path.join(DIST, "build-info.json"),
-    `${JSON.stringify({ buildId: BUILD_ID, mode, ort: ortPkg.version, models }, null, 2)}\n`,
+    `${JSON.stringify({ buildId: BUILD_ID, mode, ort: ortPkg.version, models, offline }, null, 2)}\n`,
   );
 }
 
@@ -206,6 +211,9 @@ async function assertDist(models: CheckedModel[]): Promise<void> {
   const content = await readFile(path.join(DIST, "content", "main.js"), "utf8");
   if (/^\s*(import|export)\s/m.test(content)) {
     fail("dist/content/main.js has a top-level import/export; content scripts must be classic IIFE scripts");
+  }
+  if (!existsSync(path.join(DIST, "engine", "offline-worker.js"))) {
+    fail("dist/engine/offline-worker.js is missing (the offline translation worker)");
   }
   const ortFiles = await readdir(path.join(DIST, "vendor", "ort"));
   if (ortFiles.length !== 1 || ortFiles[0] !== ORT_WASM) {

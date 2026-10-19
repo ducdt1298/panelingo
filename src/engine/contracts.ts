@@ -6,7 +6,8 @@
 // Factory → module: openStores store/db.ts · createSettingsCache settings-cache.ts · createHealth health-monitor.ts ·
 // createAcquirer acquire.ts · createDecoder decode.ts · createGfx = createChromeGfx pixels.ts · createDetector
 // detector.ts · createComposite composite.ts · createUploads uploads.ts · createTranslator translator.ts ·
-// createPipeline pipeline.ts (which creates the series memory, memory.ts createSeriesMemory, unless one is injected).
+// createPipeline pipeline.ts (which creates the series memory, memory.ts createSeriesMemory, unless one is injected) ·
+// createOfflineTranslator offline/translator.ts (offline mode; runtime.ts routes packs to it or to createTranslator's).
 // runtime.ts exports startRuntime(gate, factories); createSettingsCache is called by runtime.ts itself (it is not a
 // ServiceFactories member). Factories may accept optional test injectables on top of the deps listed here (e.g.
 // AcquirerOverrides {fetch, callSw}, DecoderOverrides {createImageBitmap, digest}).
@@ -45,6 +46,7 @@ import type {
   TranslationRecord,
   UnitsRecord,
 } from "../shared/records.ts";
+import type { OfflineFile } from "../shared/offline/catalog.ts";
 import type { Settings, SiteSettings } from "../shared/settings.ts";
 import type {
   Codec,
@@ -54,6 +56,7 @@ import type {
   Lang,
   LineType,
   LogEntry,
+  OfflineStatus,
   PronounRule,
   ReadingDir,
   RGB,
@@ -503,6 +506,16 @@ export interface PackTranslator {
   translate(pack: TranslatePack, onUnit: (result: UnitResult) => void): Promise<PackReport>;
 }
 
+/** The offline engine's PackTranslator (offline/translator.ts), with its status and an idle release. */
+export interface OfflinePackTranslator extends PackTranslator {
+  state(): OfflineStatus;
+  /** Drops every loaded session (model files stay cached). */
+  release(): Promise<void>;
+}
+
+/** Runs one task at a time in call order: the engine-wide lock around every ORT call (detector.ts createMutex). */
+export type OrtLock = <T>(fn: () => Promise<T>) => Promise<T>;
+
 /* ------------------------------------------------------------------ erase patches (erase.ts) */
 
 export interface EraseOutput {
@@ -635,7 +648,8 @@ export interface ServiceFactories {
   createHealth(deps: CoreDeps): ApiHealth;
   createAcquirer(deps: CoreDeps & { capture?: CaptureStep }): ImageAcquirer;
   createDecoder(deps: CoreDeps): ImageDecoder;
-  createDetector(deps: CoreDeps & { stores: EngineStores; gfx: Gfx }): TextDetector;
+  /** `exclusive`: the engine-wide ORT lock, shared with the offline engine (asyncify allows one call at a time). */
+  createDetector(deps: CoreDeps & { stores: EngineStores; gfx: Gfx; exclusive?: OrtLock }): TextDetector;
   createComposite(deps: CoreDeps & { gfx: Gfx }): CompositeBuilder;
   createUploads(deps: CoreDeps & { stores: EngineStores }): UploadCounter;
   createTranslator(
@@ -647,6 +661,20 @@ export interface ServiceFactories {
       onConcurrencyCap?: (cap: { value: number; forMs: number }) => void;
     },
   ): PackTranslator;
+  /**
+   * The offline pack translator (settings.translate.engine "offline", experimental; offline/translator.ts). Optional:
+   * without it, offline mode reports offline.run for every pack.
+   */
+  createOfflineTranslator?(
+    deps: CoreDeps & {
+      stores: EngineStores;
+      gfx: Gfx;
+      exclusive: OrtLock;
+      /** The offline catalog of build-info.json. */
+      catalog: () => Promise<readonly OfflineFile[]>;
+      detectorBackend: () => "webgpu" | "wasm" | "none";
+    },
+  ): OfflinePackTranslator;
   createPipeline(
     deps: CoreDeps & {
       stores: EngineStores;

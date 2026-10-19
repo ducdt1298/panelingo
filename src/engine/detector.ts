@@ -11,8 +11,8 @@
 //   changes; a WebGPU create failure is retried after a day. "webgpu" forces WebGPU without the canary (WASM only if
 //   it cannot start); "wasm" never touches WebGPU.
 // - One promise chain serialises session creation, every run and release: asyncify forbids overlapping calls, and two
-//   runs never overlap. A failed run or a lost device drops the session; two such WebGPU failures within 10 min move
-//   this engine to WASM.
+//   runs never overlap; the runtime passes the same chain to the offline engine (deps.exclusive). A failed run or a
+//   lost device drops the session; two such WebGPU failures within 10 min move this engine to WASM.
 // - Units come from core/units-build on the raw detections, so unitsFrom(rawDetections) rebuilds exactly the units
 //   detect() returned.
 
@@ -54,9 +54,13 @@ import type {
   TextDetector,
 } from "./contracts.ts";
 import { createModelFiles } from "./model-files.ts";
+import { configureOrtEnv, type OrtEnvLike } from "./ort-env.ts";
 import type { FetchLike, ModelFiles } from "./model-files.ts";
 import { defaultTilePixels, runTiling } from "./tiling.ts";
 import type { TilePixels, TileRunner } from "./tiling.ts";
+
+// The ORT environment is shared with the offline engine (ort-env.ts); re-exported for the detector's callers.
+export { configureOrtEnv, ORT_WASM_PATH, type OrtEnvLike } from "./ort-env.ts";
 
 export type DetectorBackend = "webgpu" | "wasm";
 export type BackendSetting = Settings["detector"]["backend"];
@@ -64,7 +68,6 @@ export type DetectorStatus = EngineStatus["detector"];
 
 export const FP32_MODEL = "detector-v4-s.fixed.onnx";
 export const INT8_MODEL = "detector-v4-s_int8.onnx";
-export const ORT_WASM_PATH = "vendor/ort/ort-wasm-simd-threaded.asyncify.wasm";
 export const CANARY_IMAGE = "assets/canary/canary-01.png";
 export const CANARY_REFERENCE = "assets/canary/canary-01.ref-v4s-fp32-wasm.json";
 
@@ -97,18 +100,6 @@ export interface OrtSessionOptions {
   executionProviders: readonly DetectorBackend[];
   freeDimensionOverrides: Readonly<Record<string, number>>;
   graphOptimizationLevel: "all";
-}
-
-export interface OrtEnvLike {
-  logLevel?: "verbose" | "info" | "warning" | "error" | "fatal";
-  readonly versions: { readonly web?: string };
-  readonly wasm: {
-    wasmPaths?: string | { wasm?: string | URL; mjs?: string | URL };
-    numThreads?: number;
-    proxy?: boolean;
-  };
-  /** ORT stores the GPUDevice it created here (a Promise in the typings, the device itself in 1.30). */
-  readonly webgpu?: { readonly device?: unknown };
 }
 
 export interface OrtLike {
@@ -257,6 +248,11 @@ export interface DetectorDeps {
   settings: Pick<SettingsSource, "current">;
   stores: Pick<EngineStores, "kv" | "models">;
   gfx: Gfx;
+  /**
+   * The engine-wide ORT lock: asyncify forbids overlapping calls into the one WASM instance, which the offline
+   * engine's sessions share. Default: a lock of this detector's own.
+   */
+  exclusive?: Exclusive;
 }
 
 /** The detector service; TextDetector already carries unitsFrom(..., slices?) and warmup(). */
@@ -294,7 +290,10 @@ function isDeviceLike(value: unknown): value is DeviceLike {
   return typeof value === "object" && value !== null && "lost" in value && value.lost instanceof Promise;
 }
 
-function createMutex(): <T>(fn: () => Promise<T>) => Promise<T> {
+/** Runs one task at a time, in call order. */
+export type Exclusive = <T>(fn: () => Promise<T>) => Promise<T>;
+
+export function createMutex(): Exclusive {
   let tail: Promise<unknown> = Promise.resolve();
   return <T>(fn: () => Promise<T>): Promise<T> => {
     const next = tail.then(fn);
@@ -316,7 +315,7 @@ export function createDetector(deps: DetectorDeps, platform: Partial<DetectorPla
   const chromeMajor =
     platform.chromeMajor ?? ((): number => chromeMajorOf(globalThis.navigator?.userAgent ?? ""));
   const loadOrt = platform.loadOrt ?? importOrt;
-  const exclusive = createMutex();
+  const exclusive = deps.exclusive ?? createMutex();
 
   let ortPromise: Promise<OrtLike> | null = null;
   let active: Active | null = null;
@@ -342,10 +341,7 @@ export function createDetector(deps: DetectorDeps, platform: Partial<DetectorPla
   function getOrt(): Promise<OrtLike> {
     if (ortPromise === null) {
       const loading = loadOrt().then((ort) => {
-        ort.env.wasm.wasmPaths = { wasm: getURL(ORT_WASM_PATH) };
-        ort.env.wasm.numThreads = 1;
-        ort.env.wasm.proxy = false;
-        ort.env.logLevel = "warning";
+        configureOrtEnv(ort.env, getURL);
         return ort;
       });
       ortPromise = loading;

@@ -59,6 +59,7 @@
     "test:e2e": "npm run build:test && node --test --test-concurrency=1 --test-timeout=180000 \"e2e/**/*.e2e.ts\"",
     "test:e2e:gpu": "npm run build:test && node e2e/run-gpu.ts",
     "fetch-models": "node scripts/fetch-models.ts",
+    "eval:offline": "node tools/offline-eval/run.ts",
     "icons": "python -I -B scripts/make-icons.py",
     "fixtures": "python -I -B tools/fixtures/make_fixtures.py --out test/fixtures/generated --seed 1",
     "serve:fixtures": "node tools/fixture-server/cli.ts",

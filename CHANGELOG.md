@@ -9,6 +9,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Offline mode (experimental).** `translate.engine: "offline"` translates without any AI endpoint: PaddleOCR
+  PP-OCRv5 recognizers read the detected text boxes (lines and vertical columns found on the page's ink), and Opus-MT
+  (direct or through English) or NLLB-200 distilled 600M (`translate.offlineModel`) translate them, all on
+  onnxruntime-web in the engine. The models are downloaded once from pinned Hugging Face revisions, checked against
+  their SHA-256 and kept in Cache Storage. A card in Options explains it (quality, sizes, licences; NLLB-200 is
+  CC-BY-NC-4.0) and can delete the downloaded models; the popup shows the offline engine instead of the endpoint.
+  `npm run fetch-models -- --offline` and `npm run eval:offline` evaluate it on the fixtures
+  ([docs/OFFLINE-MODE.md](docs/OFFLINE-MODE.md)). The API mode is unchanged and stays the default.
 - **Series memory.** Names and terms stay consistent across a whole series:
   - Series and chapter keys are derived from the page URL (and title) with generic rules for manga, manhwa, webtoon
     and Spanish reader URL styles.
@@ -66,6 +74,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `PROMPT_VERSION` is 2: requests now carry series context.
 
 ### Fixed
+
+- **Offline mode no longer takes the engine down.** The translation models ran in the detector's onnxruntime-web
+  instance, whose single 4 GiB WebAssembly heap NLLB-200 next to a pivot pair grew to 3.8–4.0 GB; the next growth made
+  ORT abort and broke detection for every later image. They now run in their own worker with their own heap, within a
+  memory budget (unneeded models unloaded first, the worker restarted between NLLB-200 and Opus-MT), model files are
+  handed over one at a time, and running out of memory fails only that batch with the new `offline.out_of_memory`
+  error (all 16 languages) while the engine keeps running ([docs/OFFLINE-MODE.md](docs/OFFLINE-MODE.md#memory)).
 
 - Changing the target language no longer shows cached translations in the old language: stored AI translations
   remember their target and are translated again for a new one (your manual edits stay).

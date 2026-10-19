@@ -26,6 +26,7 @@ import type {
   EnginePhase,
   EngineStatus,
   GlossaryEdit,
+  OfflineStatus,
   Transcript,
   TranscriptItem,
 } from "../shared/types.ts";
@@ -54,6 +55,10 @@ export interface StatusSources {
   pipeline: Pipeline;
   uploads: UploadCounter;
   log?: Logger;
+  /** settings.translate.engine; absent = "api". */
+  engine?: () => "api" | "offline";
+  /** The offline engine's state (offline mode). */
+  offline?: () => OfflineStatus | null;
 }
 
 /** One EngineStatus snapshot; a failing source falls back to its "unknown" value instead of failing the status. */
@@ -71,6 +76,8 @@ export function assembleStatus(sources: StatusSources): EngineStatus {
   const detector = read("detector", () => sources.detector.state(), base.detector);
   const queue = read("queue", () => sources.pipeline.queueStatus(), base.queue);
   const uploads = read("uploads", () => sources.uploads.today(), base.uploads);
+  const engine = read("engine", () => sources.engine?.() ?? "api", "api" as const);
+  const offline = engine === "offline" ? read("offline", () => sources.offline?.() ?? null, null) : null;
   return {
     phase: base.phase,
     build: base.build,
@@ -90,12 +97,16 @@ export function assembleStatus(sources: StatusSources): EngineStatus {
       urgentInFlight: queue.urgentInFlight,
       done: queue.done,
       failed: queue.failed,
-      // The translator waits on /models even when the pipeline itself reports no pause.
-      pausedBy: queue.pausedBy ?? (reading === null ? null : readinessErrorCode(reading.readiness)),
+      // The translator waits on /models even when the pipeline itself reports no pause (not in offline mode).
+      pausedBy:
+        queue.pausedBy ??
+        (reading === null || engine === "offline" ? null : readinessErrorCode(reading.readiness)),
       concurrency: queue.concurrency,
       boxBudget: queue.boxBudget,
     },
     uploads: { today: uploads.today, bytesToday: uploads.bytesToday },
+    ...(engine === "offline" ? { engine } : {}),
+    ...(offline === null ? {} : { offline }),
   };
 }
 

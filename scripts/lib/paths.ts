@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 export const ROOT = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
 export const DIST = path.join(ROOT, "dist");
 export const CACHE_MODELS = path.join(ROOT, ".cache", "models");
+/** Offline mode models (vendor/models.lock.json "offline"), as <repo>/<revision>/<path>; never bundled. */
+export const CACHE_OFFLINE = path.join(ROOT, ".cache", "offline-models");
 export const VENDOR = path.join(ROOT, "vendor");
 export const NODE_MODULES = path.join(ROOT, "node_modules");
 

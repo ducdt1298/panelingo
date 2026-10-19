@@ -4,21 +4,39 @@
 //   node scripts/fetch-models.ts            fetch/derive missing files, trust existing .sha256 sidecars
 //   node scripts/fetch-models.ts --verify   re-hash every cached file
 //   node scripts/fetch-models.ts --optional also fetch models marked optional in the lock file
+//   node scripts/fetch-models.ts --offline  also fetch the offline mode models (about 1.9 GB) into .cache/offline-models
+//   node scripts/fetch-models.ts --offline=ocr-korean,opus-mt-ko-en   only these offline models
+// Offline mode models are never bundled: the engine downloads them itself on first use (docs/OFFLINE-MODE.md). The
+// cached copies serve the offline E2E test and tools/offline-eval through a local mirror.
 import { createHash } from "node:crypto";
 import { createWriteStream, existsSync } from "node:fs";
 import { mkdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { sha256File } from "./lib/hash.ts";
-import { readModelsLock, type ModelEntry } from "./lib/models.ts";
+import { offlineFiles, readModelsLock, type ModelEntry } from "./lib/models.ts";
 import { stripValueInfo } from "./lib/onnx-strip.ts";
-import { CACHE_MODELS, rel } from "./lib/paths.ts";
+import { CACHE_MODELS, CACHE_OFFLINE, rel } from "./lib/paths.ts";
+import { offlineFileUrl, offlineLocalPath } from "../src/shared/offline/catalog.ts";
 
 const flags = new Set(process.argv.slice(2));
 const verifyAll = flags.has("--verify");
 const includeOptional = flags.has("--optional");
+const offlineFlag = [...flags].find((flag) => flag === "--offline" || flag.startsWith("--offline="));
+/** null = no offline models; empty set = all of them. */
+const offlineWanted: Set<string> | null =
+  offlineFlag === undefined
+    ? null
+    : new Set(
+        offlineFlag
+          .slice("--offline".length + 1)
+          .split(",")
+          .map((id) => id.trim())
+          .filter((id) => id !== ""),
+      );
 
 await mkdir(CACHE_MODELS, { recursive: true });
-const { models } = readModelsLock();
+const lock = readModelsLock();
+const { models } = lock;
 // Downloads first, derivations after their sources.
 const ordered = [
   ...models.filter((m) => m.derivedFrom === undefined),
@@ -37,6 +55,40 @@ for (const model of ordered) {
   } catch (error) {
     failures += 1;
     console.error(`FAILED   ${model.file}: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+if (offlineWanted !== null) {
+  const files = offlineFiles(lock).filter(
+    (file) => offlineWanted.size === 0 || offlineWanted.has(file.model),
+  );
+  const known = new Set(offlineFiles(lock).map((file) => file.model));
+  for (const id of offlineWanted) {
+    if (!known.has(id)) {
+      failures += 1;
+      console.error(`FAILED   unknown offline model ${id} (known: ${[...known].join(", ")})`);
+    }
+  }
+  for (const file of files) {
+    const entry: ModelEntry = {
+      id: `${file.model}.${file.role}`,
+      file: path.join(path.relative(CACHE_MODELS, CACHE_OFFLINE), offlineLocalPath(file)),
+      role: `offline-${file.role}`,
+      license: file.license,
+      bytes: file.bytes,
+      sha256: file.sha256,
+      url: offlineFileUrl(file),
+    };
+    try {
+      await mkdir(path.dirname(path.join(CACHE_MODELS, entry.file)), { recursive: true });
+      const status = await ensureModel(entry);
+      console.log(`${status.padEnd(8)} ${offlineLocalPath(file)} (${formatMb(file.bytes)})`);
+    } catch (error) {
+      failures += 1;
+      console.error(
+        `FAILED   ${offlineLocalPath(file)}: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
   }
 }
 

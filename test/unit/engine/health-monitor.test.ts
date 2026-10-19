@@ -561,3 +561,22 @@ test("createHealth fits ServiceFactories.createHealth (fetch defaults to the glo
   const factory: ServiceFactories["createHealth"] = createHealth;
   assert.equal(typeof factory, "function");
 });
+
+test("offline mode contacts no endpoint: no refresh, no polling while busy; switching back to api checks at once", async () => {
+  const h = harness((s) => {
+    s.translate.engine = "offline";
+  });
+  const { clock, server, health } = h;
+  await health.refresh();
+  health.setBusy(true);
+  await clock.advance(HEALTH_CADENCE.readyMs * 4);
+  assert.equal(server.calls.length, 0);
+  assert.equal(clock.pending(), 0, "nothing scheduled");
+  h.update((s) => {
+    s.translate.engine = "api";
+  });
+  await clock.advance(0);
+  assert.equal(server.calls.length, 1, "the endpoint is checked as soon as the API engine is back");
+  assert.equal(health.reading().readiness, "ready");
+  health.stop();
+});

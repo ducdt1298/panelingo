@@ -41,6 +41,17 @@ export const ERRORS = {
   "detector.model_integrity": { scope: "global", retry: "user", severity: "error" },
   "detector.init": { scope: "global", retry: "user", severity: "error" },
   "detector.run": { scope: "image", retry: "auto", severity: "warn" },
+  // Offline mode (experimental): on-device OCR and translation models (docs/OFFLINE-MODE.md).
+  /** No offline model translates from the page's language into the target language. */
+  "offline.pair_unsupported": { scope: "batch", retry: "user", severity: "warn" },
+  /** A model file could not be downloaded from Hugging Face (network, HTTP status). */
+  "offline.download": { scope: "batch", retry: "auto", severity: "warn" },
+  /** A downloaded model file does not match its pinned size or sha256. */
+  "offline.model_integrity": { scope: "global", retry: "user", severity: "error" },
+  /** An offline model could not be loaded or failed while running. */
+  "offline.run": { scope: "batch", retry: "auto", severity: "warn" },
+  /** The offline translation models ran out of memory (their worker was restarted; the engine keeps running). */
+  "offline.out_of_memory": { scope: "batch", retry: "auto", severity: "warn" },
   "engine.unavailable": { scope: "frame", retry: "user", severity: "error" },
   "engine.closing": { scope: "frame", retry: "auto", severity: "info" },
   "engine.overloaded": { scope: "image", retry: "auto", severity: "info" },

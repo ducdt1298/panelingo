@@ -4,6 +4,8 @@
 // fast failures and gives up after 10 visible minutes. BFCache suspends the client, an invalidated extension context
 // kills it for good, and an idle port closes itself so an open chapter tab does not keep the engine alive. Image
 // bytes never outlive a failed attempt: the controller re-reads them (deps.reread) when they are needed again.
+// An img:retry or unit:retranslate puts its (settled) image back among the pending ones, so the port stays open until
+// the engine is done with it again, and a lost connection resubmits it.
 
 import { isContextValid } from "../platform/context.ts";
 import type { Logger } from "../platform/log.ts";
@@ -170,6 +172,9 @@ interface Pending {
   postedOn: number;
 }
 
+/** Settled submits kept so an img:retry / unit:retranslate can make their image pending again. */
+export const MAX_SETTLED = 500;
+
 /** Engine messages the client itself reacts to; user handlers of these types run afterwards. */
 const INTERNAL_TYPES: readonly (keyof EngineToCsMap)[] = ["en:hello", "en:closing", "img:state", "img:done"];
 
@@ -213,6 +218,8 @@ export function createEngineClient(deps: EngineClientDeps): EngineClient {
   let cancelResend: (() => void) | null = null;
 
   const pending = new Map<string, Pending>();
+  /** imageKey → the last submit of a settled image (without bytes), least recently settled first. */
+  const settled = new Map<string, ImageSubmit>();
   const handlers = new Map<string, Set<AnyHandler>>();
   const stateListeners = new Set<(state: EngineClientState) => void>();
   const offPage = page.subscribe(onPageEvent);
@@ -472,7 +479,26 @@ export function createEngineClient(deps: EngineClientDeps): EngineClient {
   }
 
   function settle(imageKey: string): void {
-    if (pending.delete(imageKey) && pending.size === 0) armIdle();
+    const entry = pending.get(imageKey);
+    if (entry === undefined) return;
+    pending.delete(imageKey);
+    settled.delete(imageKey);
+    settled.set(imageKey, withoutBytes(entry.submit));
+    if (settled.size > MAX_SETTLED) {
+      const oldest = settled.keys().next();
+      if (oldest.done !== true) settled.delete(oldest.value);
+    }
+    if (pending.size === 0) armIdle();
+  }
+
+  /** The engine works on a settled image again (img:retry, unit:retranslate posted on this connection). */
+  function reopen(imageKey: string): void {
+    const submit = settled.get(imageKey);
+    if (submit === undefined || pending.has(imageKey)) return;
+    settled.delete(imageKey);
+    pending.set(imageKey, { key: imageKey, submit, postedOn: openGeneration });
+    cancelIdle?.();
+    cancelIdle = null;
   }
 
   /* ---- disconnects, backoff and give-up ---- */
@@ -639,6 +665,7 @@ export function createEngineClient(deps: EngineClientDeps): EngineClient {
     dropPort();
     offPage();
     pending.clear();
+    settled.clear();
     setState("dead");
     handlers.clear();
     stateListeners.clear();
@@ -686,7 +713,10 @@ export function createEngineClient(deps: EngineClientDeps): EngineClient {
         }
       }
       if (state !== "open" || port === null) return false;
-      return port.post(message);
+      const sent = port.post(message);
+      if (sent && (message.type === "img:retry" || message.type === "unit:retranslate"))
+        reopen(message.imageKey);
+      return sent;
     },
     on(type, handler) {
       const set = handlers.get(type) ?? new Set<AnyHandler>();
@@ -702,7 +732,10 @@ export function createEngineClient(deps: EngineClientDeps): EngineClient {
     },
     forget(imageKeys) {
       if (state === "dead" || imageKeys.length === 0) return;
-      for (const key of imageKeys) pending.delete(key);
+      for (const key of imageKeys) {
+        pending.delete(key);
+        settled.delete(key);
+      }
       if (state === "open" && port !== null) port.post({ type: "img:forget", imageKeys: [...imageKeys] });
       if (pending.size === 0) armIdle();
     },

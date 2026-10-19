@@ -51,6 +51,13 @@ export interface Settings {
     maxHttpRetriesPerRequest: number;
     maxAutoPassesPerUnitPer10Min: number;
     splitOnRefusal: boolean;
+    /**
+     * "api": the configured OpenAI-compatible vision model reads and translates. "offline" (experimental): on-device
+     * OCR and machine translation models downloaded once from Hugging Face; no AI endpoint (docs/OFFLINE-MODE.md).
+     */
+    engine: "api" | "offline";
+    /** Offline translation model: Opus-MT per language pair (pivot through English), or NLLB-200 600M (any pair). */
+    offlineModel: "opus-mt" | "nllb-600m";
   };
   discovery: {
     minNaturalSide: number;
@@ -114,7 +121,15 @@ export interface Settings {
     keepSentComposites: number;
     ackUploadNoticeAt: number | null;
   };
-  debug: { logLevel: "debug" | "info" | "warn" | "error"; logCapacity: number };
+  debug: {
+    logLevel: "debug" | "info" | "warn" | "error";
+    logCapacity: number;
+    /**
+     * Development and test builds only: offline models are downloaded from <base>/<repo>/resolve/<revision>/<path>
+     * instead of Hugging Face (a local mirror of .cache/offline-models). Empty = Hugging Face. Ignored in production.
+     */
+    offlineModelBaseUrl: string;
+  };
 }
 
 export interface SiteSettings {
@@ -170,6 +185,8 @@ export const DEFAULT_SETTINGS: Settings = {
     maxHttpRetriesPerRequest: 2,
     maxAutoPassesPerUnitPer10Min: 2,
     splitOnRefusal: false,
+    engine: "api",
+    offlineModel: "opus-mt",
   },
   discovery: {
     minNaturalSide: 300,
@@ -223,7 +240,7 @@ export const DEFAULT_SETTINGS: Settings = {
     keepSentComposites: 0,
     ackUploadNoticeAt: null,
   },
-  debug: { logLevel: "info", logCapacity: 5000 },
+  debug: { logLevel: "info", logCapacity: 5000, offlineModelBaseUrl: "" },
 };
 
 export const DEFAULT_SITE: Omit<SiteSettings, "addedAt"> = {
@@ -410,9 +427,36 @@ export function migrateSettings(raw: unknown): Settings {
   if (!["auto", "never"].includes(settings.render.verticalText)) {
     settings.render.verticalText = DEFAULT_SETTINGS.render.verticalText;
   }
+  if (!["api", "offline"].includes(settings.translate.engine)) {
+    settings.translate.engine = DEFAULT_SETTINGS.translate.engine;
+  }
+  if (!["opus-mt", "nllb-600m"].includes(settings.translate.offlineModel)) {
+    settings.translate.offlineModel = DEFAULT_SETTINGS.translate.offlineModel;
+  }
+  settings.debug.offlineModelBaseUrl = offlineBaseUrl(settings.debug.offlineModelBaseUrl);
   settings.api.maxInFlight = Math.max(settings.api.maxInFlight, settings.api.concurrency);
   settings.api.baseUrl = normalizeBaseUrl(settings.api.baseUrl);
   return settings;
+}
+
+/** An http(s) base URL without a trailing slash, query or fragment; anything else becomes "" (Hugging Face). */
+export function offlineBaseUrl(value: string): string {
+  const trimmed = value.trim().replace(/\/+$/u, "");
+  if (trimmed === "") return "";
+  try {
+    const url = new URL(trimmed);
+    if (
+      (url.protocol !== "http:" && url.protocol !== "https:") ||
+      url.username !== "" ||
+      url.password !== ""
+    ) {
+      return "";
+    }
+    if (url.search !== "" || url.hash !== "") return "";
+    return trimmed;
+  } catch {
+    return "";
+  }
 }
 
 /** Any stored per-site value → valid SiteSettings (addedAt defaults to `now`). */

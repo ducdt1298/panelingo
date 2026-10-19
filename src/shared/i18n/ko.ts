@@ -59,6 +59,26 @@ const errors: Catalog["errors"] = {
   },
   "detector.init": { title: "텍스트 감지를 시작할 수 없습니다", hint: "옵션에서 디버그 로그를 내보내세요." },
   "detector.run": { title: "텍스트 감지에 실패했습니다", hint: "" },
+  "offline.pair_unsupported": {
+    title: "이 언어 조합은 오프라인으로 사용할 수 없습니다",
+    hint: "옵션에서 오프라인 모델로 NLLB-200을 선택하거나 다른 번역 언어를 선택하세요.",
+  },
+  "offline.download": {
+    title: "오프라인 모델을 다운로드하지 못했습니다",
+    hint: "huggingface.co 연결을 확인하세요. 번역은 자동으로 다시 시도됩니다.",
+  },
+  "offline.model_integrity": {
+    title: "다운로드한 오프라인 모델이 손상되었습니다",
+    hint: "다시 번역하면 모델을 한 번 더 다운로드합니다.",
+  },
+  "offline.run": {
+    title: "오프라인 모델에서 오류가 발생했습니다",
+    hint: "옵션에서 디버그 로그를 내보내세요.",
+  },
+  "offline.out_of_memory": {
+    title: "오프라인 모델에 쓸 메모리가 부족합니다",
+    hint: "번역 모델을 다시 시작했으며 엔진은 계속 실행 중입니다. 옵션에서 Opus-MT(훨씬 작은 모델)를 선택하거나 다른 탭을 닫으세요.",
+  },
   "engine.unavailable": {
     title: "번역 엔진을 시작할 수 없습니다",
     hint: "페이지를 새로고침하거나 확장 프로그램을 껐다가 다시 켜세요.",
@@ -132,6 +152,13 @@ export const KO: Catalog = {
     fail: "GPU 결과가 일치하지 않아 CPU로 전환함",
     pending: "GPU 확인 중",
     skipped: "",
+  },
+  offlineState: {
+    idle: "모델은 처음 사용할 때 로드됩니다",
+    downloading: "모델 다운로드 중",
+    loading: "모델 로드 중",
+    ready: "준비됨",
+    failed: "실패",
   },
   ui: {
     appName: "Panelingo",
@@ -276,6 +303,11 @@ export const KO: Catalog = {
     cause: (cause: string): string => `세부 정보: ${cause}`,
     engineStopped: "번역 엔진이 대기 중입니다. 번역을 시작하면 실행됩니다.",
     engineUnreadable: "번역 엔진 상태를 읽을 수 없습니다.",
+    offlineHeading: "오프라인 모드(실험적)",
+    offlineHint: "AI 엔드포인트를 사용하지 않습니다. 텍스트 인식과 번역이 이 기기에서 실행됩니다.",
+    offlineDownload: (doneMb: number, totalMb: number): string =>
+      `다운로드 중 ${Math.round(doneMb)} / ${Math.round(totalMb)} MB`,
+    offlineModels: (models: string): string => `모델: ${models}`,
     detectorLine: (backend: string, state: string, canary: string): string =>
       `텍스트 감지: ${backend}, ${state}${canary === "" ? "" : `(${canary})`}`,
     queueLine: (queued: number, inFlight: number, done: number, failed: number): string =>
@@ -449,6 +481,14 @@ export const KO: Catalog = {
       "translate.maxHttpRetriesPerRequest": {
         label: "네트워크 오류 후 재시도 횟수",
         hint: "요청마다 적용되며, 일시적인 HTTP 및 네트워크 오류가 대상입니다.",
+      },
+      "translate.engine": {
+        label: "번역 엔진",
+        hint: "오프라인 모드는 실험적 기능입니다. 위의 오프라인 모드를 참고하세요.",
+      },
+      "translate.offlineModel": {
+        label: "오프라인 번역 모델",
+        hint: "오프라인 모드에서만 사용됩니다.",
       },
       "translate.splitOnRefusal": {
         label: "거부된 요청 나누기",
@@ -688,6 +728,28 @@ export const KO: Catalog = {
       keyImported: "파일에 있던 API 키를 가져왔습니다.",
       keyKept: "기존 API 키를 유지했습니다(파일에 키가 없음).",
     },
+  },
+  offline: {
+    heading: "오프라인 모드(실험적)",
+    intro:
+      "AI 엔드포인트 없이 번역합니다. 오픈소스 텍스트 인식(PaddleOCR) 모델과 번역 모델이 이 기기에서 실행됩니다. 품질은 비전 모델보다 확실히 낮습니다. 말풍선 사이의 문맥이나 등장인물 이름을 고려하지 않으며, 장식적인 글자는 자주 잘못 읽습니다. 효과음은 번역하지 않고 그대로 둡니다.",
+    download:
+      "모델은 처음 필요할 때 Hugging Face에서 한 번만 다운로드되고, 검증된 뒤 이 기기에 보관됩니다. 그 후에는 네트워크 없이 번역할 수 있습니다. 크기: 텍스트 인식은 언어당 8~17 MB, Opus-MT는 언어 쌍당 약 115 MB(영어를 거치면 두 배), NLLB-200은 약 910 MB입니다.",
+    engine: "번역 엔진",
+    engineChoices: { api: "AI 엔드포인트(OpenAI 호환)", offline: "이 기기에서 오프라인(실험적)" },
+    model: "오프라인 번역 모델",
+    modelChoices: {
+      "opus-mt": "Opus-MT: 작음, 언어 쌍마다 모델 하나",
+      "nllb-600m": "NLLB-200 600M: 모든 언어 쌍, 대용량, 비상업용",
+    },
+    pairs:
+      "Opus-MT는 한국어, 일본어, 중국어, 스페인어를 영어로, 영어를 베트남어, 스페인어, 프랑스어, 독일어, 이탈리아어, 인도네시아어로 번역합니다. 다른 조합은 영어를 거칩니다. NLLB-200은 여기 나열된 모든 언어 사이를 번역합니다.",
+    license:
+      "라이선스: PaddleOCR과 대부분의 Opus-MT 모델은 Apache-2.0, Opus-MT 모델 두 개는 CC-BY-4.0, NLLB-200은 CC-BY-NC-4.0(비상업적 용도만 허용)입니다.",
+    stored: (mb: number): string => `이 기기에 다운로드한 모델: ${Math.round(mb)} MB`,
+    deleteModels: "다운로드한 모델 삭제",
+    deleteConfirm: "다운로드한 오프라인 모델을 삭제할까요? 필요할 때 다시 다운로드됩니다.",
+    deleted: "다운로드한 모델을 삭제했습니다.",
   },
   manifest: {
     description:

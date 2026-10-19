@@ -1,7 +1,8 @@
 // Options entry: the OpenAI-compatible endpoint (preset, base URL, API key, model, parallel requests, connection
-// test), languages (interface and translation target), the site list with a per-site editor (sites-view.ts), what is
-// sent to the AI, cache clearing, settings backup and restore (transfer-view.ts), the debug log and the collapsed
-// Advanced section generated from a declarative table (advanced-view.ts). Settings go to chrome.storage.local and the
+// test), offline mode (experimental, offline-view.ts), languages (interface and translation target), the site list
+// with a per-site editor (sites-view.ts), what is sent to the AI, cache clearing, settings backup and restore
+// (transfer-view.ts), the debug log and the collapsed Advanced section generated from a declarative table
+// (advanced-view.ts). Settings go to chrome.storage.local and the
 // service worker relays them to the engine; site patches go through sw:site-set, which also re-syncs the
 // content-script registration.
 
@@ -14,7 +15,7 @@ import { TARGET_LANGUAGES } from "../../shared/languages.ts";
 import type { Settings, SiteSettings } from "../../shared/settings.ts";
 import { endpointOf, fetchApiHealth } from "../common/api-health.ts";
 import { h, replace } from "../common/dom.ts";
-import { apiBlock, errorTitle, renderStatusBlock } from "../common/status-view.ts";
+import { apiBlock, errorTitle, offlineBlock, renderStatusBlock } from "../common/status-view.ts";
 import { advancedSection } from "./advanced-view.ts";
 import {
   clearCache,
@@ -35,6 +36,7 @@ import {
   parseModel,
   presetFor,
 } from "./options-model.ts";
+import { offlineSection } from "./offline-view.ts";
 import { sitesSection } from "./sites-view.ts";
 import { downloadJson, transferSection } from "./transfer-view.ts";
 
@@ -102,6 +104,11 @@ async function main(): Promise<void> {
     if (preset.model !== "") modelInput.value = preset.model;
   });
   const refreshHealth = (endpoint = endpointOf(settings.api)): Promise<void> => {
+    // Offline mode contacts no endpoint on its own; "Test connection" still checks it on request.
+    if (settings.translate.engine === "offline") {
+      renderStatusBlock(apiStatus, msg().options.apiHeading, offlineBlock(null));
+      return Promise.resolve();
+    }
     renderStatusBlock(apiStatus, msg().options.apiHeading, apiBlock(null));
     return fetchApiHealth(endpoint)
       .then((result) => {
@@ -328,6 +335,14 @@ async function main(): Promise<void> {
     onError: logFailure,
   });
 
+  /* ---- offline mode (experimental) ---- */
+  const offline = offlineSection({
+    settings: () => settings,
+    save: saveAdvanced,
+    confirm: (text) => globalThis.confirm(text),
+    onError: logFailure,
+  });
+
   /* ---- advanced ---- */
   const advanced = advancedSection({
     settings: () => settings,
@@ -340,6 +355,7 @@ async function main(): Promise<void> {
     root,
     h("h1", null, `${msg().ui.appName} – ${msg().options.title}`),
     apiSection,
+    offline.element,
     languageSection,
     sitesView.element,
     privacySection,
@@ -371,6 +387,8 @@ async function main(): Promise<void> {
       presetSelect.value = presetFor(next.api.baseUrl)?.id ?? "";
     }
     advanced.update(next);
+    offline.update(next);
+    if (previous.translate.engine !== next.translate.engine) void refreshHealth();
     renderPrivacy();
   });
   watchSites((siteKey, site) => {

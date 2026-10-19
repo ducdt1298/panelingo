@@ -69,6 +69,26 @@ const errors: Catalog["errors"] = {
     hint: "Seçenekler'den hata ayıklama günlüğünü dışa aktarın.",
   },
   "detector.run": { title: "Metin algılama başarısız oldu", hint: "" },
+  "offline.pair_unsupported": {
+    title: "Bu dil çifti çevrimdışı kullanılamıyor",
+    hint: "Seçenekler'de çevrimdışı model olarak NLLB-200'ü veya başka bir hedef dili seçin.",
+  },
+  "offline.download": {
+    title: "Çevrimdışı modeller indirilemedi",
+    hint: "huggingface.co bağlantısını kontrol edin. Çeviri kendiliğinden yeniden denenir.",
+  },
+  "offline.model_integrity": {
+    title: "İndirilen bir çevrimdışı model bozuk",
+    hint: "Modeli yeniden indirmek için tekrar çevirin.",
+  },
+  "offline.run": {
+    title: "Çevrimdışı modeller başarısız oldu",
+    hint: "Seçenekler'den hata ayıklama günlüğünü dışa aktarın.",
+  },
+  "offline.out_of_memory": {
+    title: "Çevrimdışı modeller için yeterli bellek yok",
+    hint: "Çeviri modelleri yeniden başlatıldı, motor çalışmaya devam ediyor. Seçenekler'den Opus-MT'yi (çok daha küçük) seçin veya diğer sekmeleri kapatın.",
+  },
   "engine.unavailable": {
     title: "Çeviri motoru başlatılamadı",
     hint: "Sayfayı yenileyin ya da eklentiyi kapatıp yeniden açın.",
@@ -145,6 +165,13 @@ export const TR: Catalog = {
     fail: "GPU tutarsız sonuçlar verdi, CPU'ya geçildi",
     pending: "GPU doğrulanıyor",
     skipped: "",
+  },
+  offlineState: {
+    idle: "Modeller ilk kullanımda yüklenir",
+    downloading: "Modeller indiriliyor",
+    loading: "Modeller yükleniyor",
+    ready: "Hazır",
+    failed: "Başarısız",
   },
   ui: {
     appName: "Panelingo",
@@ -292,6 +319,11 @@ export const TR: Catalog = {
     cause: (cause: string): string => `Ayrıntılar: ${cause}`,
     engineStopped: "Motor boşta; çeviri yaptığınızda başlar.",
     engineUnreadable: "Motor durumu okunamadı.",
+    offlineHeading: "Çevrimdışı mod (deneysel)",
+    offlineHint: "Hiçbir yapay zeka uç noktası kullanılmaz: metin tanıma ve çeviri bu cihazda çalışır.",
+    offlineDownload: (doneMb: number, totalMb: number): string =>
+      `İndiriliyor: ${Math.round(totalMb)} MB içinden ${Math.round(doneMb)} MB`,
+    offlineModels: (models: string): string => `Modeller: ${models}`,
     detectorLine: (backend: string, state: string, canary: string): string =>
       `Metin algılama: ${backend}, ${state}${canary === "" ? "" : ` (${canary})`}`,
     queueLine: (queued: number, inFlight: number, done: number, failed: number): string =>
@@ -476,6 +508,14 @@ export const TR: Catalog = {
       "translate.maxHttpRetriesPerRequest": {
         label: "Ağ hatalarından sonra yeniden deneme",
         hint: "İstek başına; geçici HTTP ve ağ hataları için.",
+      },
+      "translate.engine": {
+        label: "Çeviri motoru",
+        hint: "Çevrimdışı mod deneyseldir: yukarıdaki Çevrimdışı mod bölümüne bakın.",
+      },
+      "translate.offlineModel": {
+        label: "Çevrimdışı çeviri modeli",
+        hint: "Yalnızca çevrimdışı modda kullanılır.",
       },
       "translate.splitOnRefusal": {
         label: "Reddedilen istekleri böl",
@@ -717,6 +757,31 @@ export const TR: Catalog = {
       keyImported: "Dosyadaki API anahtarı içe aktarıldı.",
       keyKept: "API anahtarınız korundu (dosyada anahtar yok).",
     },
+  },
+  offline: {
+    heading: "Çevrimdışı mod (deneysel)",
+    intro:
+      "Hiçbir yapay zeka uç noktası olmadan çevirin: açık kaynaklı metin tanıma (PaddleOCR) ve çeviri modelleri bu cihazda çalışır. Kalite bir görsel modele göre belirgin biçimde düşüktür: balonlar arasında bağlam yoktur, karakter adları bilinmez, stilize yazılar sık sık yanlış okunur ve ses efektleri çevrilmeden bırakılır.",
+    download:
+      "Modeller ilk gerektiğinde Hugging Face'ten bir kez indirilir, doğrulanır ve bu cihazda saklanır; sonrasında çeviri için ağ gerekmez. Boyutlar: metin tanıma dil başına 8 ila 17 MB, Opus-MT dil çifti başına yaklaşık 115 MB (İngilizce üzerinden iki katı), NLLB-200 yaklaşık 910 MB.",
+    engine: "Çeviri motoru",
+    engineChoices: {
+      api: "Yapay zeka uç noktası (OpenAI uyumlu)",
+      offline: "Bu cihazda çevrimdışı (deneysel)",
+    },
+    model: "Çevrimdışı çeviri modeli",
+    modelChoices: {
+      "opus-mt": "Opus-MT: küçük, her dil çifti için bir model",
+      "nllb-600m": "NLLB-200 600M: tüm çiftler, büyük, ticari olmayan",
+    },
+    pairs:
+      "Opus-MT Korece, Japonca, Çince ve İspanyolcayı İngilizceye, İngilizceyi de Vietnamca, İspanyolca, Fransızca, Almanca, İtalyanca ve Endonezceye çevirir; diğer çiftler İngilizce üzerinden gider. NLLB-200 burada listelenen tüm diller arasında çeviri yapar.",
+    license:
+      "Lisanslar: PaddleOCR ve Opus-MT modellerinin çoğu Apache-2.0, iki Opus-MT modeli CC-BY-4.0, NLLB-200 CC-BY-NC-4.0 (yalnızca ticari olmayan kullanım).",
+    stored: (mb: number): string => `Bu cihazdaki indirilmiş modeller: ${Math.round(mb)} MB`,
+    deleteModels: "İndirilen modelleri sil",
+    deleteConfirm: "İndirilen çevrimdışı modeller silinsin mi? Gerektiğinde yeniden indirilirler.",
+    deleted: "İndirilen modeller silindi.",
   },
   manifest: {
     description:

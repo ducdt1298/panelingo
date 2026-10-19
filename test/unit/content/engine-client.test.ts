@@ -716,6 +716,44 @@ test("a detected prefetch candidate (waiting) needs nothing more: it does not ke
   assert.equal(clock.nextDelay(), 5_000, "only the prefetch candidate is left: idle timer armed");
 });
 
+test("img:retry / unit:retranslate keep the port open until the image settles again, and survive a reconnect", async () => {
+  const client = makeClient({ portIdleMs: 5_000 });
+  client.submit(submitOf("A", 1));
+  client.submit(submitOf("B", 2));
+  await drive(() => client.state === "open" && engine.submits().length === 2);
+  engine.send({
+    type: "img:state",
+    imageKey: "A",
+    state: "error",
+    error: { code: "image.capture_unavailable", message: "x", retryable: true },
+  });
+  engine.send({ type: "img:done", imageKey: "B", contentKey: "s:2", counts: { ok: 1 } });
+  await flush();
+  assert.equal(clock.nextDelay(), 5_000, "both settled: idle timer armed");
+  // A capture retry: the engine works on A again, so the port must not close under it.
+  assert.equal(client.post({ type: "img:retry", imageKey: "A" }), true);
+  assert.equal(clock.nextDelay(), null, "A is pending again");
+  assert.deepEqual(engine.submits(), ["A", "B"], "the retry is not sent twice as a submit");
+  // The connection drops while the retried work runs: A is resubmitted, B is not.
+  browser.offscreen?.destroy();
+  await flush();
+  await drive(() => engine.sides.length === 2 && engine.submits().length === 1);
+  assert.deepEqual(engine.submits(), ["A"]);
+  engine.send({ type: "img:state", imageKey: "A", state: "done" });
+  await flush();
+  assert.equal(clock.nextDelay(), 5_000);
+  // A balloon re-translated from the popup does the same; a forgotten image does not come back.
+  assert.equal(client.post({ type: "unit:retranslate", imageKey: "B", unitKey: "u1" }), true);
+  assert.equal(clock.nextDelay(), null);
+  engine.send({ type: "img:done", imageKey: "B", contentKey: "s:2", counts: { ok: 1 } });
+  await flush();
+  client.forget(["A"]);
+  assert.equal(client.post({ type: "img:retry", imageKey: "A" }), true);
+  assert.equal(clock.nextDelay(), 5_000, "nothing known about A any more");
+  assert.equal(client.post({ type: "img:retry", imageKey: "never-submitted" }), true);
+  assert.equal(clock.nextDelay(), 5_000);
+});
+
 test("forget drops pending work and tells the engine; on() handlers can unsubscribe", async () => {
   const client = makeClient({ portIdleMs: 1_000 });
   const units: string[] = [];

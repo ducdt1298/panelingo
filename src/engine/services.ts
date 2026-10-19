@@ -7,6 +7,7 @@ import { createComposite } from "./composite.ts";
 import { createDecoder } from "./decode.ts";
 import { createDetector } from "./detector.ts";
 import { createHealth } from "./health-monitor.ts";
+import { createOfflineTranslator } from "./offline/translator.ts";
 import { createPipeline } from "./pipeline.ts";
 import { createChromeGfx } from "./pixels.ts";
 import { openStores } from "./store/db.ts";
@@ -23,5 +24,6 @@ export const productionFactories: ServiceFactories = {
   createComposite: (deps) => createComposite(deps),
   createUploads: (deps) => createUploads(deps),
   createTranslator: (deps) => createTranslator(deps),
+  createOfflineTranslator: (deps) => createOfflineTranslator(deps),
   createPipeline: (deps) => createPipeline(deps),
 };

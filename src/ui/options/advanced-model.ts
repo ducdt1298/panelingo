@@ -81,6 +81,8 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
   num("translate.maxLadderRequestsPerPack"),
   num("translate.maxHttpRetriesPerRequest"),
   bool("translate.splitOnRefusal"),
+  { kind: "select", path: "translate.engine", choices: ["api", "offline"] },
+  { kind: "select", path: "translate.offlineModel", choices: ["opus-mt", "nllb-600m"] },
 
   { kind: "select", path: "detector.backend", choices: ["auto", "webgpu", "wasm"] },
   num("detector.scoreMin", 0.05),
@@ -297,6 +299,12 @@ export function choiceLabel(field: SelectField, choice: string, t: Catalog): str
     return choice === "never"
       ? t.optionsAdvanced.verticalChoices.never
       : t.optionsAdvanced.verticalChoices.auto;
+  }
+  if (field.path === "translate.engine") {
+    return choice === "offline" ? t.offline.engineChoices.offline : t.offline.engineChoices.api;
+  }
+  if (field.path === "translate.offlineModel") {
+    return choice === "nllb-600m" ? t.offline.modelChoices["nllb-600m"] : t.offline.modelChoices["opus-mt"];
   }
   if (choice === "webgpu") return t.detectorBackend.webgpu;
   if (choice === "wasm") return t.detectorBackend.wasm;

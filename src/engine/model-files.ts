@@ -1,13 +1,15 @@
 // Detector model files, fetched and verified at build time and shipped in the package (docs/DEVELOPMENT.md).
 //
-// scripts/build.ts writes build-info.json = {buildId, mode, ort, models: [{file, sha256, bytes}]}. Every load checks
-// the byte length; the sha256 (crypto.subtle) is checked once per build and remembered in the models store, so later
-// engine starts of the same build skip hashing ~41 MB. Any mismatch, a missing entry or an unreadable file is
+// scripts/build.ts writes build-info.json = {buildId, mode, ort, models: [{file, sha256, bytes}], offline: [...]}
+// (offline: the offline mode catalog of shared/offline/catalog.ts, downloaded by offline/model-store.ts, never
+// shipped). Every load checks the byte length; the sha256 (crypto.subtle) is checked once per build and remembered in
+// the models store, so later engine starts of the same build skip hashing ~41 MB. Any mismatch, a missing entry or an unreadable file is
 // detector.model_integrity: the package is broken and only a rebuild fixes it (fetch-models + build).
 
 import type { Logger } from "../platform/log.ts";
 import { CtvError, errorMessage } from "../shared/errors.ts";
 import { toHex } from "../shared/ids.ts";
+import { parseOfflineFiles, type OfflineFile } from "../shared/offline/catalog.ts";
 import type { ModelIntegrityRecord } from "../shared/records.ts";
 import type { ModelStore } from "./contracts.ts";
 
@@ -26,6 +28,8 @@ export interface BuildInfo {
   /** onnxruntime-web version bundled by the build. */
   ort: string;
   models: ModelEntry[];
+  /** Offline mode models (vendor/models.lock.json "offline"): downloaded on first use, never in the package. */
+  offline?: OfflineFile[];
 }
 
 /** The part of a fetch Response this module and the detector use (extension package files). */
@@ -89,7 +93,15 @@ export function parseBuildInfo(json: unknown): BuildInfo {
     }
     return { file: m["file"], sha256: m["sha256"], bytes: m["bytes"] as number };
   });
-  return { buildId, mode: typeof mode === "string" ? mode : "", ort, models: entries };
+  const info: BuildInfo = { buildId, mode: typeof mode === "string" ? mode : "", ort, models: entries };
+  if (json["offline"] !== undefined) {
+    try {
+      info.offline = parseOfflineFiles(json["offline"]);
+    } catch (error) {
+      throw bad(errorMessage(error));
+    }
+  }
+  return info;
 }
 
 /** Lowercase hex sha256 via crypto.subtle (offscreen document and Node 24 alike). */

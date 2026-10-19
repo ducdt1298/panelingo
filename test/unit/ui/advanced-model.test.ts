@@ -48,7 +48,7 @@ const BASIC_UI: readonly string[] = [
 ];
 
 /** Settings that stay hand-edited on purpose: development and test builds only. */
-const DEV_ONLY: readonly string[] = ["privacy.devFixtureHosts"];
+const DEV_ONLY: readonly string[] = ["privacy.devFixtureHosts", "debug.offlineModelBaseUrl"];
 
 /** `setting` → Status of every table row in a part of docs/CONFIGURATION.md (between two "## " headings). */
 function documentedStatus(heading: string): Map<string, string> {

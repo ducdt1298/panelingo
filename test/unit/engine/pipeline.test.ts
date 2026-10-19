@@ -2155,3 +2155,60 @@ describe("look-ahead and screen captures", () => {
     assert.equal(plain.of("img:units", "1.0")[0]?.lowRes, undefined);
   });
 });
+
+describe("offline mode (experimental)", () => {
+  test("neither the privacy notice nor a sendable API holds packs: nothing is uploaded", async () => {
+    const h = harness({ ack: false, readiness: "unreachable" });
+    h.settings.value.translate.engine = "offline";
+    const frame = new FakeFrame(1);
+    h.pipeline.submit(frame, submitOf("1.0", h.image("p1", 2)));
+    await settle();
+    assert.equal(h.translator.calls.length, 1);
+    assert.equal(frame.lastState("1.0")?.state, "done");
+    assert.equal(h.pipeline.queueStatus().pausedBy, null);
+    h.settings.update((s) => {
+      s.translate.engine = "api";
+    });
+    h.pipeline.submit(frame, submitOf("2.0", h.image("p2", 1)));
+    await settle();
+    assert.equal(frame.lastState("2.0")?.error?.code, "privacy.consent", "API mode keeps its gates");
+  });
+
+  test("stored translations count only for the engine (and offline model) that wrote them", async () => {
+    const h = harness();
+    h.settings.value.translate.engine = "offline";
+    h.settings.value.translate.offlineModel = "opus-mt";
+    const frame = new FakeFrame(1);
+    const src = h.cache("t1", 4, (key) =>
+      key === "k0"
+        ? { model: "offline:opus-mt-ko-en" }
+        : key === "k1"
+          ? { model: "offline:nllb-200-distilled-600m" }
+          : key === "k2"
+            ? { manualTranslation: "Mine", manual: 1, status: "manual" }
+            : {},
+    );
+    h.pipeline.submit(frame, submitOf("1.0", src));
+    await settle();
+    assert.deepEqual(
+      h.translator.calls.map((c) => c.keys),
+      [["k1", "k3"]],
+      "the NLLB and the API records are redone; the Opus-MT one and the manual edit stay",
+    );
+  });
+
+  test("switching the engine drops idle translations held in memory", async () => {
+    const h = harness();
+    const frame = new FakeFrame(1);
+    const request = submitOf("1.0", h.image("a", 1));
+    h.pipeline.submit(frame, request);
+    await settle();
+    h.pipeline.submit(frame, request);
+    await settle();
+    assert.equal(h.translator.calls.length, 1, "replayed from memory");
+    h.settings.value.translate.engine = "offline";
+    h.pipeline.submit(frame, { ...request, force: true });
+    await settle();
+    assert.equal(h.translator.calls.length, 2, "the other engine translates again");
+  });
+});

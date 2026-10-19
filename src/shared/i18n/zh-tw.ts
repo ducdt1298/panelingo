@@ -56,6 +56,17 @@ const errors: Catalog["errors"] = {
   },
   "detector.init": { title: "無法啟動文字偵測", hint: "請從選項匯出偵錯記錄。" },
   "detector.run": { title: "文字偵測失敗", hint: "" },
+  "offline.pair_unsupported": {
+    title: "離線模式不支援此語言組合",
+    hint: "請在選項中將離線模型改為 NLLB-200，或選擇其他目標語言。",
+  },
+  "offline.download": { title: "無法下載離線模型", hint: "請檢查與 huggingface.co 的連線。翻譯會自動重試。" },
+  "offline.model_integrity": { title: "已下載的離線模型已損毀", hint: "再次翻譯即可重新下載。" },
+  "offline.run": { title: "離線模型執行失敗", hint: "請從選項匯出偵錯記錄。" },
+  "offline.out_of_memory": {
+    title: "離線模型的記憶體不足",
+    hint: "翻譯模型已重新啟動，引擎仍在執行。請在選項中選擇 Opus-MT（小得多），或關閉其他分頁。",
+  },
   "engine.unavailable": {
     title: "無法啟動翻譯引擎",
     hint: "請重新載入網頁，或將擴充功能關閉後再重新開啟。",
@@ -129,6 +140,13 @@ export const ZH_TW: Catalog = {
     fail: "GPU 結果不一致，已切換至 CPU",
     pending: "正在驗證 GPU",
     skipped: "",
+  },
+  offlineState: {
+    idle: "模型會在第一次使用時載入",
+    downloading: "正在下載模型",
+    loading: "正在載入模型",
+    ready: "就緒",
+    failed: "失敗",
   },
   ui: {
     appName: "Panelingo",
@@ -272,6 +290,11 @@ export const ZH_TW: Catalog = {
     cause: (cause: string): string => `詳細資訊：${cause}`,
     engineStopped: "引擎目前閒置，開始翻譯時會自動啟動。",
     engineUnreadable: "無法讀取引擎狀態。",
+    offlineHeading: "離線模式（實驗性）",
+    offlineHint: "不使用任何 AI 端點：文字辨識與翻譯都在這部裝置上執行。",
+    offlineDownload: (doneMb: number, totalMb: number): string =>
+      `正在下載 ${Math.round(doneMb)} / ${Math.round(totalMb)} MB`,
+    offlineModels: (models: string): string => `模型：${models}`,
     detectorLine: (backend: string, state: string, canary: string): string =>
       `文字偵測：${backend}，${state}${canary === "" ? "" : `（${canary}）`}`,
     queueLine: (queued: number, inFlight: number, done: number, failed: number): string =>
@@ -438,6 +461,14 @@ export const ZH_TW: Catalog = {
       "translate.maxHttpRetriesPerRequest": {
         label: "網路錯誤後的重試次數",
         hint: "以每個請求計，適用於暫時性的 HTTP 和網路錯誤。",
+      },
+      "translate.engine": {
+        label: "翻譯引擎",
+        hint: "離線模式為實驗性功能：請參閱上方的「離線模式」。",
+      },
+      "translate.offlineModel": {
+        label: "離線翻譯模型",
+        hint: "僅在離線模式下使用。",
       },
       "translate.splitOnRefusal": {
         label: "分割遭拒的請求",
@@ -674,6 +705,28 @@ export const ZH_TW: Catalog = {
       keyImported: "已匯入檔案中的 API 金鑰。",
       keyKept: "已保留你的 API 金鑰（檔案中沒有金鑰）。",
     },
+  },
+  offline: {
+    heading: "離線模式（實驗性）",
+    intro:
+      "不需任何 AI 端點即可翻譯：開源的文字辨識（PaddleOCR）與翻譯模型在這部裝置上執行。品質明顯低於視覺模型：不考慮對話框之間的上下文，不認得角色名字，美術字常辨識錯誤，狀聲詞則保留原樣不翻譯。",
+    download:
+      "模型會在第一次需要時從 Hugging Face 下載一次，經驗證後保存在這部裝置上；之後翻譯不需要網路。大小：文字辨識每種語言 8 到 17 MB，Opus-MT 每個語言組合約 115 MB（經英文轉譯時為兩倍），NLLB-200 約 910 MB。",
+    engine: "翻譯引擎",
+    engineChoices: { api: "AI 端點（相容 OpenAI）", offline: "在這部裝置上離線翻譯（實驗性）" },
+    model: "離線翻譯模型",
+    modelChoices: {
+      "opus-mt": "Opus-MT：體積小，每個語言組合一個模型",
+      "nllb-600m": "NLLB-200 600M：支援所有語言組合，體積大，僅限非商業用途",
+    },
+    pairs:
+      "Opus-MT 可將韓文、日文、中文和西班牙文譯成英文，並將英文譯成越南文、西班牙文、法文、德文、義大利文和印尼文；其他語言組合經英文轉譯。NLLB-200 可在此處列出的所有語言之間互譯。",
+    license:
+      "授權：PaddleOCR 和大多數 Opus-MT 模型為 Apache-2.0，兩個 Opus-MT 模型為 CC-BY-4.0，NLLB-200 為 CC-BY-NC-4.0（僅限非商業用途）。",
+    stored: (mb: number): string => `這部裝置上已下載的模型：${Math.round(mb)} MB`,
+    deleteModels: "刪除已下載的模型",
+    deleteConfirm: "要刪除已下載的離線模型嗎？需要時會重新下載。",
+    deleted: "已刪除下載的模型。",
   },
   manifest: {
     description: "邊看邊翻譯漫畫、日漫和條漫，譯文直接顯示在原圖上，支援任何相容 OpenAI 的 AI。",

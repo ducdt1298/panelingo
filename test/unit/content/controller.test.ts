@@ -1096,6 +1096,22 @@ test("a capture that could not run is retried once the image is on screen and th
   assert.equal(summaries.at(-1)?.errors["B"], "image.capture_blocked");
 });
 
+test("a capture retry after the port went idle is a new submit (it reconnects; the engine restarts the image)", async () => {
+  discovery.add("A", 0.2);
+  make("auto").start();
+  await idle();
+  assert.equal(client.submits.length, 1);
+  client.setState("idle"); // nothing pending for 5 s: the port closed
+  discovery.visible.add("A");
+  client.emit(waitingState("A", "error", { code: "image.capture_unavailable", detail: "offscreen" }));
+  timers.advance(1_300);
+  await idle();
+  assert.equal(client.postsOf("img:retry").length, 1, "tried first");
+  assert.equal(client.submits.length, 2, "then submitted again");
+  assert.equal(client.submits[1]?.imageKey, "A");
+  assert.equal(client.submits[1]?.force, undefined, "not a forced re-translation");
+});
+
 test("img:units from a screen capture marks the image lowRes; cap:done is handled", async () => {
   discovery.add("A", 0.2);
   make("auto").start();

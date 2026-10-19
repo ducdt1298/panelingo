@@ -77,6 +77,26 @@ const errors: Catalog["errors"] = {
     hint: "Exportieren Sie das Debug-Protokoll in den Optionen.",
   },
   "detector.run": { title: "Texterkennung fehlgeschlagen", hint: "" },
+  "offline.pair_unsupported": {
+    title: "Dieses Sprachpaar ist offline nicht verfügbar",
+    hint: "Wählen Sie in den Optionen NLLB-200 als Offline-Modell oder eine andere Zielsprache.",
+  },
+  "offline.download": {
+    title: "Die Offline-Modelle konnten nicht heruntergeladen werden",
+    hint: "Prüfen Sie die Verbindung zu huggingface.co. Die Übersetzung wird automatisch erneut versucht.",
+  },
+  "offline.model_integrity": {
+    title: "Ein heruntergeladenes Offline-Modell ist beschädigt",
+    hint: "Übersetzen Sie erneut, um es noch einmal herunterzuladen.",
+  },
+  "offline.run": {
+    title: "Die Offline-Modelle sind fehlgeschlagen",
+    hint: "Exportieren Sie das Debug-Protokoll in den Optionen.",
+  },
+  "offline.out_of_memory": {
+    title: "Nicht genug Speicher für die Offline-Modelle",
+    hint: "Die Übersetzungsmodelle wurden neu gestartet, die Engine läuft weiter. Wählen Sie in den Optionen Opus-MT (viel kleiner) oder schließen Sie andere Tabs.",
+  },
   "engine.unavailable": {
     title: "Die Übersetzungs-Engine konnte nicht gestartet werden",
     hint: "Laden Sie die Seite neu oder deaktivieren und aktivieren Sie die Erweiterung erneut.",
@@ -164,6 +184,13 @@ export const DE: Catalog = {
     fail: "GPU-Ergebnisse widersprüchlich, auf CPU umgestellt",
     pending: "GPU wird geprüft",
     skipped: "",
+  },
+  offlineState: {
+    idle: "Modelle werden bei der ersten Verwendung geladen",
+    downloading: "Modelle werden heruntergeladen",
+    loading: "Modelle werden geladen",
+    ready: "Bereit",
+    failed: "Fehlgeschlagen",
   },
   ui: {
     appName: "Panelingo",
@@ -313,6 +340,11 @@ export const DE: Catalog = {
     cause: (cause: string): string => `Details: ${cause}`,
     engineStopped: "Die Engine ruht; sie startet, sobald Sie übersetzen.",
     engineUnreadable: "Engine-Status konnte nicht gelesen werden.",
+    offlineHeading: "Offline-Modus (experimentell)",
+    offlineHint: "Es wird kein KI-Endpunkt verwendet: Texterkennung und Übersetzung laufen auf diesem Gerät.",
+    offlineDownload: (doneMb: number, totalMb: number): string =>
+      `Herunterladen: ${Math.round(doneMb)} von ${Math.round(totalMb)} MB`,
+    offlineModels: (models: string): string => `Modelle: ${models}`,
     detectorLine: (backend: string, state: string, canary: string): string =>
       `Texterkennung: ${backend}, ${state}${canary === "" ? "" : ` (${canary})`}`,
     queueLine: (queued: number, inFlight: number, done: number, failed: number): string =>
@@ -506,6 +538,14 @@ export const DE: Catalog = {
       "translate.maxHttpRetriesPerRequest": {
         label: "Wiederholungen nach Netzwerkfehlern",
         hint: "Pro Anfrage, bei vorübergehenden HTTP- und Netzwerkfehlern.",
+      },
+      "translate.engine": {
+        label: "Übersetzungs-Engine",
+        hint: "Der Offline-Modus ist experimentell: siehe Offline-Modus oben.",
+      },
+      "translate.offlineModel": {
+        label: "Offline-Übersetzungsmodell",
+        hint: "Wird nur im Offline-Modus verwendet.",
       },
       "translate.splitOnRefusal": {
         label: "Abgelehnte Anfragen aufteilen",
@@ -749,6 +789,32 @@ export const DE: Catalog = {
       keyImported: "Der API-Schlüssel aus der Datei wurde importiert.",
       keyKept: "Ihr API-Schlüssel wurde beibehalten (die Datei enthält keinen).",
     },
+  },
+  offline: {
+    heading: "Offline-Modus (experimentell)",
+    intro:
+      "Übersetzen ohne KI-Endpunkt: Open-Source-Modelle für Texterkennung (PaddleOCR) und Übersetzung laufen auf diesem Gerät. Die Qualität ist deutlich geringer als mit einem Vision-Modell: kein Kontext zwischen Sprechblasen, keine Figurennamen, stilisierte Schrift wird oft falsch gelesen, und Soundeffekte bleiben unübersetzt.",
+    download:
+      "Die Modelle werden bei Bedarf einmalig von Hugging Face heruntergeladen, geprüft und auf diesem Gerät gespeichert; danach braucht die Übersetzung kein Netzwerk. Größen: Texterkennung 8 bis 17 MB pro Sprache, Opus-MT etwa 115 MB pro Sprachpaar (doppelt so viel über Englisch), NLLB-200 etwa 910 MB.",
+    engine: "Übersetzungs-Engine",
+    engineChoices: {
+      api: "KI-Endpunkt (OpenAI-kompatibel)",
+      offline: "Offline auf diesem Gerät (experimentell)",
+    },
+    model: "Offline-Übersetzungsmodell",
+    modelChoices: {
+      "opus-mt": "Opus-MT: klein, ein Modell pro Sprachpaar",
+      "nllb-600m": "NLLB-200 600M: alle Paare, groß, nicht kommerziell",
+    },
+    pairs:
+      "Opus-MT übersetzt Koreanisch, Japanisch, Chinesisch und Spanisch ins Englische sowie Englisch ins Vietnamesische, Spanische, Französische, Deutsche, Italienische und Indonesische; andere Paare laufen über Englisch. NLLB-200 übersetzt zwischen allen hier aufgeführten Sprachen.",
+    license:
+      "Lizenzen: PaddleOCR und die meisten Opus-MT-Modelle Apache-2.0, zwei Opus-MT-Modelle CC-BY-4.0, NLLB-200 CC-BY-NC-4.0 (nur nicht kommerzielle Nutzung).",
+    stored: (mb: number): string => `Heruntergeladene Modelle auf diesem Gerät: ${Math.round(mb)} MB`,
+    deleteModels: "Heruntergeladene Modelle löschen",
+    deleteConfirm:
+      "Die heruntergeladenen Offline-Modelle löschen? Sie werden bei Bedarf erneut heruntergeladen.",
+    deleted: "Die heruntergeladenen Modelle wurden gelöscht.",
   },
   manifest: {
     description:

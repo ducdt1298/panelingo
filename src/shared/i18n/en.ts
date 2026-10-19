@@ -3,7 +3,14 @@
 // missing keys fall back to this catalog.
 
 import type { ErrorCode } from "../errors.ts";
-import type { ApiReadiness, EnginePhase, EngineStatus, ImageState, UnitStatus } from "../types.ts";
+import type {
+  ApiReadiness,
+  EnginePhase,
+  EngineStatus,
+  ImageState,
+  OfflineStatus,
+  UnitStatus,
+} from "../types.ts";
 
 export interface ErrorText {
   /** Short text for a badge or banner. */
@@ -73,6 +80,23 @@ const errors: Record<ErrorCode, ErrorText> = {
   },
   "detector.init": { title: "Could not start text detection", hint: "Export the debug log from Options." },
   "detector.run": { title: "Text detection failed", hint: "" },
+  "offline.pair_unsupported": {
+    title: "This language pair is not available offline",
+    hint: "Choose NLLB-200 as the offline model in Options, or another target language.",
+  },
+  "offline.download": {
+    title: "Could not download the offline models",
+    hint: "Check the connection to huggingface.co. Translation retries on its own.",
+  },
+  "offline.model_integrity": {
+    title: "A downloaded offline model is damaged",
+    hint: "Translate again to download it once more.",
+  },
+  "offline.run": { title: "The offline models failed", hint: "Export the debug log from Options." },
+  "offline.out_of_memory": {
+    title: "Not enough memory for the offline models",
+    hint: "The translation models were restarted; the engine keeps running. Choose Opus-MT (much smaller) in Options, or close other tabs.",
+  },
   "engine.unavailable": {
     title: "Could not start the translation engine",
     hint: "Reload the page, or turn the extension off and on again.",
@@ -161,6 +185,14 @@ const detectorCanary: Record<DetectorStatus["canary"], string> = {
   skipped: "",
 };
 
+const offlineState: Record<OfflineStatus["state"], string> = {
+  idle: "Models load on first use",
+  downloading: "Downloading models",
+  loading: "Loading models",
+  ready: "Ready",
+  failed: "Failed",
+};
+
 export const EN = {
   errors,
   readiness,
@@ -170,6 +202,7 @@ export const EN = {
   detectorBackend,
   detectorState,
   detectorCanary,
+  offlineState,
   ui: {
     appName: "Panelingo",
     siteEnable: "Translate this site",
@@ -317,6 +350,11 @@ export const EN = {
     cause: (cause: string): string => `Details: ${cause}`,
     engineStopped: "The engine is idle; it starts when you translate.",
     engineUnreadable: "Could not read the engine status.",
+    offlineHeading: "Offline mode (experimental)",
+    offlineHint: "No AI endpoint is used: text recognition and translation run on this device.",
+    offlineDownload: (doneMb: number, totalMb: number): string =>
+      `Downloading ${Math.round(doneMb)} of ${Math.round(totalMb)} MB`,
+    offlineModels: (models: string): string => `Models: ${models}`,
     detectorLine: (backend: string, state: string, canary: string): string =>
       `Text detection: ${backend}, ${state}${canary === "" ? "" : ` (${canary})`}`,
     queueLine: (queued: number, inFlight: number, done: number, failed: number): string =>
@@ -498,6 +536,14 @@ export const EN = {
       "translate.maxHttpRetriesPerRequest": {
         label: "Retries after network errors",
         hint: "Per request, for temporary HTTP and network failures.",
+      },
+      "translate.engine": {
+        label: "Translation engine",
+        hint: "Offline mode is experimental: see Offline mode above.",
+      },
+      "translate.offlineModel": {
+        label: "Offline translation model",
+        hint: "Used in offline mode only.",
       },
       "translate.splitOnRefusal": {
         label: "Split refused requests",
@@ -739,6 +785,39 @@ export const EN = {
       keyImported: "The API key from the file was imported.",
       keyKept: "Your API key was kept (the file has none).",
     },
+  },
+  /** Options page: offline mode (experimental). */
+  offline: {
+    heading: "Offline mode (experimental)",
+    intro:
+      "Translate without any AI endpoint: open-source text recognition (PaddleOCR) and translation models run on " +
+      "this device. Quality is clearly lower than with a vision model: no context between bubbles, no character " +
+      "names, stylized lettering is often misread, and sound effects are left untranslated.",
+    download:
+      "The models are downloaded once from Hugging Face when first needed, checked, and kept on this device; after " +
+      "that, translation needs no network. Sizes: text recognition 8 to 17 MB per language, Opus-MT about 115 MB " +
+      "per language pair (twice that through English), NLLB-200 about 910 MB.",
+    engine: "Translation engine",
+    engineChoices: {
+      api: "AI endpoint (OpenAI-compatible)",
+      offline: "Offline on this device (experimental)",
+    },
+    model: "Offline translation model",
+    modelChoices: {
+      "opus-mt": "Opus-MT: small, one model per language pair",
+      "nllb-600m": "NLLB-200 600M: every pair, large, non-commercial",
+    },
+    pairs:
+      "Opus-MT translates Korean, Japanese, Chinese and Spanish into English, and English into Vietnamese, Spanish, " +
+      "French, German, Italian and Indonesian; other pairs go through English. NLLB-200 translates between all the " +
+      "languages listed here.",
+    license:
+      "Licences: PaddleOCR and most Opus-MT models Apache-2.0, two Opus-MT models CC-BY-4.0, NLLB-200 " +
+      "CC-BY-NC-4.0 (non-commercial use only).",
+    stored: (mb: number): string => `Downloaded models on this device: ${Math.round(mb)} MB`,
+    deleteModels: "Delete the downloaded models",
+    deleteConfirm: "Delete the downloaded offline models? They are downloaded again when needed.",
+    deleted: "The downloaded models were deleted.",
   },
   manifest: {
     description:

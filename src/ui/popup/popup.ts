@@ -1,6 +1,8 @@
 // Popup entry, top to bottom: (1) the AI endpoint's readiness from the popup's own GET /models, so it shows without
-// the engine; (2) engine status, only when the engine already runs; (3) this site: opt-in (the first enable goes
-// through the privacy notice), mode and quick actions; (4) today's upload counter. Rendering never starts the engine.
+// the engine (in offline mode: the offline engine's state instead, and no request to the endpoint); (2) engine
+// status, only when the engine already runs; (3) this site: opt-in (the first enable goes through the privacy
+// notice), mode and quick actions; (4) today's upload counter (not in offline mode). Rendering never starts the
+// engine.
 
 import { createLogger } from "../../platform/log.ts";
 import { callEngine } from "../../platform/messaging.ts";
@@ -18,6 +20,7 @@ import {
   apiBlock,
   engineBlock,
   errorTitle,
+  offlineBlock,
   renderStatusBlock,
   uploadsLine,
   type EngineState,
@@ -74,13 +77,32 @@ async function main(): Promise<void> {
   };
   const tabId = tab?.id ?? null;
 
+  const offlineMode = (): boolean => state.settings.translate.engine === "offline";
   const renderApi = (): void => {
+    if (offlineMode()) {
+      // No endpoint is used (or checked) in offline mode: show the offline engine instead.
+      renderStatusBlock(
+        view.api,
+        msg().popup.offlineHeading,
+        offlineBlock(state.engine?.status?.offline ?? null),
+      );
+      return;
+    }
     const block = apiBlock(state.health?.reading ?? null, state.settings.api.baseUrl);
     renderStatusBlock(view.api, msg().popup.apiHeading, block);
   };
+  const checkApi = (): void => {
+    if (offlineMode()) return;
+    void fetchApiHealth(endpointOf(state.settings.api)).then((result) => {
+      state.health = result;
+      renderApi();
+    });
+  };
   const renderEngine = (): void => {
+    if (offlineMode()) renderApi();
     renderStatusBlock(view.engine, msg().popup.engineHeading, engineBlock(state.engine));
-    const line = uploadsLine(state.engine?.status ?? null);
+    // Nothing is uploaded in offline mode: no "sent to the AI today" line.
+    const line = offlineMode() ? null : uploadsLine(state.engine?.status ?? null);
     replace(view.uploads, line ?? "");
     view.uploads.hidden = line === null;
     renderSite();
@@ -288,7 +310,12 @@ async function main(): Promise<void> {
   renderEngine();
 
   watchSettings((settings) => {
+    const engineChanged = settings.translate.engine !== state.settings.translate.engine;
     state.settings = settings;
+    if (engineChanged) {
+      renderApi();
+      checkApi();
+    }
     renderSite();
   });
   watchSites((siteKey, site) => {
@@ -299,10 +326,7 @@ async function main(): Promise<void> {
     renderSite();
   });
 
-  void fetchApiHealth(endpointOf(state.settings.api)).then((result) => {
-    state.health = result;
-    renderApi();
-  });
+  checkApi();
 
   if (!(await engineRunning())) {
     state.engine = { exists: false, status: null };
