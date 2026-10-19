@@ -517,6 +517,14 @@ export const EN = {
         label: "Text areas per request",
         hint: "Leave empty to use the model's profile (12, 16 or 20).",
       },
+      "translate.packWaitMs": {
+        label: "Wait to group images (ms)",
+        hint: "How long the text of one image waits for the next images of the page so they share one request. 0 sends each image at once.",
+      },
+      "translate.urgentPackMax": {
+        label: "Balloons in the first on-screen request",
+        hint: "The first request of an image on screen holds at most this many balloons, so they appear sooner. 0 = no separate limit.",
+      },
       "translate.jpegQuality": {
         label: "JPEG quality",
         hint: "Quality of the composite image sent to the AI.",

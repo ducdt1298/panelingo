@@ -476,6 +476,14 @@ export const ID: Catalog = {
         label: "Area teks per permintaan",
         hint: "Kosongkan untuk memakai profil model (12, 16, atau 20).",
       },
+      "translate.packWaitMs": {
+        label: "Jeda untuk mengelompokkan gambar (ms)",
+        hint: "Berapa lama teks satu gambar menunggu gambar berikutnya di halaman agar berbagi satu permintaan. 0 mengirim setiap gambar langsung.",
+      },
+      "translate.urgentPackMax": {
+        label: "Balon pada permintaan pertama di layar",
+        hint: "Permintaan pertama gambar yang tampil berisi paling banyak sejumlah balon ini agar muncul lebih cepat. 0 = tanpa batas tersendiri.",
+      },
       "translate.jpegQuality": {
         label: "Kualitas JPEG",
         hint: "Kualitas gambar gabungan yang dikirim ke AI.",

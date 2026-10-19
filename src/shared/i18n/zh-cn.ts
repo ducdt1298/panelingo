@@ -442,6 +442,14 @@ export const ZH_CN: Catalog = {
         label: "每次请求的文字区域数",
         hint: "留空则使用模型配置（12、16 或 20）。",
       },
+      "translate.packWaitMs": {
+        label: "合并图片的等待时间 (ms)",
+        hint: "一张图片的文字等待页面中后续图片以合并为一次请求的时长。0 表示每张图片立即发送。",
+      },
+      "translate.urgentPackMax": {
+        label: "屏幕上首个请求的气泡数",
+        hint: "屏幕上图片的首个请求最多包含这么多气泡，以便更快显示。0 = 不单独限制。",
+      },
       "translate.jpegQuality": {
         label: "JPEG 质量",
         hint: "发送给 AI 的合成图片的质量。",

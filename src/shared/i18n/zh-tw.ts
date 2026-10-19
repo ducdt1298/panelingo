@@ -442,6 +442,14 @@ export const ZH_TW: Catalog = {
         label: "每次請求的文字區域數",
         hint: "留空則依模型設定檔決定（12、16 或 20）。",
       },
+      "translate.packWaitMs": {
+        label: "合併圖片的等待時間 (ms)",
+        hint: "一張圖片的文字等待頁面中後續圖片以合併為一次請求的時間。0 表示每張圖片立即送出。",
+      },
+      "translate.urgentPackMax": {
+        label: "畫面上首個請求的對話框數",
+        hint: "畫面上圖片的首個請求最多包含這麼多對話框，以便更快顯示。0 = 不另外限制。",
+      },
       "translate.jpegQuality": {
         label: "JPEG 品質",
         hint: "傳送給 AI 的合成圖片品質。",

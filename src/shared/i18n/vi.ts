@@ -466,6 +466,14 @@ export const VI: Catalog = {
         label: "Số vùng chữ mỗi yêu cầu",
         hint: "Để trống để dùng theo cấu hình của model (12, 16 hoặc 20).",
       },
+      "translate.packWaitMs": {
+        label: "Thời gian chờ gom ảnh (ms)",
+        hint: "Chữ của một ảnh chờ các ảnh kế tiếp của trang bao lâu để gửi chung một yêu cầu. 0 = gửi từng ảnh ngay.",
+      },
+      "translate.urgentPackMax": {
+        label: "Số bóng thoại trong yêu cầu đầu tiên trên màn hình",
+        hint: "Yêu cầu đầu tiên của ảnh đang hiển thị chứa tối đa chừng này bóng thoại để hiện sớm hơn. 0 = không giới hạn riêng.",
+      },
       "translate.jpegQuality": {
         label: "Chất lượng JPEG",
         hint: "Chất lượng của ảnh ghép gửi tới AI.",

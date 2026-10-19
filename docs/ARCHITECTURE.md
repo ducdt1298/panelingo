@@ -281,8 +281,25 @@ and drawn by the content script.
 ### 8. Packing and lanes
 
 Units are packed into requests of at most `boxBudget` units each, and a unit is never split. The budget comes from
-`translate.boxBudget` if set, otherwise from the model profile. The first pack of an on-screen image is capped at 4
-units so it comes back quickly.
+`translate.boxBudget` if set, otherwise from the model profile. The first pack of an on-screen image is capped at
+`translate.urgentPackMax` units (8) so it comes back quickly.
+
+A request is not tied to one image. Each model call pays the model's time to first token, so the pipeline groups
+consecutive images of one frame (same source language and reading direction) into shared requests:
+
+- **Gathering.** An image whose text is ready joins its frame's gather. The gather leaves when it holds a full
+  request, when one of its images is on screen and no other image of the frame is still being acquired, decoded or
+  detected, or after `translate.packWaitMs` (500 ms) for images on screen and 8× that (at most 5 s) for images ahead
+  of the reader. Coming on screen, an image's gather leaves at once.
+- **Late binding.** When a lane frees up, packs of the same frame still queued behind the one being sent join it,
+  as long as the request stays within `boxBudget` and its composite still lays out.
+- **Composites.** Paged images appear as page thumbnails, at most two per composite; webtoon strips appear as bands
+  around their balloons, so one request can cover several strips. Results stream back to the image each unit
+  belongs to; states, cache records, the transcript and the retry ladder stay per image.
+- `translate.packWaitMs` 0 turns grouping off: every image gets its own requests.
+
+On the fixture chapter `chapter-ko-60` (60 strips, 87 balloons, a mock model with 8 s to the first token) this cut the
+number of requests from 29 to 17.
 
 The request queue has `api.concurrency` normal lanes plus one urgent lane for on-screen images (`api.urgentLane`). It
 never has more than `api.maxInFlight` requests in flight. Model profiles (`src/shared/core/model-profile.ts`) are chosen

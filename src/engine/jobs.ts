@@ -245,6 +245,8 @@ export interface ContentWork {
   readonly packs: Set<WorkPack>;
   /** Passes still waiting for the decoded image before their packs exist. */
   preparing: number;
+  /** Batches of its units waiting to share a request with the next images of the page (pipeline gathering). */
+  gathering: number;
   /** img:done went out for the latest pass. */
   settled: boolean;
   /** Last pack or pass failure; cleared when a pass starts. */
@@ -271,6 +273,7 @@ export function newWork(contentKey: string, now: number): ContentWork {
     decoding: null,
     packs: new Set(),
     preparing: 0,
+    gathering: 0,
     settled: false,
     error: null,
     record: null,
@@ -298,7 +301,7 @@ export function setUnits(
 
 /** Something is outstanding: a pass preparing, or packs queued or in flight. */
 export function workActive(work: ContentWork): boolean {
-  return work.packs.size > 0 || work.preparing > 0;
+  return work.packs.size > 0 || work.preparing > 0 || work.gathering > 0;
 }
 
 export function progressOf(work: ContentWork): { done: number; total: number } {

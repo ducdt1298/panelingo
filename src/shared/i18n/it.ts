@@ -515,6 +515,14 @@ export const IT: Catalog = {
         label: "Aree di testo per richiesta",
         hint: "Lascia vuoto per usare il profilo del modello (12, 16 o 20).",
       },
+      "translate.packWaitMs": {
+        label: "Attesa per raggruppare le immagini (ms)",
+        hint: "Quanto il testo di un'immagine aspetta le immagini successive della pagina per condividere una richiesta. 0 invia subito ogni immagine.",
+      },
+      "translate.urgentPackMax": {
+        label: "Fumetti nella prima richiesta sullo schermo",
+        hint: "La prima richiesta di un'immagine sullo schermo contiene al massimo questi fumetti, così compaiono prima. 0 = nessun limite separato.",
+      },
       "translate.jpegQuality": {
         label: "Qualità JPEG",
         hint: "Qualità dell'immagine composita inviata all'IA.",

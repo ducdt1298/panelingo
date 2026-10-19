@@ -69,6 +69,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Fewer, fuller AI requests.** Requests are no longer one per image: consecutive images of a page share requests
+  (gathered while their text becomes ready, and merged again when a lane frees up), so a webtoon chapter makes far
+  fewer calls (29 → 17 on a 60-strip fixture chapter). The first request of an on-screen image now holds up to 8
+  balloons instead of 4. New settings `translate.packWaitMs` (500 ms, 0 = one request per image as before) and
+  `translate.urgentPackMax` (8).
 - Retention and "Clear the whole cache" also drop unconfirmed glossary suggestions; manual edits, series settings,
   chapter summaries and the glossary entries in use are kept.
 - `PROMPT_VERSION` is 2: requests now carry series context.

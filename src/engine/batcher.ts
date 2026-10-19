@@ -1,6 +1,7 @@
 // Turns translation units into packs, one request each, on top of core/packing.ts (even packs of at most boxBudget
-// units in reading order, never a split unit, shrunk until the composite lays out). A pack holds the units of one
-// image. The planner is a seam for packing consecutive images of one frame and chapter, which is not implemented.
+// units in reading order, never a split unit, shrunk until the composite lays out). The units may come from several
+// consecutive images of one frame (the pipeline gathers them), in document order then reading order; the composite
+// layout shows each image as a page thumbnail or a webtoon band.
 
 import type { ModelProfileLike } from "../shared/core/composite-layout.ts";
 import { layoutPack, packUnits } from "../shared/core/packing.ts";
@@ -8,13 +9,10 @@ import { pagePos } from "../shared/ids.ts";
 import type { ReadingDir, Script, Size, UnitGeometry } from "../shared/types.ts";
 import type { PackUnit } from "./contracts.ts";
 
-/** A pack whose head image is on screen holds at most 4 units: streaming is bursty, so on-screen bubbles come first. */
-export const URGENT_PACK_MAX = 4;
-
 export interface PackPolicy {
   /** Units per request (core/packing resolveBoxBudget). */
   boxBudget: number;
-  /** Cap on the first pack when its head image is on screen (URGENT_PACK_MAX), or null. */
+  /** Cap on the first pack when its head image is on screen (settings.translate.urgentPackMax), or null. */
   urgentMax: number | null;
   /** Every pack must lay out on this profile's canvases (full mode); omit for budget-only packing. */
   layout?: { profile: ModelProfileLike; dir: ReadingDir };

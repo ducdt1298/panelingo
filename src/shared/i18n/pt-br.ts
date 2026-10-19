@@ -494,6 +494,14 @@ export const PT_BR: Catalog = {
         label: "Áreas de texto por solicitação",
         hint: "Deixe em branco para usar o perfil do modelo (12, 16 ou 20).",
       },
+      "translate.packWaitMs": {
+        label: "Espera para agrupar imagens (ms)",
+        hint: "Quanto o texto de uma imagem espera as próximas imagens da página para compartilhar uma solicitação. 0 envia cada imagem na hora.",
+      },
+      "translate.urgentPackMax": {
+        label: "Balões na primeira solicitação na tela",
+        hint: "A primeira solicitação de uma imagem na tela leva no máximo esta quantidade de balões, para que apareçam antes. 0 = sem limite próprio.",
+      },
       "translate.jpegQuality": {
         label: "Qualidade JPEG",
         hint: "Qualidade da imagem composta enviada para a IA.",

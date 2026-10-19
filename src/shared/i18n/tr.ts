@@ -489,6 +489,14 @@ export const TR: Catalog = {
         label: "İstek başına metin alanı",
         hint: "Modelin profilini (12, 16 veya 20) kullanmak için boş bırakın.",
       },
+      "translate.packWaitMs": {
+        label: "Görselleri gruplama beklemesi (ms)",
+        hint: "Bir görselin metninin, aynı isteği paylaşmak için sayfanın sonraki görsellerini ne kadar beklediği. 0 her görseli hemen gönderir.",
+      },
+      "translate.urgentPackMax": {
+        label: "Ekrandaki ilk istekteki balon sayısı",
+        hint: "Ekrandaki bir görselin ilk isteği en fazla bu kadar balon içerir, böylece daha erken görünürler. 0 = ayrı sınır yok.",
+      },
       "translate.jpegQuality": {
         label: "JPEG kalitesi",
         hint: "Yapay zekaya gönderilen birleşik görselin kalitesi.",

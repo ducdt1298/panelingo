@@ -511,6 +511,14 @@ export const PL: Catalog = {
         label: "Obszary tekstu na zapytanie",
         hint: "Zostaw puste, aby użyć profilu modelu (12, 16 lub 20).",
       },
+      "translate.packWaitMs": {
+        label: "Czas oczekiwania na grupowanie obrazów (ms)",
+        hint: "Jak długo tekst jednego obrazu czeka na kolejne obrazy strony, aby wysłać je w jednym żądaniu. 0 wysyła każdy obraz od razu.",
+      },
+      "translate.urgentPackMax": {
+        label: "Dymki w pierwszym żądaniu na ekranie",
+        hint: "Pierwsze żądanie obrazu na ekranie zawiera co najwyżej tyle dymków, aby pojawiły się szybciej. 0 = bez osobnego limitu.",
+      },
       "translate.jpegQuality": {
         label: "Jakość JPEG",
         hint: "Jakość obrazu zbiorczego wysyłanego do AI.",

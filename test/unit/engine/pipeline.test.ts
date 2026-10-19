@@ -36,7 +36,7 @@ import type {
   UnitResult,
   UnitStore,
 } from "../../../src/engine/contracts.ts";
-import { createPipeline } from "../../../src/engine/pipeline.ts";
+import { AHEAD_WAIT_FACTOR, createPipeline } from "../../../src/engine/pipeline.ts";
 import type { CtvDatabase } from "../../../src/platform/db-schema.ts";
 import { createLogger } from "../../../src/platform/log.ts";
 import { INITIAL_HEALTH, isSendable, type HealthReading } from "../../../src/shared/core/health.ts";
@@ -234,22 +234,25 @@ class FakeDetector implements TextDetector {
   readonly options: DetectOptions[] = [];
   readonly units = new Map<string, UnitGeometry[]>();
   readonly failures = new Map<string, CtvError>();
+  /** Detection of these images waits until the promise resolves (an image still being detected). */
+  readonly holds = new Map<string, Promise<void>>();
   state(): ReturnType<TextDetector["state"]> {
     return { backend: "webgpu", state: "ready", canary: "pass" };
   }
-  detect(image: DecodedImage, options: DetectOptions): Promise<DetectionResult> {
+  async detect(image: DecodedImage, options: DetectOptions): Promise<DetectionResult> {
     this.calls.push(image.contentKey);
     this.options.push(options);
+    await this.holds.get(image.contentKey);
     const failure = this.failures.get(image.contentKey);
-    if (failure !== undefined) return Promise.reject(failure);
-    return Promise.resolve({
+    if (failure !== undefined) throw failure;
+    return {
       backend: "webgpu",
       detectorVersion: "v4s:test",
       slices: [{ y1: 0, y2: image.size.h }],
       rawDetections: [],
       units: this.units.get(image.contentKey) ?? [],
       timings: { inferMs: [1], totalMs: 1 },
-    });
+    };
   }
   unitsFrom(): UnitGeometry[] {
     return [];
@@ -265,7 +268,7 @@ class FakeDetector implements TextDetector {
 interface TranslateCall {
   readonly pack: TranslatePack;
   readonly keys: string[];
-  emit(unitKey: string, status?: UnitOutcomeStatus, translation?: string): void;
+  emit(unitKey: string, status?: UnitOutcomeStatus, translation?: string, contentKey?: string): void;
   emitAll(status?: UnitOutcomeStatus): void;
   resolve(patch?: Partial<PackReport>): void;
   reject(error: Error): void;
@@ -280,9 +283,10 @@ class FakeTranslator implements PackTranslator {
     const call: TranslateCall = {
       pack,
       keys: pack.units.map((u) => u.unitKey),
-      emit(unitKey, status = "ok", text = `vi:${unitKey}`) {
+      emit(unitKey, status = "ok", text = `vi:${unitKey}`, contentKey?: string) {
         onUnit({
-          contentKey: pack.units[0]?.contentKey ?? "",
+          // A pack may hold units of several images: each result names the image its unit belongs to.
+          contentKey: contentKey ?? pack.units.find((u) => u.unitKey === unitKey)?.contentKey ?? "",
           unitKey,
           status,
           type: "dialogue",
@@ -294,7 +298,7 @@ class FakeTranslator implements PackTranslator {
         });
       },
       emitAll(status = "ok") {
-        for (const unit of pack.units) call.emit(unit.unitKey, status);
+        for (const unit of pack.units) call.emit(unit.unitKey, status, undefined, unit.contentKey);
       },
       resolve(patch = {}) {
         done.resolve({
@@ -587,10 +591,13 @@ function harness(
     concurrency?: number;
     eraser?: Eraser;
     memory?: SeriesMemory;
+    /** translate.packWaitMs; 0 (the default here) sends each image's units at once, as the queue tests expect. */
+    packWaitMs?: number;
   } = {},
 ): Harness {
   const clock = new ManualClock();
   const settings = new FakeSettings();
+  settings.value.translate.packWaitMs = options.packWaitMs ?? 0;
   if (options.ack === false) settings.value.privacy.ackUploadNoticeAt = null;
   if (options.concurrency !== undefined) {
     settings.value.api.concurrency = options.concurrency;
@@ -1051,16 +1058,24 @@ describe("lanes and priorities", () => {
     assert.equal(h.pipeline.idle(), true);
   });
 
-  test("an on-screen image with many units sends its first 4 units in their own pack (D-037)", async () => {
-    const h = harness();
-    const frame = new FakeFrame(1);
-    frame.info.viewport = { scrollY: 0, innerHeight: 900, secondsPerScreen: 4, onScreen: ["1.0"] };
-    h.pipeline.submit(frame, submitOf("1.0", h.image("p1", 9)));
-    await settle();
-    assert.deepEqual(
-      h.translator.calls.map((c) => c.keys.length),
-      [4, 5],
-    );
+  test("an on-screen image sends its first translate.urgentPackMax units in their own pack (8 by default)", async () => {
+    for (const [cap, sizes] of [
+      [8, [8, 1]],
+      [4, [4, 5]],
+      [0, [9]],
+    ] as const) {
+      const h = harness();
+      h.settings.value.translate.urgentPackMax = cap;
+      const frame = new FakeFrame(1);
+      frame.info.viewport = { scrollY: 0, innerHeight: 900, secondsPerScreen: 4, onScreen: ["1.0"] };
+      h.pipeline.submit(frame, submitOf("1.0", h.image("p1", 9)));
+      await settle();
+      assert.deepEqual(
+        h.translator.calls.map((c) => c.keys.length),
+        [...sizes],
+        `urgentPackMax ${cap}`,
+      );
+    }
   });
 
   test("lower priority values go first; img:priority reorders unsent packs", async () => {
@@ -2210,5 +2225,281 @@ describe("offline mode (experimental)", () => {
     h.pipeline.submit(frame, { ...request, force: true });
     await settle();
     assert.equal(h.translator.calls.length, 2, "the other engine translates again");
+  });
+});
+
+describe("cross-image packs (translate.packWaitMs)", () => {
+  const imagesOf = (call: TranslateCall): string[] => [...new Set(call.pack.units.map((u) => u.contentKey))];
+
+  test("paged images of one frame detected together share requests, two pages per composite", async () => {
+    const h = harness({ packWaitMs: 500 });
+    h.translator.auto = false;
+    const frame = new FakeFrame(1);
+    frame.info.viewport = { scrollY: 0, innerHeight: 900, secondsPerScreen: 4, onScreen: ["0.0"] };
+    for (const [i, label] of ["a", "b", "c"].entries()) {
+      h.pipeline.submit(
+        frame,
+        submitOf(`${i}.0`, h.image(label, 2), { pos: { docOrder: i, srcGen: 0, yTop: i * 1200 } }),
+      );
+    }
+    await settle();
+    assert.deepEqual(
+      h.translator.calls.map(imagesOf),
+      [["s:a", "s:b"], ["s:c"]],
+      "two requests instead of three; a composite shows at most two page thumbnails",
+    );
+    assert.equal(h.translator.calls[0]?.pack.images.size, 2, "both images are decoded for the composite");
+    for (const call of h.translator.calls) {
+      call.emitAll();
+      call.resolve();
+    }
+    await settle();
+    for (const key of ["0.0", "1.0", "2.0"]) {
+      assert.equal(frame.of("img:done", key).length, 1, `${key} done`);
+      assert.equal(frame.lastState(key)?.state, "done");
+    }
+    assertProtocol(frame);
+  });
+
+  test("webtoon strip images share one request (each shown as a band around its balloons)", async () => {
+    const h = harness({ packWaitMs: 500 });
+    const frame = new FakeFrame(1);
+    frame.info.viewport = { scrollY: 0, innerHeight: 900, secondsPerScreen: 4, onScreen: ["0.0"] };
+    for (const [i, label] of ["s1", "s2", "s3", "s4"].entries()) {
+      h.decoder.sizes.set(`s:${label}`, { w: 800, h: 2400 });
+      h.pipeline.submit(
+        frame,
+        submitOf(`${i}.0`, h.image(label, 2), {
+          natural: { w: 800, h: 2400 },
+          pos: { docOrder: i, srcGen: 0, yTop: i * 2400 },
+        }),
+      );
+    }
+    await settle();
+    assert.deepEqual(h.translator.calls.map(imagesOf), [["s:s1", "s:s2", "s:s3", "s:s4"]]);
+    for (const key of ["0.0", "1.0", "2.0", "3.0"]) assert.equal(frame.lastState(key)?.state, "done", key);
+  });
+
+  test("a gather leaves as soon as it fills a request (boxBudget)", async () => {
+    const h = harness({ packWaitMs: 5_000 });
+    h.settings.value.translate.boxBudget = 4;
+    const frame = new FakeFrame(1);
+    for (const [i, label] of ["a", "b", "c", "d"].entries()) {
+      h.pipeline.submit(
+        frame,
+        submitOf(`${i}.0`, h.image(label, 2), { pos: { docOrder: i, srcGen: 0, yTop: 0 } }),
+      );
+    }
+    await settle();
+    const sizes = h.translator.calls.map((c) => c.keys.length);
+    assert.ok(
+      sizes.every((n) => n <= 4),
+      `packs ${JSON.stringify(sizes)}`,
+    );
+    assert.equal(
+      sizes.reduce((a, b) => a + b, 0),
+      8,
+    );
+    assert.equal(sizes.length, 2, "two full requests instead of four small ones");
+  });
+
+  test("on screen, ready text waits at most packWaitMs for an image that is still being detected", async () => {
+    const h = harness({ packWaitMs: 500 });
+    const frame = new FakeFrame(1);
+    frame.info.viewport = { scrollY: 0, innerHeight: 900, secondsPerScreen: 4, onScreen: ["0.0"] };
+    const release = Promise.withResolvers<void>();
+    h.image("slow", 2);
+    h.detector.holds.set("s:slow", release.promise);
+    h.pipeline.submit(frame, submitOf("0.0", h.image("fast", 2)));
+    h.pipeline.submit(frame, submitOf("1.0", srcOf("slow"), { pos: { docOrder: 1, srcGen: 0, yTop: 0 } }));
+    await settle();
+    assert.equal(h.translator.calls.length, 0, "the fast image waits for its neighbour");
+    h.clock.advance(500);
+    await settle();
+    assert.deepEqual(h.translator.calls.map(imagesOf), [["s:fast"]], "the wait ran out: it goes alone");
+    release.resolve();
+    await settle();
+    h.clock.advance(500 * AHEAD_WAIT_FACTOR);
+    await settle();
+    assert.deepEqual(
+      h.translator.calls.map(imagesOf),
+      [["s:fast"], ["s:slow"]],
+      "the slow one is ahead of the reader",
+    );
+  });
+
+  test("on screen, a neighbour that turns out to have no text releases the waiting request at once", async () => {
+    const h = harness({ packWaitMs: 5_000 });
+    const frame = new FakeFrame(1);
+    frame.info.viewport = { scrollY: 0, innerHeight: 900, secondsPerScreen: 4, onScreen: ["0.0"] };
+    const release = Promise.withResolvers<void>();
+    h.image("blank", 0);
+    h.detector.holds.set("s:blank", release.promise);
+    h.pipeline.submit(frame, submitOf("0.0", h.image("text", 3)));
+    h.pipeline.submit(frame, submitOf("1.0", srcOf("blank"), { pos: { docOrder: 1, srcGen: 0, yTop: 0 } }));
+    await settle();
+    assert.equal(h.translator.calls.length, 0);
+    release.resolve();
+    await settle();
+    assert.deepEqual(h.translator.calls.map(imagesOf), [["s:text"]], "no timer needed");
+  });
+
+  test("images ahead of the reader wait longer to share a request, and leave when the reader arrives", async () => {
+    const h = harness({ packWaitMs: 500 });
+    const frame = new FakeFrame(1);
+    h.pipeline.submit(frame, submitOf("0.0", h.image("ahead", 2)));
+    await settle();
+    h.clock.advance(500);
+    await settle();
+    assert.equal(h.translator.calls.length, 0, "ahead of the reader: still waiting for neighbours");
+    frame.info.viewport = { scrollY: 0, innerHeight: 900, secondsPerScreen: 4, onScreen: ["0.0"] };
+    h.pipeline.priority(frame.info.frameKey, []);
+    await settle();
+    assert.equal(h.translator.calls.length, 1, "the reader reached it: sent at once");
+  });
+
+  test("images ahead of the reader leave after AHEAD_WAIT_FACTOR × packWaitMs at the latest", async () => {
+    const h = harness({ packWaitMs: 500 });
+    const frame = new FakeFrame(1);
+    h.pipeline.submit(frame, submitOf("0.0", h.image("ahead", 2)));
+    await settle();
+    h.clock.advance(500 * AHEAD_WAIT_FACTOR);
+    await settle();
+    assert.equal(h.translator.calls.length, 1);
+  });
+
+  test("a failed shared request fails the units of every image in it", async () => {
+    const h = harness({ packWaitMs: 500 });
+    h.translator.auto = false;
+    const frame = new FakeFrame(1);
+    frame.info.viewport = { scrollY: 0, innerHeight: 900, secondsPerScreen: 4, onScreen: ["0.0"] };
+    h.pipeline.submit(frame, submitOf("0.0", h.image("a", 1)));
+    h.pipeline.submit(frame, submitOf("1.0", h.image("b", 1), { pos: { docOrder: 1, srcGen: 0, yTop: 0 } }));
+    await settle();
+    assert.equal(h.translator.calls.length, 1);
+    h.translator.calls[0]?.reject(new CtvError("api.bad_request", "rejected"));
+    await settle();
+    for (const key of ["0.0", "1.0"]) assert.equal(frame.lastState(key)?.state, "error", key);
+  });
+
+  test("forgetting one image of a queued shared request re-sends the other image on its own", async () => {
+    const h = harness({ packWaitMs: 500, concurrency: 1 });
+    h.translator.auto = false;
+    const frame = new FakeFrame(1);
+    frame.info.viewport = {
+      scrollY: 0,
+      innerHeight: 900,
+      secondsPerScreen: 4,
+      onScreen: ["9.0", "0.0", "1.0"],
+    };
+    h.pipeline.submit(
+      frame,
+      submitOf("9.0", h.image("blocker", 1), { pos: { docOrder: 9, srcGen: 0, yTop: 0 } }),
+    );
+    await settle();
+    h.clock.advance(500);
+    await settle();
+    assert.equal(h.translator.calls.length, 1, "the blocker holds the only lane");
+    h.pipeline.submit(frame, submitOf("0.0", h.image("a", 1)));
+    h.pipeline.submit(frame, submitOf("1.0", h.image("b", 1), { pos: { docOrder: 1, srcGen: 0, yTop: 0 } }));
+    await settle();
+    h.pipeline.forget(frame.info.frameKey, ["0.0"]);
+    await settle();
+    const blocker = h.translator.calls[0];
+    blocker?.emitAll();
+    blocker?.resolve();
+    await settle();
+    assert.deepEqual(h.translator.calls.slice(1).map(imagesOf), [["s:b"]], "only the image still shown");
+  });
+});
+
+describe("late binding: queued packs merge when a lane frees up", () => {
+  const imagesOf = (call: TranslateCall): string[] => [...new Set(call.pack.units.map((u) => u.contentKey))];
+
+  /** One image at a time, each leaving its gather on the look-ahead timer while the only lane is busy. */
+  async function queueOneByOne(
+    h: Harness,
+    frame: FakeFrame,
+    labels: readonly string[],
+    strip = false,
+  ): Promise<void> {
+    for (const [i, label] of labels.entries()) {
+      if (strip) h.decoder.sizes.set(`s:${label}`, { w: 800, h: 2400 });
+      h.pipeline.submit(
+        frame,
+        submitOf(`${i}.0`, h.image(label, 2), {
+          ...(strip ? { natural: { w: 800, h: 2400 } } : {}),
+          pos: { docOrder: i, srcGen: 0, yTop: 0 },
+        }),
+      );
+      await settle();
+      h.clock.advance(500 * AHEAD_WAIT_FACTOR);
+      await settle();
+    }
+  }
+
+  async function busyLane(h: Harness, frame: FakeFrame): Promise<void> {
+    h.pipeline.submit(
+      frame,
+      submitOf("9.0", h.image("blocker", 1), { pos: { docOrder: 9, srcGen: 0, yTop: 0 } }),
+    );
+    await settle();
+    h.clock.advance(500 * AHEAD_WAIT_FACTOR);
+    await settle();
+    assert.equal(h.translator.calls.length, 1, "the blocker holds the only lane");
+  }
+
+  test("packs queued behind a busy lane leave as one request; each image still gets its results", async () => {
+    const h = harness({ concurrency: 1, packWaitMs: 500 });
+    h.translator.auto = false;
+    const frame = new FakeFrame(1);
+    await busyLane(h, frame);
+    await queueOneByOne(h, frame, ["a", "b", "c"]);
+    assert.equal(h.translator.calls.length, 1, "three packs wait for the lane");
+    h.translator.calls[0]?.emitAll();
+    h.translator.calls[0]?.resolve();
+    await settle();
+    const next = h.translator.calls.slice(1);
+    assert.deepEqual(next.map(imagesOf), [["s:a", "s:b"]], "merged; a composite shows at most two pages");
+    for (const call of h.translator.calls.slice(1)) {
+      call.emitAll();
+      call.resolve();
+    }
+    await settle();
+    for (const call of h.translator.calls.slice(2)) {
+      call.emitAll();
+      call.resolve();
+    }
+    await settle();
+    for (const key of ["0.0", "1.0", "2.0"]) assert.equal(frame.lastState(key)?.state, "done", key);
+    assertProtocol(frame);
+  });
+
+  test("queued strip images merge up to boxBudget", async () => {
+    const h = harness({ concurrency: 1, packWaitMs: 500 });
+    h.settings.value.translate.boxBudget = 6;
+    h.translator.auto = false;
+    const frame = new FakeFrame(1);
+    await busyLane(h, frame);
+    await queueOneByOne(h, frame, ["s1", "s2", "s3", "s4"], true);
+    h.translator.calls[0]?.emitAll();
+    h.translator.calls[0]?.resolve();
+    await settle();
+    const second = h.translator.calls[1];
+    assert.ok(second !== undefined);
+    assert.deepEqual(imagesOf(second), ["s:s1", "s:s2", "s:s3"]);
+    assert.equal(second.keys.length, 6, "filled to boxBudget");
+  });
+
+  test("packWaitMs 0 keeps one request per image", async () => {
+    const h = harness({ concurrency: 1, packWaitMs: 0 });
+    h.translator.auto = false;
+    const frame = new FakeFrame(1);
+    await busyLane(h, frame);
+    await queueOneByOne(h, frame, ["a", "b"]);
+    h.translator.calls[0]?.emitAll();
+    h.translator.calls[0]?.resolve();
+    await settle();
+    assert.deepEqual(h.translator.calls.slice(1).map(imagesOf), [["s:a"]]);
   });
 });

@@ -502,6 +502,14 @@ export const ES: Catalog = {
         label: "Zonas de texto por solicitud",
         hint: "Déjalo vacío para usar el perfil del modelo (12, 16 o 20).",
       },
+      "translate.packWaitMs": {
+        label: "Espera para agrupar imágenes (ms)",
+        hint: "Cuánto espera el texto de una imagen a las siguientes de la página para compartir una solicitud. 0 envía cada imagen enseguida.",
+      },
+      "translate.urgentPackMax": {
+        label: "Globos en la primera solicitud en pantalla",
+        hint: "La primera solicitud de una imagen en pantalla lleva como máximo estos globos, para que aparezcan antes. 0 = sin límite aparte.",
+      },
       "translate.jpegQuality": {
         label: "Calidad JPEG",
         hint: "Calidad de la imagen compuesta que se envía a la IA.",

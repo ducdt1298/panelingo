@@ -42,7 +42,7 @@ import type {
 import { urlKeyOf } from "../shared/url-normalize.ts";
 import { pageKeysOf, type PageKeys } from "../shared/series-key.ts";
 import { ERASE_VERSION, PROMPT_VERSION, UNITS_VERSION } from "../shared/versions.ts";
-import { createBatcher, toPackUnits, URGENT_PACK_MAX, type PackPlanner } from "./batcher.ts";
+import { createBatcher, toPackUnits, type PackPlanner } from "./batcher.ts";
 import type {
   AcquireContext,
   AcquiredImage,
@@ -123,6 +123,9 @@ export interface PipelineDeps extends CoreDeps {
 export const PREP_CONCURRENCY = 2;
 /** Works kept in memory without a job, least recently used first out. */
 export const MAX_IDLE_WORKS = 256;
+/** Images ahead of the reader wait this many times translate.packWaitMs for their neighbours, at most AHEAD_WAIT_MAX_MS. */
+export const AHEAD_WAIT_FACTOR = 8;
+export const AHEAD_WAIT_MAX_MS = 5_000;
 /** urlKey → contentKey memo entries. */
 export const MAX_URL_MEMO = 2048;
 /** Page URL + title → series and chapter keys memo entries. */
@@ -154,15 +157,39 @@ function layoutDir(layout: PageHints["layout"]): ReadingDir | "auto" {
   }
 }
 
-interface PackEntry extends WorkPack {
+/** One request: units of one or more consecutive images of a frame, in document order then reading order. */
+interface PackEntry {
   readonly id: string;
-  readonly work: ContentWork;
   readonly units: PackUnit[];
+  /** Per image: its share of the units, registered in that work's `packs`. */
+  readonly parts: PackPart[];
   readonly frameKey: string;
   readonly lang: Lang | "auto";
-  /** Document order of the image in its page (chapter history). */
+  readonly dir: ReadingDir;
+  /** Document order of the first image in its page (chapter history). */
   readonly docOrder: number;
   readonly task: QueueTask;
+  /** Handed to the translator (in flight). */
+  started: boolean;
+}
+
+/** The units of one image inside a pack: what that image's work waits for. */
+interface PackPart extends WorkPack {
+  readonly entry: PackEntry;
+  readonly work: ContentWork;
+  /** Grows when a queued pack of the same image is absorbed at dispatch. */
+  readonly unitKeys: string[];
+}
+
+/** Images of one frame whose units wait to share requests (same language and reading direction). */
+interface Gather {
+  readonly key: string;
+  readonly frameKey: string;
+  readonly lang: Lang | "auto";
+  readonly dir: ReadingDir;
+  readonly items: Array<{ work: ContentWork; keys: string[]; src: string; docOrder: number }>;
+  /** Cancels the wait timer; null when none is armed. */
+  cancel: (() => void) | null;
 }
 
 /** Encoded bytes of released images (settings.cache.encodedBytesLruMb), so a retry decodes without refetching. */
@@ -223,6 +250,8 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
   const urlMemo = new Map<string, string>();
   const loading = new Map<string, Promise<ContentWork | null>>();
   const entries = new Map<QueueTask, PackEntry>();
+  /** Units waiting to share requests, per frame + language + reading direction. */
+  const gathers = new Map<string, Gather>();
   const bytes = createBytesCache(() => settings.current().cache.encodedBytesLruMb * 1024 * 1024);
   const prep = createSlots(PREP_CONCURRENCY);
   const stats = { done: 0, failed: 0 };
@@ -948,6 +977,8 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
     for (const job of work.jobs) postUnitsMessage(job, work);
     startPendingPass(work, "auto");
     maybeSettle(work);
+    // An image that needs no translation (no text, prefetch) no longer holds back its neighbours' requests.
+    for (const job of work.jobs) nudgeGathers(job.frameKey);
   }
 
   function persistImage(work: ContentWork, decoded: DecodedImage, source: AcquiredImage): void {
@@ -1070,6 +1101,7 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
       .warn("image failed", { reason: info.message }, info.code);
     sendState(job);
     if (work !== null && work.jobs.size === 0) abandonWork(work);
+    nudgeGathers(job.frameKey);
   }
 
   function failWork(work: ContentWork, info: ErrorInfo): void {
@@ -1091,16 +1123,38 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
 
   /** Nobody shows the image any more: unsent packs go, in-flight ones finish and are still stored. */
   function abandonWork(work: ContentWork): void {
-    const dropped = queue.drop((task) => entries.get(task)?.work === work);
+    const dropped = queue.drop(
+      (task) => entries.get(task)?.parts.some((part) => part.work === work) === true,
+    );
+    // Images that shared a dropped request with this one translate on their own again.
+    const others = new Set<ContentWork>();
     for (const task of dropped) {
       const entry = entries.get(task);
       entries.delete(task);
       if (entry === undefined) continue;
-      work.packs.delete(entry);
-      for (const key of entry.unitKeys) {
-        const slot = work.slots.get(key);
-        if (slot !== undefined) slot.inPass = false;
+      for (const part of entry.parts) {
+        part.work.packs.delete(part);
+        releaseKeys(part.work, part.unitKeys);
+        if (part.work !== work) others.add(part.work);
       }
+    }
+    // Units still waiting in a gather leave it.
+    for (const gather of [...gathers.values()]) {
+      for (let i = gather.items.length - 1; i >= 0; i -= 1) {
+        const item = gather.items[i];
+        if (item?.work !== work) continue;
+        gather.items.splice(i, 1);
+        work.gathering -= 1;
+        releaseKeys(work, item.keys);
+      }
+      if (gather.items.length === 0) {
+        gathers.delete(gather.key);
+        gather.cancel?.();
+      }
+    }
+    for (const other of others) {
+      if (other.jobs.size > 0) startPendingPass(other, "manual");
+      else maybeSettle(other);
     }
     maybeSettle(work);
   }
@@ -1138,6 +1192,7 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
       flows -= 1;
       work.preparing -= 1;
       maybeSettle(work);
+      for (const job of work.jobs) nudgeGathers(job.frameKey);
       queue.pump();
     });
     return owned.length;
@@ -1170,61 +1225,231 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
     enqueuePacks(work, keys);
   }
 
+  /**
+   * Units of an image ready to translate join the gather of their frame (same language and reading direction), so
+   * consecutive images share requests instead of sending a few balloons each. The gather leaves when it holds a
+   * full request, when no other image of the frame is still on its way (acquiring, decoding, detecting), or after
+   * translate.packWaitMs.
+   */
   function enqueuePacks(work: ContentWork, keys: readonly string[]): void {
     const lead = leadJob(work);
     if (lead === null || work.natural === null) {
       releaseKeys(work, keys);
       return;
     }
-    const site = siteOf(lead);
-    const lang: Lang | "auto" = work.lang ?? site.sourceLang;
-    const wanted = new Set(keys);
-    const units = toPackUnits(
-      {
-        contentKey: work.contentKey,
-        size: work.natural,
-        src: lead.submit.src,
-        script: scriptForLang(lang),
-        docOrder: lead.submit.pos.docOrder,
+    const lang: Lang | "auto" = work.lang ?? siteOf(lead).sourceLang;
+    const key = `${lead.frameKey}\u0000${lang}\u0000${work.dir}`;
+    let gather = gathers.get(key);
+    if (gather === undefined) {
+      gather = { key, frameKey: lead.frameKey, lang, dir: work.dir, items: [], cancel: null };
+      gathers.set(key, gather);
+    }
+    gather.items.push({ work, keys: [...keys], src: lead.submit.src, docOrder: lead.submit.pos.docOrder });
+    work.gathering += 1;
+    updateStates(work);
+    scheduleGather(gather);
+  }
+
+  function gatheredUnits(gather: Gather): number {
+    return gather.items.reduce((n, item) => n + item.keys.length, 0);
+  }
+
+  /** No other image of the frame is still being acquired, decoded or detected for translation. */
+  function frontierReached(frameKey: string, gather: Gather): boolean {
+    const inGather = new Set(gather.items.map((item) => item.work));
+    for (const job of jobs.all()) {
+      if (job.frameKey !== frameKey || job.stale || job.phase === "failed") continue;
+      if (job.phase === "queued" || job.phase === "acquiring") return false;
+      const work = job.contentKey === null ? null : liveWork(job.contentKey);
+      if (work === null || inGather.has(work)) continue;
+      if (work.phase === "prep" || work.preparing > 0) return false;
+    }
+    return true;
+  }
+
+  /**
+   * A gather with an image on screen leaves as soon as nothing else of the frame is on its way: the reader is waiting.
+   * Images ahead of the reader (look-ahead, lazy images entering the translate window one by one) wait longer, so
+   * the next ones can join their request.
+   */
+  function gatherReady(gather: Gather): boolean {
+    if (gatheredUnits(gather) >= boxBudgetNow()) return true;
+    return gather.items.some((item) => workOnScreen(item.work)) && frontierReached(gather.frameKey, gather);
+  }
+
+  function scheduleGather(gather: Gather): void {
+    const wait = settings.current().translate.packWaitMs;
+    if (wait <= 0 || gatherReady(gather)) {
+      flushGather(gather, wait <= 0 ? "no-wait" : "ready");
+      return;
+    }
+    const onScreen = gather.items.some((item) => workOnScreen(item.work));
+    gather.cancel ??= clock.setTimer(
+      () => {
+        gather.cancel = null;
+        flushGather(gather, "timer");
       },
-      work.units.filter((unit) => wanted.has(unit.unitKey)),
+      onScreen ? wait : Math.min(wait * AHEAD_WAIT_FACTOR, AHEAD_WAIT_MAX_MS),
     );
+  }
+
+  /** Re-checks the frame's gathers when one of its images settles its preparation or comes on screen. */
+  function nudgeGathers(frameKey: string): void {
+    for (const gather of [...gathers.values()]) {
+      if (gather.frameKey === frameKey && gatherReady(gather)) flushGather(gather, "nudge");
+    }
+  }
+
+  function flushGather(gather: Gather, reason: string): void {
+    if (gathers.get(gather.key) !== gather) return;
+    log.debug("gather sent", { reason, images: gather.items.length, units: gatheredUnits(gather) });
+    gathers.delete(gather.key);
+    gather.cancel?.();
+    gather.cancel = null;
+    const items = [...gather.items].sort((a, b) => a.docOrder - b.docOrder);
+    const units: PackUnit[] = [];
+    const involved: ContentWork[] = [];
+    for (const item of items) {
+      const { work } = item;
+      work.gathering -= 1;
+      if (work.jobs.size === 0 || work.natural === null) {
+        releaseKeys(work, item.keys);
+        maybeSettle(work);
+        continue;
+      }
+      involved.push(work);
+      const wanted = new Set(item.keys);
+      units.push(
+        ...toPackUnits(
+          {
+            contentKey: work.contentKey,
+            size: work.natural,
+            src: item.src,
+            script: scriptForLang(gather.lang),
+            docOrder: item.docOrder,
+          },
+          work.units.filter((unit) => wanted.has(unit.unitKey)),
+        ),
+      );
+    }
+    if (units.length === 0) return;
+    const byKey = new Map(involved.map((work) => [work.contentKey, work]));
+    const docOrderOf = new Map(items.map((item) => [item.work.contentKey, item.docOrder]));
+    const workOf = (unit: PackUnit): ContentWork | undefined => byKey.get(unit.contentKey);
+    const firstWork = involved[0];
+    const urgentMax = settings.current().translate.urgentPackMax;
     const plan = batcher.plan(units, {
       boxBudget: boxBudgetNow(),
-      urgentMax: workOnScreen(work) ? URGENT_PACK_MAX : null,
-      layout: { profile: profileForModel(settings.current().api.model), dir: work.dir },
+      urgentMax: urgentMax > 0 && firstWork !== undefined && workOnScreen(firstWork) ? urgentMax : null,
+      layout: { profile: profileForModel(settings.current().api.model), dir: gather.dir },
     });
-    for (const unit of plan.skipped) deliverSynthetic(work, unit.unitKey, "ignored", false);
+    for (const unit of plan.skipped) {
+      const work = workOf(unit);
+      if (work !== undefined) deliverSynthetic(work, unit.unitKey, "ignored", false);
+    }
     for (const packUnits of plan.packs) {
       packSeq += 1;
+      const packWorks = [...new Set(packUnits.map(workOf).filter((w): w is ContentWork => w !== undefined))];
+      const head = packWorks[0];
+      if (head === undefined) continue;
       const task: QueueTask = {
-        urgent: () => workOnScreen(work),
-        rank: () => workRank(work),
+        urgent: () => packWorks.some(workOnScreen),
+        rank: () => workRank(head),
         run: (lane) => runPack(entry, lane),
       };
+      const parts: PackPart[] = [];
       const entry: PackEntry = {
         id: `pk-${packSeq.toString(36)}`,
-        work,
         units: packUnits,
-        unitKeys: packUnits.map((unit) => unit.unitKey),
-        frameKey: lead.frameKey,
-        lang,
-        docOrder: lead.submit.pos.docOrder,
+        parts,
+        frameKey: gather.frameKey,
+        lang: gather.lang,
+        dir: gather.dir,
+        docOrder: docOrderOf.get(head.contentKey) ?? 0,
         task,
         started: false,
       };
+      for (const work of packWorks) {
+        const part: PackPart = {
+          entry,
+          work,
+          unitKeys: packUnits.filter((unit) => unit.contentKey === work.contentKey).map((u) => u.unitKey),
+          get started() {
+            return entry.started;
+          },
+        };
+        parts.push(part);
+        work.packs.add(part);
+      }
       entries.set(task, entry);
-      work.packs.add(entry);
       queue.add(task);
     }
-    parkBitmap(work);
-    updateStates(work);
+    for (const work of involved) {
+      parkBitmap(work);
+      updateStates(work);
+      maybeSettle(work);
+    }
+    queue.pump();
+  }
+
+  /**
+   * Late binding: when a lane frees up, packs of the same frame (language, reading direction) still queued behind
+   * this one join it while the request stays within boxBudget and its composite lays out. They were waiting for a
+   * lane anyway, so a slow model costs one request instead of one per image.
+   */
+  function absorbQueued(entry: PackEntry): void {
+    // translate.packWaitMs 0 turns grouping off: every image keeps its own requests.
+    if (settings.current().translate.packWaitMs <= 0) return;
+    const budget = boxBudgetNow();
+    const layout = { profile: profileForModel(settings.current().api.model), dir: entry.dir };
+    const candidates = [...entries.values()]
+      .filter(
+        (other) =>
+          other !== entry &&
+          !other.started &&
+          other.frameKey === entry.frameKey &&
+          other.lang === entry.lang &&
+          other.dir === entry.dir,
+      )
+      .sort((a, b) => a.docOrder - b.docOrder);
+    for (const other of candidates) {
+      if (entry.units.length + other.units.length > budget) continue;
+      const merged = [...entry.units, ...other.units].sort((a, b) => (a.pos ?? 0) - (b.pos ?? 0));
+      const plan = batcher.plan(merged, { boxBudget: budget, urgentMax: null, layout });
+      if (plan.packs.length !== 1 || plan.skipped.length > 0 || plan.packs[0]?.length !== merged.length)
+        continue;
+      if (queue.drop((task) => task === other.task).length === 0) continue;
+      entries.delete(other.task);
+      entry.units.splice(0, entry.units.length, ...merged);
+      for (const moved of other.parts) {
+        moved.work.packs.delete(moved);
+        const host = entry.parts.find((part) => part.work === moved.work);
+        if (host !== undefined) {
+          host.unitKeys.push(...moved.unitKeys);
+          continue;
+        }
+        const part: PackPart = {
+          entry,
+          work: moved.work,
+          unitKeys: [...moved.unitKeys],
+          get started() {
+            return entry.started;
+          },
+        };
+        entry.parts.push(part);
+        moved.work.packs.add(part);
+      }
+      log.debug("queued pack absorbed", { packId: entry.id, absorbed: other.id, units: entry.units.length });
+    }
   }
 
   async function runPack(entry: PackEntry, lane: Lane): Promise<void> {
-    const work = entry.work;
+    absorbQueued(entry);
+    const works = entry.parts.map((part) => part.work);
+    const lead = works[0];
+    if (lead === undefined) return;
     entry.started = true;
-    updateStates(work);
+    for (const work of works) updateStates(work);
     const delivered = new Set<string>();
     let report: PackReport | null = null;
     let failure: ErrorInfo | null = null;
@@ -1233,23 +1458,29 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
     const positions = entry.units.map((unit) => unit.pos ?? 0);
     const firstPos = Math.min(...positions);
     try {
-      const [decoded, context] = await Promise.all([
-        ensureDecoded(work, true),
+      const [decodedList, context] = await Promise.all([
+        Promise.all(works.map((work) => ensureDecoded(work, true))),
         scope === null
           ? Promise.resolve<PackMemory | null>(null)
-          : memory.context(scope, { contentKey: work.contentKey, docOrder: entry.docOrder, pos: firstPos }),
+          : memory.context(scope, { contentKey: lead.contentKey, docOrder: entry.docOrder, pos: firstPos }),
       ]);
-      startErase(work, decoded);
+      const images = new Map<string, DecodedImage>();
+      works.forEach((work, i) => {
+        const decoded = decodedList[i];
+        if (decoded === undefined) return;
+        images.set(work.contentKey, decoded);
+        startErase(work, decoded);
+      });
       report = await translator.translate(
         {
           packId: entry.id,
           frameKey: entry.frameKey,
           seriesKey: scope?.seriesKey ?? null,
           lang: context?.lang ?? entry.lang,
-          dir: work.dir,
+          dir: entry.dir,
           units: entry.units,
-          urgent: lane === "urgent" || workOnScreen(work),
-          images: new Map([[work.contentKey, decoded]]),
+          urgent: lane === "urgent" || works.some(workOnScreen),
+          images,
           ...pageOf(entry.frameKey),
           ...(context === null ? {} : { memory: context }),
         },
@@ -1279,17 +1510,20 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
     }
   }
 
+  /** Key of a unit inside a pack (unit keys are unique per image only). */
+  function deliveredKey(contentKey: string, unitKey: string): string {
+    return `${contentKey}\u0000${unitKey}`;
+  }
+
   function onUnit(entry: PackEntry, result: UnitResult, delivered: Set<string>): void {
-    if (
-      result.contentKey !== entry.work.contentKey ||
-      !entry.unitKeys.includes(result.unitKey) ||
-      delivered.has(result.unitKey)
-    ) {
+    const part = entry.parts.find((p) => p.work.contentKey === result.contentKey);
+    const key = deliveredKey(result.contentKey, result.unitKey);
+    if (part === undefined || !part.unitKeys.includes(result.unitKey) || delivered.has(key)) {
       log.debug("unexpected unit result ignored", { packId: entry.id, unitKey: result.unitKey });
       return;
     }
-    delivered.add(result.unitKey);
-    applyResult(entry.work, result, true);
+    delivered.add(key);
+    applyResult(part.work, result, true);
   }
 
   /** Stores a final outcome and shows it everywhere the image is shown. */
@@ -1378,59 +1612,61 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
     failure: ErrorInfo | null,
     delivered: ReadonlySet<string>,
   ): void {
-    const work = entry.work;
     entries.delete(entry.task);
-    work.packs.delete(entry);
     const error = failure ?? report?.error ?? null;
-    if (report?.lang != null) {
-      work.lang = report.lang;
-      if (work.record !== null && work.record.lang !== report.lang) {
-        const record: ImageRecord = { ...work.record, lang: report.lang, lastUsedAt: clock.now() };
-        work.record = record;
-        persist("image write", () => stores.images.put(record));
-      }
-    }
-    // The translator reports every unit once; anything it did not is closed here so no unit stays pending.
-    for (const key of entry.unitKeys) {
-      if (delivered.has(key)) continue;
-      const status: UnitOutcomeStatus =
-        error === null ? "untranslated" : error.code === "llm.refused" ? "refused" : "error";
-      deliverSynthetic(work, key, status, true);
-    }
     if (error === null) {
       stats.done += 1;
     } else {
       stats.failed += 1;
-      work.error = error;
       if (error.code === "api.rate_limit") {
         queue.throttle(RATE_LIMIT_CONCURRENCY.value, RATE_LIMIT_CONCURRENCY.forMs);
       }
       if (error.code === "api.timeout") queue.throttle(TIMEOUT_CONCURRENCY.value, TIMEOUT_CONCURRENCY.forMs);
       log
         .child({ batchId: entry.id })
-        .warn("pack failed", { reason: error.message, units: entry.unitKeys.length }, error.code);
+        .warn("pack failed", { reason: error.message, units: entry.units.length }, error.code);
     }
-    // The API went away (unreachable, unauthorized) and the translator gave up: the failed units wait for health again,
-    // within the automatic-pass budget (allowAutoPass, ≤ 2 per unit per 10 min).
-    if (error !== null && ERRORS[error.code].retry === "health" && work.jobs.size > 0) {
-      const now = clock.now();
-      const again = entry.unitKeys.filter((key) => {
-        const slot = work.slots.get(key);
-        return (
-          slot !== undefined &&
-          slot.status === "error" &&
-          slot.manual === null &&
-          !slot.inPass &&
-          allowAutoPass(slot.autoPasses, now)
-        );
-      });
-      if (again.length > 0) {
-        reopen(work, again, null);
-        startPass(work, again, "auto");
+    for (const part of entry.parts) {
+      const { work } = part;
+      work.packs.delete(part);
+      if (report?.lang != null) {
+        work.lang = report.lang;
+        if (work.record !== null && work.record.lang !== report.lang) {
+          const record: ImageRecord = { ...work.record, lang: report.lang, lastUsedAt: clock.now() };
+          work.record = record;
+          persist("image write", () => stores.images.put(record));
+        }
       }
+      // The translator reports every unit once; anything it did not is closed here so no unit stays pending.
+      for (const key of part.unitKeys) {
+        if (delivered.has(deliveredKey(work.contentKey, key))) continue;
+        const status: UnitOutcomeStatus =
+          error === null ? "untranslated" : error.code === "llm.refused" ? "refused" : "error";
+        deliverSynthetic(work, key, status, true);
+      }
+      if (error !== null) work.error = error;
+      // The API went away (unreachable, unauthorized) and the translator gave up: the failed units wait for health
+      // again, within the automatic-pass budget (allowAutoPass, ≤ 2 per unit per 10 min).
+      if (error !== null && ERRORS[error.code].retry === "health" && work.jobs.size > 0) {
+        const now = clock.now();
+        const again = part.unitKeys.filter((key) => {
+          const slot = work.slots.get(key);
+          return (
+            slot !== undefined &&
+            slot.status === "error" &&
+            slot.manual === null &&
+            !slot.inPass &&
+            allowAutoPass(slot.autoPasses, now)
+          );
+        });
+        if (again.length > 0) {
+          reopen(work, again, null);
+          startPass(work, again, "auto");
+        }
+      }
+      parkBitmap(work);
+      maybeSettle(work);
     }
-    parkBitmap(work);
-    maybeSettle(work);
   }
 
   /** Nothing outstanding: release the image and, once every unit has an outcome, send the final state + img:done. */
@@ -1649,6 +1885,8 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
       if (job !== undefined) job.submit = { ...job.submit, priority: item.priority };
     }
     postHorizons(frameKey);
+    // The reader reached an image whose text waits in a gather: send it now.
+    nudgeGathers(frameKey);
     queue.pump();
   }
 

@@ -112,6 +112,8 @@ test("each request carries the chapter's earlier lines, summary and learned term
   configured.api.baseUrl = "http://api.invalid/v1";
   configured.translate.targetLang = "vi";
   configured.privacy.ackUploadNoticeAt = 1;
+  // One request per image: the subject is what each later request inherits from the earlier ones.
+  configured.translate.packWaitMs = 0;
   settings.apply(configured, {});
   const stores = memoryStores();
   const health = fakeHealth("ready");

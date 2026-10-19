@@ -75,6 +75,8 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
   num("api.healthTimeoutMs", 0.5, { scale: SECOND }),
 
   num("translate.boxBudget", 1, { nullable: true }),
+  num("translate.packWaitMs", 50),
+  num("translate.urgentPackMax"),
   num("translate.jpegQuality", 0.01),
   num("translate.requestBodyCapMb"),
   num("translate.promptCharCap"),

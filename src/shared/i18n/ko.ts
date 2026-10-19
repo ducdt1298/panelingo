@@ -462,6 +462,14 @@ export const KO: Catalog = {
         label: "요청당 텍스트 영역 수",
         hint: "비워 두면 모델 프로필 값(12, 16 또는 20)을 사용합니다.",
       },
+      "translate.packWaitMs": {
+        label: "이미지 묶기 대기 시간 (ms)",
+        hint: "한 이미지의 텍스트가 같은 요청으로 묶이도록 페이지의 다음 이미지를 기다리는 시간입니다. 0이면 이미지마다 바로 보냅니다.",
+      },
+      "translate.urgentPackMax": {
+        label: "화면의 첫 요청에 넣을 말풍선 수",
+        hint: "화면에 보이는 이미지의 첫 요청에는 최대 이만큼의 말풍선만 넣어 더 빨리 표시합니다. 0 = 별도 제한 없음.",
+      },
       "translate.jpegQuality": {
         label: "JPEG 품질",
         hint: "AI로 보내는 합성 이미지의 품질입니다.",

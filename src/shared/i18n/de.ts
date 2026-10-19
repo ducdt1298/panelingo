@@ -519,6 +519,14 @@ export const DE: Catalog = {
         label: "Textbereiche pro Anfrage",
         hint: "Leer lassen, um das Profil des Modells zu verwenden (12, 16 oder 20).",
       },
+      "translate.packWaitMs": {
+        label: "Wartezeit zum Bündeln von Bildern (ms)",
+        hint: "Wie lange der Text eines Bildes auf die nächsten Bilder der Seite wartet, damit sie eine Anfrage teilen. 0 sendet jedes Bild sofort.",
+      },
+      "translate.urgentPackMax": {
+        label: "Sprechblasen in der ersten Anfrage auf dem Bildschirm",
+        hint: "Die erste Anfrage eines sichtbaren Bildes enthält höchstens so viele Sprechblasen, damit sie früher erscheinen. 0 = keine eigene Grenze.",
+      },
       "translate.jpegQuality": {
         label: "JPEG-Qualität",
         hint: "Qualität des Kompositbilds, das an die KI gesendet wird.",

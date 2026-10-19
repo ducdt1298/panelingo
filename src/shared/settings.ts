@@ -44,6 +44,13 @@ export interface Settings {
     targetLang: string;
     /** null = use the model profile's budget for the configured model. */
     boxBudget: number | null;
+    /**
+     * How long the text of one image waits for the next images of the page (still being detected) to share its
+     * request, in ms; a request also leaves as soon as it is full or nothing else is on its way. 0 = send at once.
+     */
+    packWaitMs: number;
+    /** Cap on the first request of an image on screen, so its balloons show sooner; 0 = no separate cap. */
+    urgentPackMax: number;
     jpegQuality: number;
     requestBodyCapMb: number;
     promptCharCap: number;
@@ -178,6 +185,8 @@ export const DEFAULT_SETTINGS: Settings = {
   translate: {
     targetLang: "auto",
     boxBudget: null,
+    packWaitMs: 500,
+    urgentPackMax: 8,
     jpegQuality: 0.9,
     requestBodyCapMb: 4,
     promptCharCap: 16_000,
@@ -273,6 +282,8 @@ export const LIMITS: Readonly<Record<string, readonly [number, number]>> = {
   "detector.sliceOverlap": [0.05, 0.5],
   "detector.sliceOverlapMinPx": [0, 1000],
   "translate.boxBudget": [4, 20],
+  "translate.packWaitMs": [0, 5_000],
+  "translate.urgentPackMax": [0, 20],
   "translate.jpegQuality": [0.5, 1],
   "translate.requestBodyCapMb": [1, 40],
   "translate.promptCharCap": [2_000, 200_000],

@@ -515,6 +515,14 @@ export const FR: Catalog = {
         label: "Zones de texte par requête",
         hint: "Laissez vide pour utiliser le profil du modèle (12, 16 ou 20).",
       },
+      "translate.packWaitMs": {
+        label: "Attente pour regrouper les images (ms)",
+        hint: "Durée pendant laquelle le texte d'une image attend les images suivantes de la page pour partager une requête. 0 envoie chaque image aussitôt.",
+      },
+      "translate.urgentPackMax": {
+        label: "Bulles dans la première requête à l'écran",
+        hint: "La première requête d'une image à l'écran contient au plus ce nombre de bulles, pour qu'elles s'affichent plus tôt. 0 = pas de limite à part.",
+      },
       "translate.jpegQuality": {
         label: "Qualité JPEG",
         hint: "Qualité de l'image composite envoyée à l'IA.",

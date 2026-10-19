@@ -1,12 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import {
-  createBatcher,
-  planPacks,
-  toPackUnits,
-  URGENT_PACK_MAX,
-  type PackPlanner,
-} from "../../../src/engine/batcher.ts";
+import { createBatcher, planPacks, toPackUnits, type PackPlanner } from "../../../src/engine/batcher.ts";
 import type { PackUnit } from "../../../src/engine/contracts.ts";
 import { MODEL_PROFILES } from "../../../src/shared/core/model-profile.ts";
 import { layoutPack } from "../../../src/shared/core/packing.ts";
@@ -67,12 +61,12 @@ describe("planPacks (P1, one image)", () => {
   });
 
   test("an on-screen head image sends its first units in a small urgent pack (D-037)", () => {
-    const plan = planPacks(units(10), { boxBudget: 20, urgentMax: URGENT_PACK_MAX });
+    const plan = planPacks(units(10), { boxBudget: 20, urgentMax: 4 });
     assert.deepEqual(keys(plan.packs), [
       ["u0", "u1", "u2", "u3"],
       ["u4", "u5", "u6", "u7", "u8", "u9"],
     ]);
-    const few = planPacks(units(3), { boxBudget: 20, urgentMax: URGENT_PACK_MAX });
+    const few = planPacks(units(3), { boxBudget: 20, urgentMax: 4 });
     assert.deepEqual(
       few.packs.map((p) => p.length),
       [3],
