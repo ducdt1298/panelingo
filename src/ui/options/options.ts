@@ -564,7 +564,8 @@ async function watchEngineInfo(render: (state: EngineState) => void): Promise<vo
 /**
  * The tab list on the left: one tab shown at a time. The tab follows the URL hash, so deep links (#privacy from the
  * popup, #sites, an old #cache bookmark) and the browser's back button work; the first tab is the default. Clicking
- * switches at once; the hash follows through hashchange.
+ * switches (and scrolls to the top) at once; the hashchange that follows only acts when it names another tab, so the
+ * page never jumps after the user moved on.
  */
 function settingsNav(tabs: readonly HTMLElement[]): HTMLElement {
   const links = OPTION_TABS.map((tab) =>
@@ -576,14 +577,20 @@ function settingsNav(tabs: readonly HTMLElement[]): HTMLElement {
         href: `#${tab}`,
         role: "tab",
         "aria-controls": `tab-${tab}`,
-        onclick: () => show(tab),
+        onclick: () => {
+          if (show(tab) && typeof window !== "undefined") window.scrollTo(0, 0);
+        },
       },
       h("span", { class: "nav-icon", "aria-hidden": "true" }),
       msg().options.tabs[tab].label,
     ),
   );
-  const show = (hash: string): void => {
+  let shown: OptionTab | null = null;
+  /** Shows the tab of `hash`; true when that is another tab than before. */
+  const show = (hash: string): boolean => {
     const current = tabFor(hash);
+    const changed = current !== shown;
+    shown = current;
     OPTION_TABS.forEach((tab, i) => {
       const active = tab === current;
       const panel = tabs[i];
@@ -599,12 +606,15 @@ function settingsNav(tabs: readonly HTMLElement[]): HTMLElement {
       const card = document.getElementById(hash);
       if (card !== null && typeof card.scrollIntoView === "function") card.scrollIntoView({ block: "start" });
     }
+    return changed;
   };
   show(location.hash.slice(1));
   if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
     window.addEventListener("hashchange", () => {
-      show(location.hash.slice(1));
-      if (OPTION_TABS.some((tab) => `#${tab}` === location.hash)) window.scrollTo(0, 0);
+      // Back/forward or a link to another tab; after a click the tab is already shown and nothing moves.
+      if (show(location.hash.slice(1)) && OPTION_TABS.some((tab) => `#${tab}` === location.hash)) {
+        window.scrollTo(0, 0);
+      }
     });
   }
   return h(

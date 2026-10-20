@@ -381,15 +381,12 @@ describe("wire format", () => {
       ["Content-Type: text/event-stream; charset=utf-8", "Cache-Control: no-cache", "Connection: keep-alive"],
     );
     assert.equal(res.headers.get("transfer-encoding"), "chunked");
-    const chunks = (res.chunks ?? []).map((c) => c.toString("utf8"));
     const answer = ["@lang|ko", placeholderLine(1, "ko"), placeholderLine(2, "ko")].join("\n");
     const pieces = splitCodePoints(answer, 10);
-    assert.equal(chunks.length, 1 + pieces.length + 2, "role + content + finish + [DONE]");
-    const frames = chunks.map((c) => sseData(c));
-    assert.ok(
-      frames.every((f) => f.length === 1),
-      "one frame per write",
-    );
+    // Frames from the body: Node may merge writes made in the same tick into one HTTP chunk on a busy machine, so the
+    // writes are counted on the server (framesWritten, below).
+    const frames = sseData(res.body.toString("utf8")).map((frame) => [frame]);
+    assert.equal(frames.length, 1 + pieces.length + 2, "role + content + finish + [DONE]");
     const role = frames[0]?.[0] as Json;
     const { id, created } = role;
     assert.match(String(id), /^chatcmpl-[0-9a-f]{32}$/);
@@ -415,7 +412,7 @@ describe("wire format", () => {
 
     const record = lastRecord(mock);
     assert.equal(record.outcome, "done");
-    assert.equal(record.framesWritten, chunks.length);
+    assert.equal(record.framesWritten, frames.length, "one frame per write");
     assert.equal(record.n, 2);
     assert.equal(record.model, MODEL);
     assert.equal(record.stream, true);
@@ -1005,7 +1002,7 @@ describe("answers", () => {
     await first.text();
   });
 
-  test("replay streams a recorded transcript byte for byte, one HTTP chunk per recorded frame", async () => {
+  test("replay streams a recorded transcript byte for byte, one write per recorded frame", async () => {
     const frames = [
       'data: {"id":"chatcmpl-1","object":"chat.completion.chunk","created":1,"model":"gpt-5.2","choices":[{"index":0,"delta":{"role":"assistant"},"finish_reason":null}]}\r\n\r\n',
       'data: {"id":"chatcmpl-1","object":"chat.completion.chunk","created":1,"model":"gpt-5.2","choices":[{"index":0,"delta":{"content":"@lang|ko\\n#1|sfx||쾅|RẦM"},"finish_reason":null}]}\r\n\r\n',
@@ -1023,8 +1020,9 @@ describe("answers", () => {
     assert.equal(res.headers.get("content-type"), "text/event-stream; charset=utf-8");
     assert.ok(res.body.equals(bytes), "byte-exact");
     assert.deepEqual(
-      res.chunks?.map((c) => c.toString("utf8")),
+      splitSseFrames(res.body).map((frame) => Buffer.from(frame).toString("utf8")),
       frames,
+      "the recorded frames, in order",
     );
     assert.equal(lastRecord(mock).outcome, "done");
     assert.equal(lastRecord(mock).framesWritten, 4);

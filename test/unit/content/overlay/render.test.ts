@@ -595,7 +595,8 @@ describe("vertical lettering (Japanese and Traditional Chinese in tategaki ballo
       assert.ok(col.height !== undefined && col.height > 0);
       assert.ok(col.x >= tall.x1 - 1e-9 && col.x + col.width <= tall.x2 + 1e-9, `column ${i} x`);
       assert.ok(col.y >= tall.y1 - 1e-9 && col.y + (col.height ?? 0) <= tall.y2 + 1e-9, `column ${i} y`);
-      const next = plan.lines[i + 1];
+      // Typed explicitly: newer @types/node assertion signatures make the inference circular here.
+      const next: (typeof plan.lines)[number] | undefined = plan.lines[i + 1];
       if (next !== undefined) assert.ok(next.x < col.x, "right to left");
     }
     assert.ok(plan.patch !== null, "the erase patch is drawn as usual");
