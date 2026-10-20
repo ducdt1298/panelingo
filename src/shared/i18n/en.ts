@@ -322,6 +322,21 @@ export const EN = {
       import: "Import",
       imported: (count: number): string => `Imported ${count} entr${count === 1 ? "y" : "ies"}.`,
       importFailed: "This file is not a Panelingo glossary.",
+      address: {
+        heading: "Forms of address",
+        hint: "How each character refers to themself and to the one they talk to. The AI fills this in as you read and keeps it the same; your own rules are never changed.",
+        speaker: "Speaker",
+        listener: "Listener",
+        self: "Refers to themself as",
+        other: "Calls the listener",
+        learned: "Learned by the AI",
+        mine: "Yours",
+        keep: "Keep",
+        addHeading: "Add a form of address",
+        incomplete: "Enter both names and at least one form of address.",
+        full: "The list is full. Delete a rule first.",
+        empty: "None yet. Pairs appear here as the AI meets them.",
+      },
     },
   },
   debug: {
@@ -720,6 +735,10 @@ export const EN = {
       "memory.summaryMaxWords": {
         label: "Story summary length (words)",
         hint: "0 turns the running summary off.",
+      },
+      "memory.warmUp": {
+        label: "Warm up a new series",
+        hint: "While a series has no memory yet, its first request goes alone so the next pages reuse its names and forms of address. The first pages take a little longer.",
       },
       "cache.translationTtlDays": {
         label: "Keep unused translations for (days)",

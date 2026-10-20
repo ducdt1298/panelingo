@@ -131,6 +131,7 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
   num("memory.historyMaxLines"),
   num("memory.historyMaxTokens"),
   num("memory.summaryMaxWords"),
+  bool("memory.warmUp"),
 
   num("cache.translationTtlDays"),
   num("cache.encodedBytesLruMb"),

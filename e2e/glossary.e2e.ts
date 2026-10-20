@@ -5,7 +5,7 @@
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 import type { Page } from "puppeteer-core";
-import { GLOSSARY_HEADER } from "../src/shared/core/prompt.ts";
+import { GLOSSARY_HEADER, PRONOUNS_LEGEND } from "../src/shared/core/prompt.ts";
 import { EN } from "../src/shared/i18n/en.ts";
 import {
   enableSite,
@@ -130,5 +130,48 @@ test("the next request of the series sends the entry in the prompt's glossary", 
       .join("\n");
     assert.ok(prompt.includes(GLOSSARY_HEADER), "the prompt has a glossary section");
     assert.ok(prompt.includes(`${ORIGINAL} -> ${RENDERING}`), "the manual entry is in the glossary");
+  });
+});
+
+test("a form of address added in the panel is listed as yours and sent in the next prompt's table", async () => {
+  await withDiagnostics(h, current, async () => {
+    const view = panel?.page;
+    assert.ok(view !== undefined, "needs the panel of the previous tests");
+    await view.evaluate(() => {
+      const details = document.querySelector<HTMLDetailsElement>("details.add-address");
+      if (details !== null) details.open = true;
+    });
+    const inputs = await view.$$("form.address-form input");
+    assert.equal(inputs.length, 4, "speaker, listener and both forms of address");
+    for (const [i, text] of ["Mina", "Jun", "tớ", "cậu"].entries()) await inputs[i]!.type(text);
+    await clickButton(view, EN.sidepanel.glossary.add, "form.address-form");
+    const rows = await waitUntil(
+      "the reader's rule",
+      () =>
+        view.$$eval(".entry.address.mine", (items) =>
+          items.map(
+            (item) =>
+              `${item.querySelector(".orig")?.textContent}${item.querySelector(".rendering")?.textContent}`,
+          ),
+        ),
+      (list) => list.length > 0,
+    );
+    assert.deepEqual(rows, ["Mina → Juntớ / cậu"]);
+
+    const before = h.api.requests().filter((r) => r.path === "/v1/chat/completions").length;
+    const reply = await sendFromPage<{ queued: number }>(view, "engine", "en:retranslate", { tabId });
+    assert.equal(reply.ok, true, JSON.stringify(reply));
+    const chats = await waitUntil(
+      "a new chat request",
+      () => h.api.requests().filter((r) => r.path === "/v1/chat/completions"),
+      (list) => list.length > before,
+      90_000,
+    );
+    const prompt = chats
+      .slice(before)
+      .map((r) => r.systemText)
+      .join("\n");
+    assert.ok(prompt.includes(PRONOUNS_LEGEND), "the forms-of-address table explains its lines");
+    assert.ok(prompt.includes("Mina -> Jun: tớ / cậu"), "the rule is in the table");
   });
 });

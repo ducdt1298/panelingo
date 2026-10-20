@@ -22,7 +22,7 @@ import type { Logger } from "../platform/log.ts";
 import type { Clock } from "../shared/clock.ts";
 import type { CompositeFailReason } from "../shared/core/composite-layout.ts";
 import type { HealthReading } from "../shared/core/health.ts";
-import type { Term } from "../shared/core/id-accounting.ts";
+import type { Address, Term } from "../shared/core/id-accounting.ts";
 import type { ModelProfile } from "../shared/core/model-profile.ts";
 import type {
   HistoryLine,
@@ -436,6 +436,8 @@ export interface PackMemory {
 /** What the answers of one pack taught: @term lines, the last @sum of a full request, and the reported @lang. */
 export interface PackLearning {
   terms: Term[];
+  /** @addr lines: forms of address between characters (first report per pair wins). */
+  addresses: Address[];
   summary: string | null;
   /** From an @lang line only (never the fallback language). */
   lang: Lang | null;

@@ -1,18 +1,7 @@
-:root {
-  color-scheme: light dark;
-  font-family: system-ui, "Segoe UI", sans-serif;
-  font-size: 13px;
-  --border: color-mix(in srgb, currentColor 18%, transparent);
-  --muted: color-mix(in srgb, currentColor 62%, transparent);
-  --ok: #188038;
-  --warn: #b06000;
-  --error: #c5221f;
-  --pending: #1a73e8;
-  --accent: #1a73e8;
-}
+/* Side panel layout on top of ../theme.css. */
 
 body {
-  margin: 0;
+  font-size: 13px;
 }
 
 #toolbar {
@@ -24,7 +13,7 @@ body {
   gap: 8px;
   padding: 10px 12px;
   border-bottom: 1px solid var(--border);
-  background: Canvas;
+  background: var(--bg);
   z-index: 1;
 }
 
@@ -53,36 +42,6 @@ main {
   gap: 6px;
 }
 
-button {
-  font: inherit;
-  padding: 3px 10px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-}
-
-button.primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
-.message:empty {
-  display: none;
-}
-
-.message {
-  margin: 8px 12px 0;
-  color: var(--warn);
-}
-
 .muted {
   color: var(--muted);
 }
@@ -98,9 +57,10 @@ button:disabled {
 }
 
 .line {
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 10px;
+  border-radius: var(--radius-lg);
+  padding: 10px 12px;
   margin-bottom: 8px;
 }
 
@@ -170,13 +130,14 @@ button:disabled {
   border: none;
   border-bottom: 2px solid transparent;
   border-radius: 0;
-  padding: 4px 10px 6px;
+  background: none;
+  padding: 6px 12px 8px;
   color: var(--muted);
 }
 
 #tabs .tab.selected {
   border-bottom-color: var(--accent);
-  color: inherit;
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -268,4 +229,18 @@ button:disabled {
 .profile summary {
   cursor: pointer;
   font-weight: 600;
+}
+
+.add-address {
+  margin: 4px 0 12px;
+}
+
+.add-address summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.entry.address.learned {
+  border-style: dashed;
 }

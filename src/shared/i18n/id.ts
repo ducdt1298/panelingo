@@ -276,6 +276,21 @@ export const ID: Catalog = {
       import: "Impor",
       imported: (count: number): string => `${count} entri diimpor.`,
       importFailed: "File ini bukan glosarium Panelingo.",
+      address: {
+        heading: "Bentuk sapaan",
+        hint: "Cara tiap tokoh menyebut dirinya dan lawan bicaranya. AI mengisinya selama Anda membaca dan menjaganya tetap sama; aturan Anda sendiri tidak pernah diubah.",
+        speaker: "Penutur",
+        listener: "Lawan bicara",
+        self: "Menyebut dirinya",
+        other: "Memanggil lawan bicara",
+        learned: "Dipelajari AI",
+        mine: "Milik Anda",
+        keep: "Simpan",
+        addHeading: "Tambah bentuk sapaan",
+        incomplete: "Isi kedua nama dan setidaknya satu bentuk sapaan.",
+        full: "Daftar sudah penuh. Hapus satu aturan dulu.",
+        empty: "Belum ada. Pasangan muncul di sini saat AI menemuinya.",
+      },
     },
   },
   debug: { heading: "Debug (khusus build dev/uji)" },
@@ -679,6 +694,10 @@ export const ID: Catalog = {
       "memory.summaryMaxWords": {
         label: "Panjang ringkasan cerita (kata)",
         hint: "0 menonaktifkan ringkasan yang terus diperbarui.",
+      },
+      "memory.warmUp": {
+        label: "Panaskan seri baru",
+        hint: "Selama seri belum punya memori, permintaan pertamanya dikirim sendiri agar halaman berikutnya memakai ulang nama dan sapaan darinya. Halaman pertama sedikit lebih lama.",
       },
       "cache.translationTtlDays": {
         label: "Simpan terjemahan yang tidak dipakai selama (hari)",

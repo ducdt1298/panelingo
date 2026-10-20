@@ -40,12 +40,21 @@ export interface SumRec {
   text: string;
   raw: string;
 }
+/** @addr|<speaker>|<listener>|<how the speaker refers to themself>|<how the speaker addresses the listener> */
+export interface AddrRec {
+  kind: "addr";
+  a: string;
+  b: string;
+  aSelf: string;
+  aToB: string;
+  raw: string;
+}
 /** Anything else: kept for refusal detection and debug logs. */
 export interface JunkRec {
   kind: "junk";
   raw: string;
 }
-export type Rec = ItemRec | LangRec | TermRec | SumRec | JunkRec;
+export type Rec = ItemRec | LangRec | TermRec | SumRec | AddrRec | JunkRec;
 
 const TYPE_WORDS: ReadonlyArray<readonly [LineType, readonly string[]]> = [
   ["dialogue", ["dialogue", "dialog", "speech", "talk", "spoken"]],
@@ -80,7 +89,7 @@ const LANG_MAP: ReadonlyMap<string, Lang> = new Map(
 const LEADING_INVISIBLE = /^[\ufeff\u200b-\u200d\u2060]+/u;
 const TOLERATED_PREFIX = /^\s*(?:[-*>•]\s*)?(?:assistant\s*:\s*)?/iu;
 const ITEM_HEAD = /^#\s*(\d{1,3})\s*$/u;
-const CONTROL_HEAD = /^@\s*(lang|language|term|sum|summary)\s*$/iu;
+const CONTROL_HEAD = /^@\s*(lang|language|term|sum|summary|addr|address)\s*$/iu;
 const FENCE = /^\s*(?:```|~~~)/u;
 const THINK_OPEN = /<think(?:ing)?>/iu;
 const THINK_CLOSE = /<\/think(?:ing)?>/iu;
@@ -190,7 +199,7 @@ function parseItem(text: string, raw: string): ItemRec | null {
   return { kind: "item", id, type: normalizeType(type), speaker, original, translation: vi, raw };
 }
 
-function parseControl(text: string, raw: string): LangRec | TermRec | SumRec | null {
+function parseControl(text: string, raw: string): LangRec | TermRec | SumRec | AddrRec | null {
   const sep = firstSeparator(text, ":\uff1a");
   if (sep < 0) {
     return null;
@@ -210,6 +219,12 @@ function parseControl(text: string, raw: string): LangRec | TermRec | SumRec | n
       field.trim().normalize("NFC"),
     );
     return { kind: "term", original, translation: vi, note, raw };
+  }
+  if (key === "addr" || key === "address") {
+    const [a = "", b = "", aSelf = "", aToB = ""] = splitFirst(body, fieldSeparator(body), 3).map((field) =>
+      field.trim().normalize("NFC"),
+    );
+    return { kind: "addr", a, b, aSelf, aToB, raw };
   }
   return { kind: "sum", text: body.trim().normalize("NFC"), raw };
 }

@@ -36,7 +36,7 @@ import type {
   UnitResult,
   UnitStore,
 } from "../../../src/engine/contracts.ts";
-import { AHEAD_WAIT_FACTOR, createPipeline } from "../../../src/engine/pipeline.ts";
+import { AHEAD_WAIT_FACTOR, createPipeline, WARM_UP_MAX_MS } from "../../../src/engine/pipeline.ts";
 import type { CtvDatabase } from "../../../src/platform/db-schema.ts";
 import { createLogger } from "../../../src/platform/log.ts";
 import { INITIAL_HEALTH, isSendable, type HealthReading } from "../../../src/shared/core/health.ts";
@@ -1584,6 +1584,7 @@ describe("series memory", () => {
 
     const learning: PackLearning = {
       terms: [{ original: "서연", translation: "Seoyeon", note: "" }],
+      addresses: [{ a: "Minjun", b: "Seoyeon", aSelf: "tớ", aToB: "cậu" }],
       summary: "Minjun meets Seoyeon.",
       lang: "ko",
     };
@@ -1629,6 +1630,118 @@ describe("series memory", () => {
     h.pipeline.submit(new FakeFrame(1), submitOf("1.0", src));
     await settle();
     assert.equal(h.stores.imageRecords.get("s:p1")?.seriesKey, SCOPE.seriesKey);
+  });
+});
+
+describe("series warm-up (memory.warmUp)", () => {
+  const COLD: PackMemory = {
+    lang: null,
+    style: { genre: "", koNames: "romanized", keepJaHonorifics: false },
+    glossary: [],
+    pronouns: [],
+    history: [],
+    summary: null,
+    askSummary: true,
+  };
+  const LEARNING: PackLearning = {
+    terms: [],
+    addresses: [{ a: "Minjun", b: "Seoyeon", aSelf: "tớ", aToB: "cậu" }],
+    summary: null,
+    lang: "ko",
+  };
+
+  function coldHarness(): Harness & { memory: RecordingMemory; frame: FakeFrame; submit(n: number): void } {
+    const memory = new RecordingMemory();
+    memory.answer = COLD;
+    const h = harness({ memory });
+    h.translator.auto = false;
+    const frame = new FakeFrame(1);
+    return {
+      ...h,
+      memory,
+      frame,
+      submit(n: number) {
+        h.pipeline.submit(
+          frame,
+          submitOf(`${n}.0`, h.image(`p${n}`, 2), { pos: { docOrder: n, srcGen: 0, yTop: n * 1200 } }),
+        );
+      },
+    };
+  }
+
+  test("the first request of a series with no memory goes alone; the rest start once it is answered and learned", async () => {
+    const h = coldHarness();
+    h.submit(1);
+    h.submit(2);
+    h.submit(3);
+    await settle();
+    assert.equal(h.translator.calls.length, 1, "the warm-up request goes alone");
+    assert.equal(h.memory.contexts.length, 1);
+    const first = h.translator.calls[0];
+    assert.ok(first !== undefined);
+    first.emitAll();
+    first.resolve({ learning: LEARNING });
+    await settle();
+    assert.equal(h.memory.learned.length, 1, "learned before the next requests read their context");
+    assert.equal(h.translator.calls.length, 3, "the others go together");
+    assert.ok(h.logs.some((entry) => entry.msg === "series warm-up"));
+    for (const call of h.translator.calls.slice(1)) {
+      call.emitAll();
+      call.resolve();
+    }
+    h.submit(4);
+    h.submit(5);
+    await settle();
+    assert.equal(h.translator.calls.length, 5, "a warmed-up series is not held again");
+  });
+
+  test("a series that already has memory, memory.warmUp off or memory off: nothing is held", async () => {
+    const warm = harness({ memory: new RecordingMemory() });
+    warm.translator.auto = false;
+    const frame = new FakeFrame(1);
+    for (const n of [1, 2]) {
+      warm.pipeline.submit(
+        frame,
+        submitOf(`${n}.0`, warm.image(`p${n}`, 2), { pos: { docOrder: n, srcGen: 0, yTop: 0 } }),
+      );
+    }
+    await settle();
+    assert.equal(warm.translator.calls.length, 2);
+
+    const offs = [
+      (s: Settings) => {
+        s.memory.warmUp = false;
+      },
+      (s: Settings) => {
+        s.memory.enabled = false;
+      },
+    ];
+    for (const off of offs) {
+      const h = coldHarness();
+      h.settings.update(off);
+      h.submit(1);
+      h.submit(2);
+      await settle();
+      assert.equal(h.translator.calls.length, 2);
+    }
+  });
+
+  test("a warm-up request that fails hands over to the next pack; one that hangs frees the rest after WARM_UP_MAX_MS", async () => {
+    const h = coldHarness();
+    h.submit(1);
+    h.submit(2);
+    h.submit(3);
+    await settle();
+    h.translator.calls[0]?.emitAll("error");
+    h.translator.calls[0]?.resolve({ error: { code: "engine.internal", message: "x", retryable: false } });
+    await settle();
+    assert.equal(h.translator.calls.length, 2, "the next pack leads a new warm-up");
+    h.clock.advance(WARM_UP_MAX_MS - 1);
+    await settle();
+    assert.equal(h.translator.calls.length, 2);
+    h.clock.advance(1);
+    await settle();
+    assert.equal(h.translator.calls.length, 3, "a slow warm-up does not hold the series");
   });
 });
 

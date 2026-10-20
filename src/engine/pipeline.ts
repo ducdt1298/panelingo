@@ -126,6 +126,8 @@ export const MAX_IDLE_WORKS = 256;
 /** Images ahead of the reader wait this many times translate.packWaitMs for their neighbours, at most AHEAD_WAIT_MAX_MS. */
 export const AHEAD_WAIT_FACTOR = 8;
 export const AHEAD_WAIT_MAX_MS = 5_000;
+/** Longest the other packs of a new series wait for its warm-up request (settings.memory.warmUp). */
+export const WARM_UP_MAX_MS = 60_000;
 /** urlKey → contentKey memo entries. */
 export const MAX_URL_MEMO = 2048;
 /** Page URL + title → series and chapter keys memo entries. */
@@ -262,6 +264,13 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
   const stripFrames = new Set<string>();
   let flows = 0;
   let packSeq = 0;
+  /**
+   * Series warm-up (settings.memory.warmUp): the first request of a series is out alone while its memory is empty,
+   * so the next ones start from the names, forms of address and lines it reported instead of each picking their own.
+   * Series known to have memory (or that had a warm-up) are in warmSeries; leaders holds the request in flight.
+   */
+  const warmSeries = new Set<string>();
+  const leaders = new Map<string, { entry: PackEntry; cancel: () => void }>();
 
   const queue = createQueue({
     clock,
@@ -1356,6 +1365,7 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
         urgent: () => packWorks.some(workOnScreen),
         rank: () => workRank(head),
         run: (lane) => runPack(entry, lane),
+        ready: () => mayStart(entry),
       };
       const parts: PackPart[] = [];
       const entry: PackEntry = {
@@ -1443,6 +1453,53 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
     }
   }
 
+  function warmUpOn(): boolean {
+    const s = settings.current();
+    return s.memory.enabled && s.memory.warmUp && s.translate.engine === "api";
+  }
+
+  /** queue ready(): false while another pack of this cold series is the warm-up request. */
+  function mayStart(entry: PackEntry): boolean {
+    if (!warmUpOn()) return true;
+    const seriesKey = scopeOf(entry.frameKey)?.seriesKey;
+    if (seriesKey === undefined || warmSeries.has(seriesKey)) return true;
+    const leader = leaders.get(seriesKey);
+    return leader === undefined || leader.entry === entry;
+  }
+
+  /** The pack becomes its series' warm-up request when the series' memory is not known to be filled yet. */
+  function leadWarmUp(entry: PackEntry, seriesKey: string | null): boolean {
+    if (seriesKey === null || !warmUpOn() || warmSeries.has(seriesKey) || leaders.has(seriesKey))
+      return false;
+    // A request that never ends must not hold the series: the others go after WARM_UP_MAX_MS whatever happens.
+    const cancel = clock.setTimer(() => endWarmUp(entry, seriesKey, true), WARM_UP_MAX_MS);
+    leaders.set(seriesKey, { entry, cancel });
+    return true;
+  }
+
+  /**
+   * Releases the packs held behind the warm-up request. done: no more warm-ups for the series (it has memory now, or
+   * the request took too long); otherwise (it failed) the next pack to start leads a new one.
+   */
+  function endWarmUp(entry: PackEntry, seriesKey: string, done: boolean): void {
+    const leader = leaders.get(seriesKey);
+    if (leader?.entry !== entry) return;
+    leader.cancel();
+    leaders.delete(seriesKey);
+    if (done) warmSeries.add(seriesKey);
+    queue.pump();
+  }
+
+  /** Nothing in the context could keep the next requests consistent with this one. */
+  function coldContext(context: PackMemory): boolean {
+    return (
+      context.glossary.length === 0 &&
+      context.pronouns.length === 0 &&
+      context.history.length === 0 &&
+      context.summary === null
+    );
+  }
+
   async function runPack(entry: PackEntry, lane: Lane): Promise<void> {
     absorbQueued(entry);
     const works = entry.parts.map((part) => part.work);
@@ -1455,6 +1512,8 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
     let failure: ErrorInfo | null = null;
     const packLog = log.child({ batchId: entry.id });
     const scope = scopeOf(entry.frameKey);
+    const seriesKey = scope?.seriesKey ?? null;
+    const leads = leadWarmUp(entry, seriesKey);
     const positions = entry.units.map((unit) => unit.pos ?? 0);
     const firstPos = Math.min(...positions);
     try {
@@ -1464,6 +1523,11 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
           ? Promise.resolve<PackMemory | null>(null)
           : memory.context(scope, { contentKey: lead.contentKey, docOrder: entry.docOrder, pos: firstPos }),
       ]);
+      if (leads && seriesKey !== null) {
+        // Memory off or unavailable, or already filled: nothing to wait for.
+        if (context === null || !coldContext(context)) endWarmUp(entry, seriesKey, true);
+        else packLog.debug("series warm-up", { seriesKey, units: entry.units.length });
+      }
       const images = new Map<string, DecodedImage>();
       works.forEach((work, i) => {
         const decoded = decodedList[i];
@@ -1500,8 +1564,19 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
       for (const frameKey of frames.keys()) postHorizons(frameKey);
     }
     const learning = report?.learning;
-    if (scope !== null && learning !== undefined) {
-      void memory.learn(scope, { packId: entry.id, pos: Math.max(...positions), learning });
+    const learned =
+      scope !== null && learning !== undefined
+        ? memory.learn(scope, { packId: entry.id, pos: Math.max(...positions), learning })
+        : null;
+    if (leads && seriesKey !== null) {
+      // The next requests read the context once what this one taught is written; a failed one hands over.
+      const answered = report !== null && report.error === null;
+      if (learned === null) endWarmUp(entry, seriesKey, answered);
+      else
+        void learned.then(
+          () => endWarmUp(entry, seriesKey, answered),
+          () => endWarmUp(entry, seriesKey, false),
+        );
     }
     try {
       finishPack(entry, report, failure, delivered);
@@ -1942,6 +2017,7 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
     urlMemo.clear();
     bytes.clear();
     memory.cacheCleared();
+    warmSeries.clear();
     const dropped = works.clear(
       (work) => work.phase === "ready" && !workActive(work) && work.decoding === null,
     );

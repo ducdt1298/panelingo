@@ -293,6 +293,21 @@ export const TR: Catalog = {
       import: "İçe aktar",
       imported: (count: number): string => `${count} girdi içe aktarıldı.`,
       importFailed: "Bu dosya bir Panelingo sözlüğü değil.",
+      address: {
+        heading: "Hitap biçimleri",
+        hint: "Her karakterin kendinden ve konuştuğu kişiden nasıl söz ettiği. Yapay zekâ bunu sen okurken doldurur ve aynı tutar; kendi kuralların asla değişmez.",
+        speaker: "Konuşan",
+        listener: "Dinleyen",
+        self: "Kendine dediği",
+        other: "Dinleyene hitabı",
+        learned: "Yapay zekâ öğrendi",
+        mine: "Senin",
+        keep: "Sabitle",
+        addHeading: "Hitap biçimi ekle",
+        incomplete: "İki adı ve en az bir hitap biçimini gir.",
+        full: "Liste dolu. Önce bir kural sil.",
+        empty: "Henüz yok. Yapay zekâ karşılaştıkça çiftler burada görünür.",
+      },
     },
   },
   debug: { heading: "Hata ayıklama (yalnızca dev/test derlemelerinde)" },
@@ -692,6 +707,10 @@ export const TR: Catalog = {
       "memory.summaryMaxWords": {
         label: "Hikâye özeti uzunluğu (kelime)",
         hint: "0 girilirse sürekli güncellenen özet kapanır.",
+      },
+      "memory.warmUp": {
+        label: "Yeni seriyi ısıt",
+        hint: "Bir serinin henüz belleği yokken ilk isteği tek başına gider; sonraki sayfalar onun adlarını ve hitap biçimlerini kullanır. İlk sayfalar biraz daha uzun sürer.",
       },
       "cache.translationTtlDays": {
         label: "Kullanılmayan çevirileri saklama süresi (gün)",

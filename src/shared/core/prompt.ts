@@ -138,7 +138,26 @@ export function systemOutput(target: PromptTarget): string {
     '- Never put the character "|" inside a field.',
     "After the # lines, for each NEW name or recurring term that is not in the glossary (at most 5):",
     `@term|<original>|<${target.name} rendering>|<short note in ${target.name}>`,
+    ...addressOutput(target),
   ].join("\n");
+}
+
+/** Targets whose forms of address carry relationship and register (English only has I / you). */
+export function asksForAddress(target: PromptTarget): boolean {
+  return target.code !== "en";
+}
+
+/**
+ * @addr lines: how each pair of characters talk to each other, so the extension can keep them the same for the
+ * rest of the series (series memory learns them and sends them back as the forms-of-address table).
+ */
+function addressOutput(target: PromptTarget): string[] {
+  if (!asksForAddress(target)) return [];
+  return [
+    "Then, for each pair of characters who speak to each other in these regions and are not yet in the forms-of-address table (at most 5):",
+    `@addr|<speaker>|<listener>|<how the speaker refers to themself>|<how the speaker addresses the listener>   (${target.name} words: pronoun, kinship word or title)`,
+    "Use the same names as in the speaker field.",
+  ];
 }
 
 export function systemAskSummary(target: PromptTarget, words: number = PROMPT_LIMITS.summaryWords): string {
@@ -183,6 +202,10 @@ export function styleBlock(target: PromptTarget): string {
 
 export const LANGUAGE_RULES_HEADER = "# Language rules";
 export const GLOSSARY_HEADER = "# Glossary (always use these renderings)";
+
+/** Explains the lines under the forms-of-address header. */
+export const PRONOUNS_LEGEND =
+  "speaker -> listener: how the speaker refers to themself / how the speaker addresses the listener. Always use exactly these words for these pairs.";
 
 export function pronounsHeader(target: PromptTarget): string {
   return target.code === "vi" ? "# Xưng hô (keep consistent)" : "# Forms of address (keep consistent)";
@@ -428,7 +451,7 @@ function systemText(input: PromptInput, sel: Selection, limits: PromptLimits): s
     tail.push(GLOSSARY_HEADER, ...sel.glossary.map(glossaryLine));
   }
   if (sel.pronouns.length > 0) {
-    tail.push(pronounsHeader(target), ...sel.pronouns.map(pronounLine));
+    tail.push(pronounsHeader(target), PRONOUNS_LEGEND, ...sel.pronouns.map(pronounLine));
   }
   if (tail.length > 0) {
     sections.push(tail.join("\n"));

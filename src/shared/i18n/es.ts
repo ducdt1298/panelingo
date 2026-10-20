@@ -296,6 +296,21 @@ export const ES: Catalog = {
       imported: (count: number): string =>
         `${plural(count, "Se importó", "Se importaron")} ${count} ${plural(count, "entrada", "entradas")}.`,
       importFailed: "Este archivo no es un glosario de Panelingo.",
+      address: {
+        heading: "Formas de tratamiento",
+        hint: "Cómo se refiere cada personaje a sí mismo y a quien le habla. La IA lo completa mientras lees y lo mantiene igual; tus propias reglas nunca cambian.",
+        speaker: "Hablante",
+        listener: "Oyente",
+        self: "Se llama a sí mismo",
+        other: "Llama al oyente",
+        learned: "Aprendida por la IA",
+        mine: "Tuya",
+        keep: "Conservar",
+        addHeading: "Añadir una forma de tratamiento",
+        incomplete: "Escribe los dos nombres y al menos una forma de tratamiento.",
+        full: "La lista está llena. Borra primero una regla.",
+        empty: "Todavía ninguna. Las parejas aparecen aquí cuando la IA las encuentra.",
+      },
     },
   },
   debug: { heading: "Depuración (solo en versiones de desarrollo y prueba)" },
@@ -705,6 +720,10 @@ export const ES: Catalog = {
       "memory.summaryMaxWords": {
         label: "Longitud del resumen de la historia (palabras)",
         hint: "0 desactiva el resumen continuo.",
+      },
+      "memory.warmUp": {
+        label: "Preparar una serie nueva",
+        hint: "Mientras una serie aún no tiene memoria, su primera solicitud va sola para que las páginas siguientes reutilicen sus nombres y formas de tratamiento. Las primeras páginas tardan un poco más.",
       },
       "cache.translationTtlDays": {
         label: "Conservar traducciones sin usar durante (días)",

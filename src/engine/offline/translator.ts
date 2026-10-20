@@ -695,7 +695,7 @@ export function createOfflineTranslator(deps: OfflineTranslatorDeps): OfflineTra
         lang = await voteLanguage(crops);
         timings.voteMs = now() - voteStart;
         report.lang = lang === "other" ? null : lang;
-        if (lang !== "other") report.learning = { terms: [], summary: null, lang };
+        if (lang !== "other") report.learning = { terms: [], addresses: [], summary: null, lang };
       } else {
         lang = pack.lang;
       }

@@ -126,6 +126,20 @@ describe("classifyHttpError: OpenAI-compatible error shapes", () => {
       assert.equal(info.status, status);
     });
   }
+
+  test("400 naming the temperature is a bad request marked 'temperature' (the translator asks again without it)", () => {
+    const info = classifyHttpError(
+      400,
+      openai(
+        "Unsupported value: 'temperature' does not support 0.2 with this model. Only the default (1) value is supported.",
+        "invalid_request_error",
+        "unsupported_value",
+      ),
+    );
+    assert.equal(info.code, "api.bad_request");
+    assert.equal(info.detail, "temperature");
+    assert.notEqual(classifyHttpError(400, openai("Invalid value for 'messages'.")).detail, "temperature");
+  });
 });
 
 describe("classifyHttpError: context length variants", () => {

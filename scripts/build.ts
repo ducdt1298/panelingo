@@ -162,6 +162,8 @@ async function checkModels(): Promise<CheckedModel[]> {
 
 async function copyStatic(models: CheckedModel[]): Promise<void> {
   await copyInto("src/engine/offscreen.html", "engine/offscreen.html");
+  // Shared look of every extension page; each page's own stylesheet adds its layout.
+  await copyInto("src/ui/common/theme.css", "ui/theme.css");
   for (const page of UI_PAGES) {
     await copyInto(`src/ui/${page}/${page}.html`, `ui/${page}.html`);
     if (existsSync(path.join(ROOT, `src/ui/${page}/${page}.css`))) {

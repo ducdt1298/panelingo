@@ -277,6 +277,21 @@ export const KO: Catalog = {
       import: "가져오기",
       imported: (count: number): string => `항목 ${count}개를 가져왔습니다.`,
       importFailed: "이 파일은 Panelingo 용어집이 아닙니다.",
+      address: {
+        heading: "호칭",
+        hint: "각 인물이 자신과 상대를 어떻게 부르는지입니다. 읽는 동안 AI가 채우고 그대로 유지하며, 직접 정한 규칙은 바꾸지 않습니다.",
+        speaker: "말하는 사람",
+        listener: "듣는 사람",
+        self: "자신을 부르는 말",
+        other: "상대를 부르는 말",
+        learned: "AI가 학습함",
+        mine: "내 규칙",
+        keep: "고정",
+        addHeading: "호칭 추가",
+        incomplete: "두 이름과 호칭을 하나 이상 입력하세요.",
+        full: "목록이 가득 찼습니다. 먼저 규칙을 삭제하세요.",
+        empty: "아직 없습니다. AI가 만난 인물 쌍이 여기에 표시됩니다.",
+      },
     },
   },
   debug: { heading: "디버그(개발/테스트 빌드 전용)" },
@@ -665,6 +680,10 @@ export const KO: Catalog = {
       "memory.summaryMaxWords": {
         label: "이야기 요약 길이(단어 수)",
         hint: "0이면 계속 갱신되는 이야기 요약을 끕니다.",
+      },
+      "memory.warmUp": {
+        label: "새 시리즈 예열",
+        hint: "시리즈 기억이 아직 없으면 첫 요청만 먼저 보내고, 다음 페이지는 그 요청의 이름과 호칭을 그대로 씁니다. 처음 몇 페이지는 조금 더 걸립니다.",
       },
       "cache.translationTtlDays": {
         label: "사용하지 않은 번역 보관 기간(일)",

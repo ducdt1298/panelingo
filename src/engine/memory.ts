@@ -12,7 +12,9 @@ import {
   castLangVote,
   excessCandidates,
   historyBefore,
+  learnAddress,
   learnTerm,
+  promptPronouns,
   newChapter,
   newSeriesProfile,
   nextSummary,
@@ -25,6 +27,7 @@ import type { Term } from "../shared/core/id-accounting.ts";
 import type { HistoryLine } from "../shared/core/prompt.ts";
 import { PAGE_POS_STRIDE, pagePos } from "../shared/ids.ts";
 import type { ChapterRecord, SeriesRecord } from "../shared/records.ts";
+import type { PronounRule } from "../shared/types.ts";
 import { SERIES_KEY_SEPARATOR, seriesTitleOf } from "../shared/series-key.ts";
 import type {
   ChapterStore,
@@ -208,7 +211,10 @@ export function createSeriesMemory(deps: SeriesMemoryDeps): SeriesMemory {
           keepJaHonorifics: profile.style.keepJaHonorifics,
         },
         glossary: promptGlossary(entries).slice(0, Math.max(0, memory.glossaryInPrompt)),
-        pronouns: profile.pronouns.map((rule) => ({ ...rule })),
+        pronouns: promptPronouns(
+          profile.pronouns,
+          lines.map((line) => line.speaker),
+        ),
         history: lines,
         summary: summaryOn && chapter.summary !== "" ? chapter.summary : null,
         askSummary: summaryOn,
@@ -228,6 +234,7 @@ export function createSeriesMemory(deps: SeriesMemoryDeps): SeriesMemory {
     if (!memory.enabled || st === null) return;
     const now = clock.now();
     const { terms, summary, lang } = pack.learning;
+    const addresses = pack.learning.addresses ?? [];
     if (terms.length > 0) {
       const byKey = new Map<string, Term>();
       for (const term of terms) {
@@ -244,6 +251,25 @@ export function createSeriesMemory(deps: SeriesMemoryDeps): SeriesMemory {
         const drop = excessCandidates(await st.glossary.forSeries(scope.seriesKey));
         if (drop.length > 0) await st.glossary.update(scope.seriesKey, drop, () => null);
       }
+    }
+    if (addresses.length > 0) {
+      await st.series.update(scope.seriesKey, (existing) => {
+        const profile = existing ?? freshProfile(scope, now);
+        let rules: PronounRule[] = profile.pronouns;
+        let changed = false;
+        for (const address of addresses) {
+          const next = learnAddress(rules, { ...address, packId: pack.packId, at: now });
+          if (next !== null) {
+            rules = next;
+            changed = true;
+          }
+        }
+        return changed
+          ? { ...profile, pronouns: rules, updatedAt: now }
+          : existing === undefined
+            ? profile
+            : undefined;
+      });
     }
     if (summary !== null && memory.summaryMaxWords > 0) {
       const profile = await st.series.get(scope.seriesKey);

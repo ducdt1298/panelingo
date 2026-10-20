@@ -94,7 +94,7 @@ async function seedImage(
 }
 
 function learning(patch: Partial<PackLearning> = {}): PackLearning {
-  return { terms: [], summary: null, lang: null, ...patch };
+  return { terms: [], addresses: [], summary: null, lang: null, ...patch };
 }
 
 test("the first context creates the series profile, the chapter and the page, with an empty memory", async () => {
@@ -314,6 +314,51 @@ test("the profile's language, style and forms of address reach the context", asy
   assert.equal(context?.lang, "ko");
   assert.deepEqual(context?.style, { genre: "action", koNames: "han-viet", keepJaHonorifics: true });
   assert.deepEqual(context?.pronouns, [rule]);
+});
+
+test("learning: @addr pairs are kept for the series and sent back; a reader's rule stays", async () => {
+  const memory = memoryOver();
+  const manual = { a: "Jiho", b: "Jiyu", aSelf: "anh", aToB: "em", source: "manual" as const };
+  await memory.context(SCOPE, { contentKey: "s:A", docOrder: 0, pos: 0 });
+  await stores.series.update(SCOPE.seriesKey, (existing) =>
+    existing === undefined ? undefined : { ...existing, pronouns: [manual] },
+  );
+  await memory.learn(SCOPE, {
+    packId: "pk-1",
+    pos: 1_005,
+    learning: learning({
+      addresses: [
+        { a: "Jiho", b: "Jiyu", aSelf: "tớ", aToB: "cậu" },
+        { a: "Jiyu", b: "Jiho", aSelf: "em", aToB: "anh" },
+      ],
+    }),
+  });
+  let context = await memory.context(SCOPE, { contentKey: "s:B", docOrder: 1, pos: 2_000 });
+  assert.deepEqual(context?.pronouns, [
+    { a: "Jiyu", b: "Jiho", aSelf: "em", aToB: "anh" },
+    { a: "Jiho", b: "Jiyu", aSelf: "anh", aToB: "em" },
+  ]);
+  // One later request that answers differently does not change the pair; a second one does.
+  await memory.learn(SCOPE, {
+    packId: "pk-2",
+    pos: 2_005,
+    learning: learning({ addresses: [{ a: "Jiyu", b: "Jiho", aSelf: "tớ", aToB: "cậu" }] }),
+  });
+  context = await memory.context(SCOPE, { contentKey: "s:B", docOrder: 1, pos: 2_000 });
+  assert.equal(context?.pronouns[0]?.aSelf, "em");
+  await memory.learn(SCOPE, {
+    packId: "pk-3",
+    pos: 3_005,
+    learning: learning({ addresses: [{ a: "Jiyu", b: "Jiho", aSelf: "tớ", aToB: "cậu" }] }),
+  });
+  const profile = await stores.series.get(SCOPE.seriesKey);
+  assert.deepEqual(
+    profile?.pronouns.map((rule) => [rule.a, rule.aSelf, rule.aToB, rule.source]),
+    [
+      ["Jiho", "anh", "em", "manual"],
+      ["Jiyu", "tớ", "cậu", "learned"],
+    ],
+  );
 });
 
 test("memory off, missing stores or a failing store: no context and no learning", async () => {

@@ -4,7 +4,13 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import {
+  ADDRESS_SWITCH_PACKS,
   applySeriesPatch,
+  learnAddress,
+  MAX_PRONOUN_CHARS,
+  MAX_PRONOUN_RULES,
+  promptPronouns,
+  type AddressSighting,
   castLangVote,
   cleanText,
   confirmEntry,
@@ -28,6 +34,7 @@ import {
   type TermSighting,
 } from "../../../src/shared/core/memory.ts";
 import type { GlossaryEntry } from "../../../src/shared/records.ts";
+import type { PronounRule } from "../../../src/shared/types.ts";
 
 const SERIES = "https://reader.example|lone-hunter";
 
@@ -370,6 +377,182 @@ describe("series profile", () => {
     assert.equal(auto.lang, "auto");
     assert.deepEqual(auto.langVotes, {});
     assert.deepEqual(profile.langVotes, { ko: 3 }, "the input is not mutated");
+  });
+
+  test("sanitizeSeriesPatch keeps a learned rule learned (the side panel sends every rule back)", () => {
+    assert.deepEqual(
+      sanitizeSeriesPatch({
+        pronouns: [
+          {
+            a: "Minjun",
+            b: "Seoyeon",
+            aSelf: "tớ",
+            aToB: "cậu",
+            source: "learned",
+            sightings: 2.7,
+            updatedAt: 40,
+            packIds: ["p1"],
+            pending: { aSelf: "x", aToB: "y", packIds: ["p2"] },
+          },
+          { a: "Seoyeon", b: "Minjun", aSelf: "tớ", aToB: "cậu", source: "manual" },
+          { a: "Jiho", b: "Yuna", aSelf: "anh", aToB: "em", source: "bogus", sightings: "9" },
+        ],
+      }),
+      {
+        pronouns: [
+          {
+            a: "Minjun",
+            b: "Seoyeon",
+            aSelf: "tớ",
+            aToB: "cậu",
+            source: "learned",
+            sightings: 2,
+            updatedAt: 40,
+          },
+          { a: "Seoyeon", b: "Minjun", aSelf: "tớ", aToB: "cậu", source: "manual" },
+          { a: "Jiho", b: "Yuna", aSelf: "anh", aToB: "em" },
+        ],
+      },
+    );
+  });
+});
+
+describe("forms of address (@addr)", () => {
+  const sighting = (packId: string, aSelf: string, aToB: string, at = 1): AddressSighting => ({
+    a: "Minjun",
+    b: "Seoyeon",
+    aSelf,
+    aToB,
+    packId,
+    at,
+  });
+
+  test("a new pair is learned at once; the same rendering counts once per request", () => {
+    const first = learnAddress([], sighting("p1", "tớ", "cậu", 5));
+    assert.deepEqual(first, [
+      {
+        a: "Minjun",
+        b: "Seoyeon",
+        aSelf: "tớ",
+        aToB: "cậu",
+        source: "learned",
+        sightings: 1,
+        packIds: ["p1"],
+        updatedAt: 5,
+      },
+    ]);
+    assert.ok(first !== null);
+    assert.equal(
+      learnAddress(first, sighting("p1", "tớ", "cậu", 6)),
+      null,
+      "the same request never counts twice",
+    );
+    const again = learnAddress(first, { ...sighting("p2", " Tớ ", "cậu", 7), a: "minjun" });
+    assert.equal(again?.[0]?.sightings, 2, "names and renderings compare like glossary terms");
+    assert.deepEqual(again?.[0]?.packIds, ["p1", "p2"]);
+    assert.equal(again?.[0]?.updatedAt, 7);
+    assert.equal(again?.[0]?.aSelf, "tớ", "the stored words stay as first written");
+  });
+
+  test(`a different rendering replaces a learned one only after ${ADDRESS_SWITCH_PACKS} requests agree`, () => {
+    let rules = learnAddress([], sighting("p1", "tớ", "cậu")) ?? [];
+    rules = learnAddress(rules, sighting("p2", "anh", "em", 2)) ?? [];
+    assert.equal(rules[0]?.aSelf, "tớ", "one odd answer does not flip the pair");
+    assert.deepEqual(rules[0]?.pending, { aSelf: "anh", aToB: "em", packIds: ["p2"] });
+    assert.equal(
+      learnAddress(rules, sighting("p2", "anh", "em", 3)),
+      null,
+      "the same request again is ignored",
+    );
+    const odd = learnAddress(rules, sighting("p3", "ta", "ngươi", 3)) ?? [];
+    assert.deepEqual(
+      odd[0]?.pending,
+      { aSelf: "ta", aToB: "ngươi", packIds: ["p3"] },
+      "a third rendering restarts",
+    );
+    rules = learnAddress(rules, sighting("p4", "anh", "em", 4)) ?? [];
+    assert.deepEqual(rules, [
+      {
+        a: "Minjun",
+        b: "Seoyeon",
+        aSelf: "anh",
+        aToB: "em",
+        source: "learned",
+        sightings: 2,
+        packIds: ["p2", "p4"],
+        updatedAt: 4,
+      },
+    ]);
+    const confirmed = learnAddress(
+      [{ ...rules[0]!, pending: { aSelf: "ta", aToB: "ngươi", packIds: ["p5"] } }],
+      sighting("p6", "anh", "em", 6),
+    );
+    assert.equal(confirmed?.[0]?.pending, undefined, "the current rendering seen again drops the challenger");
+  });
+
+  test("a reader's rule is never changed, and empty or self pairs are ignored", () => {
+    const manual: PronounRule[] = [{ a: "Minjun", b: "Seoyeon", aSelf: "tôi", aToB: "em" }];
+    assert.equal(learnAddress(manual, sighting("p1", "tớ", "cậu")), null, "stored before learning existed");
+    assert.equal(learnAddress([{ ...manual[0]!, source: "manual" }], sighting("p1", "tớ", "cậu")), null);
+    assert.equal(learnAddress([], { ...sighting("p1", "tớ", "cậu"), b: " " }), null);
+    assert.equal(learnAddress([], sighting("p1", "", "")), null);
+    assert.equal(learnAddress([], { ...sighting("p1", "tớ", "cậu"), b: "minjun" }), null);
+    const reverse = learnAddress(manual, { ...sighting("p1", "em", "anh"), a: "Seoyeon", b: "Minjun" });
+    assert.equal(reverse?.length, 2, "the other direction is its own pair");
+    assert.equal(
+      learnAddress([], { ...sighting("p1", "tớ", "x".repeat(200)) })?.[0]?.aToB.length,
+      MAX_PRONOUN_CHARS,
+      "fields are cut like the side panel's",
+    );
+  });
+
+  test(`at most ${MAX_PRONOUN_RULES} rules: the learned rule seen least recently goes, never a reader's`, () => {
+    const manual: PronounRule = { a: "M", b: "N", aSelf: "tôi", aToB: "anh", source: "manual" };
+    let rules: PronounRule[] = [manual];
+    for (let i = 0; i < MAX_PRONOUN_RULES + 3; i += 1) {
+      rules =
+        learnAddress(rules, { a: `A${i}`, b: "B", aSelf: "tớ", aToB: "cậu", packId: `p${i}`, at: i + 1 }) ??
+        [];
+    }
+    assert.equal(rules.length, MAX_PRONOUN_RULES);
+    assert.ok(
+      rules.some((rule) => rule.source === "manual"),
+      "the reader's rule stays",
+    );
+    assert.ok(!rules.some((rule) => rule.a === "A0"), "the oldest learned pair went first");
+    assert.ok(
+      rules.some((rule) => rule.a === `A${MAX_PRONOUN_RULES + 2}`),
+      "the newest pair is kept",
+    );
+  });
+
+  test("promptPronouns: learned rules by last report, then the reader's rules (kept when the prompt is short)", () => {
+    const rules: PronounRule[] = [
+      { a: "R", b: "S", aSelf: "tôi", aToB: "anh" },
+      {
+        a: "L2",
+        b: "S",
+        aSelf: "tớ",
+        aToB: "cậu",
+        source: "learned",
+        updatedAt: 9,
+        sightings: 3,
+        packIds: ["p"],
+      },
+      { a: "L1", b: "S", aSelf: "ta", aToB: "ngươi", source: "learned", updatedAt: 2 },
+      { a: "M", b: "S", aSelf: "con", aToB: "mẹ", source: "manual" },
+    ];
+    assert.deepEqual(promptPronouns(rules), [
+      { a: "L1", b: "S", aSelf: "ta", aToB: "ngươi" },
+      { a: "L2", b: "S", aSelf: "tớ", aToB: "cậu" },
+      { a: "R", b: "S", aSelf: "tôi", aToB: "anh" },
+      { a: "M", b: "S", aSelf: "con", aToB: "mẹ" },
+    ]);
+    assert.deepEqual(
+      promptPronouns(rules, ["", " l1 "]).map((rule) => rule.a),
+      ["L2", "L1", "R", "M"],
+      "pairs of the chapter's recent speakers are kept first when the prompt is short of room",
+    );
   });
 });
 

@@ -35,6 +35,7 @@ import {
   GLOSSARY_HEADER,
   KOREAN_BLOCK,
   pronounsHeader,
+  PRONOUNS_LEGEND,
   systemAskSummary,
   systemIntro,
   USER_HISTORY_HEADER,
@@ -657,7 +658,7 @@ describe("translator: streaming and replay", () => {
       totalMs: 0,
       uploadedBytes: JPEG.byteLength,
       // No @term or @sum in this transcript; the reported @lang votes for the series language.
-      learning: { terms: [], summary: null, lang: "ko" },
+      learning: { terms: [], addresses: [], summary: null, lang: "ko" },
     });
     assert.deepEqual(h.uploads, [JPEG.byteLength]);
     assert.equal(h.health.waits, 1);
@@ -759,6 +760,32 @@ describe("translator: requests", () => {
     assert.ok(
       ["## Korean", "## Japanese", "## Chinese", "## English"].every((block) => system.includes(block)),
     );
+  });
+
+  test("a model that rejects the temperature is asked again at once without it, and from then on", async () => {
+    const rejected = {
+      status: 400,
+      type: "invalid_request_error",
+      code: "unsupported_value",
+      message:
+        "Unsupported value: 'temperature' does not support 0.2 with this model. Only the default (1) value is supported.",
+    };
+    const h = setup([() => failure(rejected), answer(), answer()]);
+    const report = await h.translate();
+    const temperatures = (): unknown[] =>
+      h.sent.map((req) => (JSON.parse(req.init.body) as Record<string, unknown>)["temperature"]);
+    assert.deepEqual(temperatures(), [DEFAULT_SETTINGS.api.temperature, undefined]);
+    assert.deepEqual(statuses(h.results), ALL_OK);
+    assert.equal(report.error, null);
+    assert.equal(report.requests, 2);
+    assert.ok(h.logs.some((entry) => /rejects the temperature/u.test(entry.msg)));
+    await h.translate();
+    assert.deepEqual(temperatures(), [DEFAULT_SETTINGS.api.temperature, undefined, undefined], "remembered");
+
+    const other = setup([() => failure(FAILURES.bad_request)]);
+    const failed = await other.translate();
+    assert.equal(other.sent.length, 1, "any other bad request is not retried");
+    assert.equal(failed.error?.code, "api.bad_request");
   });
 
   test("no API key: no Authorization header; a null temperature is left out; the profile follows the model", async () => {
@@ -1541,13 +1568,18 @@ describe("translator: series memory", () => {
 
   test("glossary, forms of address and style go in the system text; summary and history in the user text", async () => {
     const h = setup([
-      (req) => sse(`${answerText(req, good)}@term|지갑|ví|đồ vật\n@sum|They forgot the wallet.\n`),
+      (req) =>
+        sse(
+          `${answerText(req, good)}@term|지갑|ví|đồ vật\n@addr|Yuna|Jiho|tớ|cậu\n@addr|Yuna|Jiho|mình|bạn\n@addr|Jiho||tôi|\n@sum|They forgot the wallet.\n`,
+        ),
     ]);
     const report = await h.translate(memoryPack());
     const req = h.sent[0];
     assert.ok(req !== undefined);
     assert.ok(req.system.includes(`${GLOSSARY_HEADER}\n지호 -> Jiho (main character)\n유나 -> Yuna`));
-    assert.ok(req.system.includes(`${pronounsHeader(VIETNAMESE)}\nJiho -> Yuna: tớ / cậu`));
+    assert.ok(
+      req.system.includes(`${pronounsHeader(VIETNAMESE)}\n${PRONOUNS_LEGEND}\nJiho -> Yuna: tớ / cậu`),
+    );
     assert.ok(req.system.includes(KOREAN_BLOCK.hanViet), "the series name style");
     assert.ok(req.system.includes(systemAskSummary(VIETNAMESE, DEFAULT_SETTINGS.memory.summaryMaxWords)));
     assert.ok(req.user.includes(`${USER_SUMMARY_HEADER}\nJiho and Yuna go to the market.`));
@@ -1555,6 +1587,7 @@ describe("translator: series memory", () => {
     assert.deepEqual(statuses(h.results), ALL_OK);
     assert.deepEqual(report.learning, {
       terms: [{ original: "지갑", translation: "ví", note: "đồ vật" }],
+      addresses: [{ a: "Yuna", b: "Jiho", aSelf: "tớ", aToB: "cậu" }],
       summary: "They forgot the wallet.",
       lang: "ko",
     });
@@ -1583,6 +1616,7 @@ describe("translator: series memory", () => {
         { original: "지갑", translation: "ví", note: "" },
         { original: "가게", translation: "cửa hàng", note: "" },
       ],
+      addresses: [],
       summary: "First part.",
       lang: "ko",
     });

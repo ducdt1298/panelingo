@@ -16,6 +16,11 @@ export interface QueueTask {
   rank(): readonly number[];
   /** Sends the pack. Never aborted; settles when the pack is finished. */
   run(lane: Lane): Promise<void>;
+  /**
+   * False: not yet (series warm-up); the task keeps its place and takes no lane. Read at every dispatch; whoever
+   * makes it true again calls pump().
+   */
+  ready?(): boolean;
 }
 
 export interface QueueLimits {
@@ -104,10 +109,11 @@ export function createQueue(deps: QueueDeps): PackQueue {
     deps.onBusy(busy);
   };
 
-  /** Index of the best queued task: urgent first, then rank, then insertion order. */
+  /** Index of the best queued task that is ready: urgent first, then rank, then insertion order. */
   const best = (): { index: number; urgent: boolean } | null => {
     let found: { index: number; urgent: boolean; rank: readonly number[]; seq: number } | null = null;
     for (const [index, entry] of queued.entries()) {
+      if (entry.task.ready?.() === false) continue;
       const urgent = entry.task.urgent();
       const rank = entry.task.rank();
       if (

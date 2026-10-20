@@ -25,6 +25,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - Every request carries the glossary, the earlier lines of the chapter (page order, then reading order) and a running
     story summary (`@sum`), within the `memory.*` limits. `@lang` votes settle a series' source language.
   - New setting `memory.enabled` (on by default) turns all of it off.
+- **Consistent forms of address across a series.** The model reports how each pair of characters talk to each other
+  (`@addr`: how the speaker refers to themself and to the listener, e.g. tớ / cậu or anh / em). The pair is learned at
+  once and sent back with every later request of the series, so the xưng hô of the first pages holds to the last; a
+  different rendering replaces it only after two requests agree, and your own rules are never changed. The side
+  panel's Glossary view lists them (learned or yours) and adds, edits, keeps or deletes them. While a new series has
+  no memory yet, its first request goes alone so the next ones start from it (`memory.warmUp`, on by default).
 - **Transcript side panel.** The tab's translated lines in reading order, with editing, "Translate again" per balloon,
   "Show" (scroll to the balloon), "Copy all" and a mark on lines that differ from the glossary. The popup opens it
   ("Open the transcript").
@@ -76,10 +82,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `translate.urgentPackMax` (8).
 - Retention and "Clear the whole cache" also drop unconfirmed glossary suggestions; manual edits, series settings,
   chapter summaries and the glossary entries in use are kept.
-- `PROMPT_VERSION` is 2: requests now carry series context.
+- `PROMPT_VERSION` is 3: requests carry series context and ask for `@addr` lines (every target but English); the
+  forms-of-address table explains its format.
 
 ### Fixed
 
+- A model that accepts only its default temperature (OpenAI reasoning models answer 400 "Unsupported value:
+  'temperature'") no longer fails every request: the request is sent again at once without `temperature`, and the
+  model gets none from then on.
+- The text detector starts loading when a page in auto mode connects, while its images download, instead of at the
+  first detection (the model load and the WebGPU compile take a few seconds on a fresh engine).
 - **Offline mode no longer takes the engine down.** The translation models ran in the detector's onnxruntime-web
   instance, whose single 4 GiB WebAssembly heap NLLB-200 next to a pivot pair grew to 3.8–4.0 GB; the next growth made
   ORT abort and broke detection for every later image. They now run in their own worker with their own heap, within a

@@ -61,6 +61,127 @@ export function sameRendering(a: string, b: string): boolean {
   return compareKey(a) === compareKey(b);
 }
 
+/* ------------------------------------------------------------------ forms of address */
+
+/** Requests that must report a different rendering of a learned pair before it replaces the current one. */
+export const ADDRESS_SWITCH_PACKS = 2;
+
+export interface AddressSighting {
+  a: string;
+  b: string;
+  aSelf: string;
+  aToB: string;
+  packId: string;
+  at: number;
+}
+
+/** The pair a rule is about (speaker → listener), compared like glossary terms. */
+export function addressKey(rule: Pick<PronounRule, "a" | "b">): string {
+  return `${compareKey(rule.a)}\u0000${compareKey(rule.b)}`;
+}
+
+function sameAddress(
+  rule: Pick<PronounRule, "aSelf" | "aToB">,
+  other: Pick<PronounRule, "aSelf" | "aToB">,
+): boolean {
+  return sameRendering(rule.aSelf, other.aSelf) && sameRendering(rule.aToB, other.aToB);
+}
+
+function remember(packIds: readonly string[] | undefined, packId: string): string[] {
+  return [...(packIds ?? []).filter((id) => id !== packId), packId].slice(-MAX_PACK_IDS);
+}
+
+/**
+ * The rules after the model reported `sighting` (an @addr line) in one request, or null when nothing changes.
+ * - A new pair is learned at once: the next requests keep it, so the next pages match the ones already shown.
+ * - A reader's rule (manual, or stored before learning existed) is never changed.
+ * - The same rendering again counts one sighting per request.
+ * - A different rendering replaces a learned rule only once ADDRESS_SWITCH_PACKS different requests reported it, so
+ *   one odd answer does not flip how two characters talk for the rest of the series.
+ * At most MAX_PRONOUN_RULES rules are kept: the learned rule seen least recently goes first.
+ */
+export function learnAddress(rules: readonly PronounRule[], sighting: AddressSighting): PronounRule[] | null {
+  const a = cleanText(sighting.a, MAX_PRONOUN_CHARS);
+  const b = cleanText(sighting.b, MAX_PRONOUN_CHARS);
+  const aSelf = cleanText(sighting.aSelf, MAX_PRONOUN_CHARS);
+  const aToB = cleanText(sighting.aToB, MAX_PRONOUN_CHARS);
+  if (a === "" || b === "" || (aSelf === "" && aToB === "") || sameRendering(a, b)) return null;
+  const key = addressKey({ a, b });
+  const index = rules.findIndex((rule) => addressKey(rule) === key);
+  const next = rules.map((rule) => ({ ...rule }));
+  if (index < 0) {
+    next.push({
+      a,
+      b,
+      aSelf,
+      aToB,
+      source: "learned",
+      sightings: 1,
+      packIds: [sighting.packId],
+      updatedAt: sighting.at,
+    });
+    while (next.length > MAX_PRONOUN_RULES) {
+      const learned = next
+        .map((rule, i) => ({ rule, i }))
+        .filter(({ rule }) => rule.source === "learned")
+        .sort((x, y) => (x.rule.updatedAt ?? 0) - (y.rule.updatedAt ?? 0));
+      const oldest = learned[0];
+      if (oldest === undefined) break;
+      next.splice(oldest.i, 1);
+    }
+    return next;
+  }
+  const rule = next[index];
+  if (rule === undefined || rule.source !== "learned") return null;
+  if (rule.packIds?.includes(sighting.packId) === true) return null;
+  if (sameAddress(rule, { aSelf, aToB })) {
+    rule.sightings = (rule.sightings ?? 0) + 1;
+    rule.packIds = remember(rule.packIds, sighting.packId);
+    rule.updatedAt = sighting.at;
+    delete rule.pending;
+    return next;
+  }
+  const pending =
+    rule.pending !== undefined && sameAddress(rule.pending, { aSelf, aToB })
+      ? { aSelf, aToB, packIds: remember(rule.pending.packIds, sighting.packId) }
+      : { aSelf, aToB, packIds: [sighting.packId] };
+  if (pending.packIds.length >= ADDRESS_SWITCH_PACKS) {
+    next[index] = {
+      a: rule.a,
+      b: rule.b,
+      aSelf,
+      aToB,
+      source: "learned",
+      sightings: pending.packIds.length,
+      packIds: pending.packIds,
+      updatedAt: sighting.at,
+    };
+    return next;
+  }
+  rule.pending = pending;
+  rule.packIds = remember(rule.packIds, sighting.packId);
+  return next;
+}
+
+/**
+ * Rules for the prompt, least important first (the prompt keeps the last lines when it is short of room): learned
+ * rules by last report, those about the speakers of the chapter's recent lines after the others, then the reader's
+ * rules.
+ */
+export function promptPronouns(
+  rules: readonly PronounRule[],
+  speakers: readonly string[] = [],
+): PronounRule[] {
+  const recent = new Set(speakers.map(compareKey).filter((key) => key !== ""));
+  const near = (rule: PronounRule): number =>
+    recent.has(compareKey(rule.a)) || recent.has(compareKey(rule.b)) ? 1 : 0;
+  const learned = rules
+    .filter((rule) => rule.source === "learned")
+    .sort((x, y) => near(x) - near(y) || (x.updatedAt ?? 0) - (y.updatedAt ?? 0));
+  const manual = rules.filter((rule) => rule.source !== "learned");
+  return [...learned, ...manual].map(({ a, b, aSelf, aToB }) => ({ a, b, aSelf, aToB }));
+}
+
 /* ------------------------------------------------------------------ glossary */
 
 export interface TermSighting {
@@ -341,7 +462,20 @@ export function sanitizeSeriesPatch(raw: unknown): SeriesPatch | null {
       if (fields.some((field) => typeof rule[field] !== "string")) return null;
       const [a, b, aSelf, aToB] = fields.map((field) => cleanText(rule[field], MAX_PRONOUN_CHARS));
       if (a !== undefined && b !== undefined && a !== "" && b !== "") {
-        out.push({ a, b, aSelf: aSelf ?? "", aToB: aToB ?? "" });
+        const kept: PronounRule = { a, b, aSelf: aSelf ?? "", aToB: aToB ?? "" };
+        // A learned rule sent back by the side panel (another rule was edited) stays learned.
+        if (rule["source"] === "learned") {
+          kept.source = "learned";
+          if (typeof rule["sightings"] === "number" && Number.isFinite(rule["sightings"])) {
+            kept.sightings = Math.max(1, Math.floor(rule["sightings"]));
+          }
+          if (typeof rule["updatedAt"] === "number" && Number.isFinite(rule["updatedAt"])) {
+            kept.updatedAt = rule["updatedAt"];
+          }
+        } else if (rule["source"] === "manual") {
+          kept.source = "manual";
+        }
+        out.push(kept);
       }
     }
     patch.pronouns = out;

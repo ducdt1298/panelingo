@@ -3,9 +3,12 @@
 // the current tab's series as manual entries (suggestions are skipped) and applies the file's series settings.
 
 import {
+  addressKey,
   cleanText,
   GLOSSARY_STATES,
   MAX_NOTE_CHARS,
+  MAX_PRONOUN_CHARS,
+  MAX_PRONOUN_RULES,
   MAX_TERM_CHARS,
   sanitizeSeriesPatch,
   type GlossaryState,
@@ -13,7 +16,7 @@ import {
 } from "../../shared/core/memory.ts";
 import type { GlossaryEntry } from "../../shared/records.ts";
 import { SERIES_KEY_SEPARATOR } from "../../shared/series-key.ts";
-import type { GlossaryEdit, Lang, SeriesProfile } from "../../shared/types.ts";
+import type { GlossaryEdit, Lang, PronounRule, SeriesProfile } from "../../shared/types.ts";
 
 export const GLOSSARY_EXPORT_VERSION = 1;
 /** Entries per en:glossary-upsert call while importing (the engine takes up to 500). */
@@ -90,6 +93,63 @@ export function editFromDraft(draft: {
   const translation = cleanText(draft.translation, MAX_TERM_CHARS);
   if (orig === "" || translation === "") return null;
   return { orig, translation, note: cleanText(draft.note, MAX_NOTE_CHARS) };
+}
+
+/* ------------------------------------------------------------------ forms of address */
+
+export interface AddressDraft {
+  a: string;
+  b: string;
+  aSelf: string;
+  aToB: string;
+}
+
+/** A learned rule (reported by the AI); anything else is the reader's and the AI never changes it. */
+export function isLearnedAddress(rule: Pick<PronounRule, "source">): boolean {
+  return rule.source === "learned";
+}
+
+/** The reader's rules first (by speaker), then the learned ones, most recently reported first. */
+export function addressRows(rules: readonly PronounRule[]): PronounRule[] {
+  const mine = rules
+    .filter((rule) => !isLearnedAddress(rule))
+    .sort((x, y) => x.a.localeCompare(y.a) || x.b.localeCompare(y.b));
+  const learned = rules.filter(isLearnedAddress).sort((x, y) => (y.updatedAt ?? 0) - (x.updatedAt ?? 0));
+  return [...mine, ...learned];
+}
+
+/** The reader's rule from form fields, or null without both names and at least one form of address. */
+export function addressFromDraft(draft: AddressDraft): PronounRule | null {
+  const [a, b, aSelf, aToB] = [draft.a, draft.b, draft.aSelf, draft.aToB].map((field) =>
+    cleanText(field, MAX_PRONOUN_CHARS),
+  );
+  if (a === undefined || b === undefined || aSelf === undefined || aToB === undefined) return null;
+  if (a === "" || b === "" || (aSelf === "" && aToB === "")) return null;
+  return { a, b, aSelf, aToB, source: "manual" };
+}
+
+/**
+ * The rules with `rule` saved: it replaces the rule of the same pair, or is added. When the list is full the learned
+ * rule reported least recently makes room; null when only the reader's rules are left.
+ */
+export function withAddress(rules: readonly PronounRule[], rule: PronounRule): PronounRule[] | null {
+  const key = addressKey(rule);
+  const next = rules.filter((other) => addressKey(other) !== key);
+  next.push(rule);
+  while (next.length > MAX_PRONOUN_RULES) {
+    const learned = next.filter(isLearnedAddress).sort((x, y) => (x.updatedAt ?? 0) - (y.updatedAt ?? 0))[0];
+    if (learned === undefined) return null;
+    next.splice(next.indexOf(learned), 1);
+  }
+  return next;
+}
+
+export function withoutAddress(
+  rules: readonly PronounRule[],
+  rule: Pick<PronounRule, "a" | "b">,
+): PronounRule[] {
+  const key = addressKey(rule);
+  return rules.filter((other) => addressKey(other) !== key);
 }
 
 /** The settings form for a series (defaults while it has no profile yet). */

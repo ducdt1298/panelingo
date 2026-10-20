@@ -304,6 +304,21 @@ export const IT: Catalog = {
       imported: (count: number): string =>
         `${plural(count, "Importata", "Importate")} ${count} ${plural(count, "voce", "voci")}.`,
       importFailed: "Questo file non è un glossario di Panelingo.",
+      address: {
+        heading: "Forme di cortesia",
+        hint: "Come ogni personaggio chiama sé stesso e chi ha di fronte. L'IA le compila mentre leggi e le mantiene uguali; le tue regole non cambiano mai.",
+        speaker: "Chi parla",
+        listener: "Chi ascolta",
+        self: "Chiama sé stesso",
+        other: "Chiama l'interlocutore",
+        learned: "Appresa dall'IA",
+        mine: "Tua",
+        keep: "Tieni",
+        addHeading: "Aggiungi una forma di cortesia",
+        incomplete: "Inserisci entrambi i nomi e almeno una forma di cortesia.",
+        full: "L'elenco è pieno. Elimina prima una regola.",
+        empty: "Ancora nessuna. Le coppie compaiono qui quando l'IA le incontra.",
+      },
     },
   },
   debug: {
@@ -718,6 +733,10 @@ export const IT: Catalog = {
       "memory.summaryMaxWords": {
         label: "Lunghezza del riassunto della storia (parole)",
         hint: "0 disattiva il riassunto progressivo.",
+      },
+      "memory.warmUp": {
+        label: "Preparare una nuova serie",
+        hint: "Finché una serie non ha ancora memoria, la sua prima richiesta parte da sola, così le pagine successive riusano i suoi nomi e le sue forme di cortesia. Le prime pagine richiedono un po' più di tempo.",
       },
       "cache.translationTtlDays": {
         label: "Conserva le traduzioni inutilizzate per (giorni)",

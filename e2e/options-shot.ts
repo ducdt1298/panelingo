@@ -1,5 +1,5 @@
-// Debug aid: node e2e/options-shot.ts <out.png> [locale] [light|dark] — full-page screenshot of the options page of
-// the build ($CTV_EXTENSION_DIR or dist/) with one site's editor and the Advanced section open. The API settings point
+// Debug aid: node e2e/options-shot.ts <out.png> [locale] [light|dark] [tab] — full-page screenshot of one tab of the
+// options page of the build ($CTV_EXTENSION_DIR or dist/); the default tab "sites" opens one site's editor. The API settings point
 // at a local mock OpenAI-compatible server; any other network request from the page is aborted.
 import puppeteer, { TargetType } from "puppeteer-core";
 import { createMockServer } from "../tools/mock-openai/server.ts";
@@ -8,6 +8,7 @@ import { chromePath, extensionDir } from "./helpers/chrome.ts";
 const out = process.argv[2] ?? "options.png";
 const locale = process.argv[3] ?? "en";
 const scheme = process.argv[4] === "dark" ? "dark" : "light";
+const tab = process.argv[5] ?? "sites";
 const api = await createMockServer({ port: 0 });
 const browser = await puppeteer.launch({
   executablePath: chromePath(),
@@ -59,8 +60,8 @@ try {
   await page.emulateMediaFeatures([{ name: "prefers-color-scheme", value: scheme }]);
   await page.goto(`chrome-extension://${id}/ui/options.html`);
   await page.waitForSelector("#site-1-toggle");
-  await page.click("#site-1-toggle");
-  await page.click("#advanced-details > summary");
+  await page.click(`a.settings-nav-item[href="#${tab}"]`);
+  if (tab === "sites") await page.click("#site-1-toggle");
   await new Promise((resolve) => setTimeout(resolve, 1500));
   await page.screenshot({ path: out, fullPage: true });
 } finally {

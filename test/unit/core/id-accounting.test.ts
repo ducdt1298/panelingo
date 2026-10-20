@@ -4,6 +4,7 @@ import {
   compareKey,
   createAccountant,
   judgeItem,
+  MAX_ADDRESSES,
   MAX_TERMS,
   type Outcome,
 } from "../../../src/shared/core/id-accounting.ts";
@@ -257,6 +258,23 @@ describe("createAccountant", () => {
     assert.equal(fallback.langReported, false);
     assert.equal(createAccountant(1, "auto").finish(true).lang, null);
     assert.equal(createAccountant(1).finish(true).summary, null);
+  });
+
+  test("@addr: pairs deduped (first wins), incomplete ones dropped, capped", () => {
+    const acc = createAccountant(1, "ko");
+    acc.accept(parseLine("@addr|Zorvik|Kai|tớ|cậu"));
+    acc.accept(parseLine("@addr|zorvik|KAI|ta|ngươi"));
+    acc.accept(parseLine("@addr|Kai|Zorvik|tớ|cậu"));
+    acc.accept(parseLine("@addr||Kai|tớ|cậu"));
+    acc.accept(parseLine("@addr|Mina|Kai||"));
+    for (let i = 0; i < 12; i += 1) acc.accept(parseLine(`@addr|A${i}|B|tôi|anh`));
+    const out = acc.finish(true);
+    assert.equal(out.addresses.length, MAX_ADDRESSES);
+    assert.deepEqual(out.addresses.slice(0, 2), [
+      { a: "Zorvik", b: "Kai", aSelf: "tớ", aToB: "cậu" },
+      { a: "Kai", b: "Zorvik", aSelf: "tớ", aToB: "cậu" },
+    ]);
+    assert.deepEqual(createAccountant(1).finish(true).addresses, []);
   });
 
   test("an empty request is fully covered", () => {

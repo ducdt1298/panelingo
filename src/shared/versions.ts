@@ -8,7 +8,7 @@ export const SETTINGS_VERSION = 2;
 /** Message envelope / Port protocol between content, service worker, engine and UI. */
 export const PROTOCOL_VERSION = 1;
 /** System prompt and output line format sent to the model. */
-export const PROMPT_VERSION = 2;
+export const PROMPT_VERSION = 3;
 /** Unit geometry derivation (detections → translation units). */
 export const UNITS_VERSION = 1;
 /** Erase-patch algorithm. */

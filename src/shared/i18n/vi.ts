@@ -284,6 +284,21 @@ export const VI: Catalog = {
       import: "Nhập",
       imported: (count: number): string => `Đã nhập ${count} mục.`,
       importFailed: "Tệp này không phải bảng thuật ngữ Panelingo.",
+      address: {
+        heading: "Xưng hô",
+        hint: "Cách mỗi nhân vật tự xưng và gọi người đối diện. AI tự điền khi bạn đọc và giữ nguyên về sau; quy tắc của bạn không bao giờ bị đổi.",
+        speaker: "Người nói",
+        listener: "Người nghe",
+        self: "Tự xưng",
+        other: "Gọi người nghe",
+        learned: "AI tự học",
+        mine: "Của bạn",
+        keep: "Giữ cố định",
+        addHeading: "Thêm cách xưng hô",
+        incomplete: "Nhập đủ hai tên và ít nhất một cách xưng hô.",
+        full: "Danh sách đã đầy. Hãy xoá bớt một quy tắc.",
+        empty: "Chưa có. Các cặp nhân vật sẽ hiện ở đây khi AI gặp.",
+      },
     },
   },
   debug: { heading: "Debug (chỉ bản dev/test)" },
@@ -669,6 +684,10 @@ export const VI: Catalog = {
       "memory.summaryMaxWords": {
         label: "Độ dài tóm tắt cốt truyện (từ)",
         hint: "0 là tắt bản tóm tắt liên tục.",
+      },
+      "memory.warmUp": {
+        label: "Khởi động bộ truyện mới",
+        hint: "Khi bộ truyện chưa có bộ nhớ, yêu cầu đầu tiên được gửi riêng để các trang sau dùng lại tên và cách xưng hô của nó. Vài trang đầu sẽ chậm hơn một chút.",
       },
       "cache.translationTtlDays": {
         label: "Giữ bản dịch không dùng đến trong (ngày)",

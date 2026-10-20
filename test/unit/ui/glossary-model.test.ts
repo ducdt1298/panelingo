@@ -3,9 +3,15 @@
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
-import { newSeriesProfile } from "../../../src/shared/core/memory.ts";
+import { MAX_PRONOUN_RULES, newSeriesProfile } from "../../../src/shared/core/memory.ts";
 import type { GlossaryEntry } from "../../../src/shared/records.ts";
+import type { PronounRule } from "../../../src/shared/types.ts";
 import {
+  addressFromDraft,
+  addressRows,
+  isLearnedAddress,
+  withAddress,
+  withoutAddress,
   canConfirm,
   chunks,
   editFromDraft,
@@ -93,6 +99,66 @@ describe("grouping and actions", () => {
     assert.deepEqual(chunks([1, 2, 3, 4, 5], 2), [[1, 2], [3, 4], [5]]);
     assert.deepEqual(chunks([], 2), []);
     assert.deepEqual(chunks([1, 2], 0), [[1], [2]]);
+  });
+});
+
+describe("forms of address", () => {
+  const learned = (a: string, updatedAt: number): PronounRule => ({
+    a,
+    b: "Kai",
+    aSelf: "tớ",
+    aToB: "cậu",
+    source: "learned",
+    sightings: 1,
+    updatedAt,
+  });
+
+  test("rows: the reader's rules by speaker, then learned ones newest first", () => {
+    const rows = addressRows([
+      learned("Old", 1),
+      { a: "Zed", b: "Kai", aSelf: "tôi", aToB: "anh" },
+      learned("New", 9),
+      { a: "Ann", b: "Kai", aSelf: "em", aToB: "anh", source: "manual" },
+    ]);
+    assert.deepEqual(
+      rows.map((rule) => rule.a),
+      ["Ann", "Zed", "New", "Old"],
+    );
+    assert.equal(isLearnedAddress(rows[0]!), false);
+    assert.equal(isLearnedAddress(rows[2]!), true);
+  });
+
+  test("a draft needs both names and one form of address; it becomes the reader's rule", () => {
+    assert.deepEqual(addressFromDraft({ a: " Mina ", b: "Kai", aSelf: "", aToB: " cậu " }), {
+      a: "Mina",
+      b: "Kai",
+      aSelf: "",
+      aToB: "cậu",
+      source: "manual",
+    });
+    assert.equal(addressFromDraft({ a: "Mina", b: " ", aSelf: "tớ", aToB: "" }), null);
+    assert.equal(addressFromDraft({ a: "Mina", b: "Kai", aSelf: " ", aToB: "" }), null);
+  });
+
+  test("saving replaces the same pair (any case) or adds; a full list drops the oldest learned rule", () => {
+    const mine: PronounRule = { a: "Mina", b: "Kai", aSelf: "tớ", aToB: "cậu", source: "manual" };
+    assert.deepEqual(
+      withAddress([learned("mina", 3)], mine),
+      [mine],
+      "keeping a learned rule makes it yours",
+    );
+    const full = Array.from({ length: MAX_PRONOUN_RULES }, (_, i) => learned(`L${i}`, 100 - i));
+    const saved = withAddress(full, mine);
+    assert.equal(saved?.length, MAX_PRONOUN_RULES);
+    assert.ok(
+      !saved?.some((rule) => rule.a === `L${MAX_PRONOUN_RULES - 1}`),
+      "the oldest learned rule made room",
+    );
+    const manualOnly = Array.from({ length: MAX_PRONOUN_RULES }, (_, i) => ({ ...mine, a: `M${i}` }));
+    assert.equal(withAddress(manualOnly, mine), null, "the reader's rules are never dropped");
+    assert.deepEqual(withoutAddress([mine, learned("Other", 1)], { a: "MINA", b: "kai" }), [
+      learned("Other", 1),
+    ]);
   });
 });
 

@@ -408,7 +408,11 @@ describe("options page: back up and restore", () => {
     assert.equal(first["format"], SETTINGS_EXPORT_FORMAT);
     assert.ok(!("apiKey" in (first["settings"]?.["api"] as object)));
     assert.equal((first["sites"]?.[SITE] as SiteSettings).layout, "webtoon");
-    assert.equal(run.dom.document.body.findAll("a").length, 0, "the temporary link is removed");
+    assert.equal(
+      run.dom.document.body.findAll("a").filter((link) => link.getAttribute("download") !== null).length,
+      0,
+      "the temporary download link is removed",
+    );
 
     byId(run, "export-api-key")["checked"] = true;
     run.dispatch(byId(run, "export-settings"), "click");

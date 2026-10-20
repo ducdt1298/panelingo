@@ -13,6 +13,7 @@ import {
   languageBlock,
   languageBlocks,
   pronounsHeader,
+  PRONOUNS_LEGEND,
   PROMPT_LIMITS,
   sameLanguageLine,
   spanishBlock,
@@ -72,6 +73,9 @@ Hard rules:
 - Never put the character "|" inside a field.
 After the # lines, for each NEW name or recurring term that is not in the glossary (at most 5):
 @term|<original>|<Vietnamese rendering>|<short note in Vietnamese>
+Then, for each pair of characters who speak to each other in these regions and are not yet in the forms-of-address table (at most 5):
+@addr|<speaker>|<listener>|<how the speaker refers to themself>|<how the speaker addresses the listener>   (Vietnamese words: pronoun, kinship word or title)
+Use the same names as in the speaker field.
 
 # Vietnamese style
 - Write like a good Vietnamese scanlation team: natural, idiomatic, and short enough to fit the bubble. Prefer the shortest natural phrasing.
@@ -216,7 +220,7 @@ describe("buildMessages: language blocks and conditionals", () => {
     );
     assert.ok(
       system.includes(
-        "@term|<original>|<Vietnamese rendering>|<short note in Vietnamese>\nAs the very last line: @sum|<the story so far in Vietnamese, at most 60 words, including this part>\n\n# Vietnamese style",
+        "Use the same names as in the speaker field.\nAs the very last line: @sum|<the story so far in Vietnamese, at most 60 words, including this part>\n\n# Vietnamese style",
       ),
     );
     assert.ok(
@@ -226,7 +230,7 @@ describe("buildMessages: language blocks and conditionals", () => {
     );
     assert.ok(
       system.endsWith(
-        "\n\n# Glossary (always use these renderings)\nPlimba -> Plimba (tên tiệm bánh)\n무림 -> võ lâm\n# Xưng hô (keep consistent)\nZorvik -> Kai: tớ / cậu",
+        `\n\n# Glossary (always use these renderings)\nPlimba -> Plimba (tên tiệm bánh)\n무림 -> võ lâm\n# Xưng hô (keep consistent)\n${PRONOUNS_LEGEND}\nZorvik -> Kai: tớ / cậu`,
       ),
     );
     const noSum = buildPrompt(input(), IMAGE).system;
@@ -334,7 +338,7 @@ describe("buildPrompt: limits", () => {
       aToB: "cậu",
     }));
     const { system, stats } = buildPrompt(input({ pronouns }), IMAGE);
-    const lines = system.split("# Xưng hô (keep consistent)\n")[1]?.split("\n") ?? [];
+    const lines = system.split(`# Xưng hô (keep consistent)\n${PRONOUNS_LEGEND}\n`)[1]?.split("\n") ?? [];
     assert.equal(lines.length, 10);
     assert.equal(lines[0], "A4 -> B4: tớ / cậu");
     assert.equal(lines[9], "A13 -> B13: tớ / cậu");
@@ -486,7 +490,15 @@ describe("buildPrompt: target language", () => {
     assert.ok(output.includes("Line 1: @lang|<ko, ja, zh, en, es or other>"));
     assert.ok(output.includes("\n#<n>|<type>|<speaker>|<original>|<translation>\n"));
     assert.ok(output.includes("- translation: the English translation of region n only, on one line."));
-    assert.ok(output.endsWith("@term|<original>|<English rendering>|<short note in English>"));
+    assert.ok(
+      output.endsWith("@term|<original>|<English rendering>|<short note in English>"),
+      "no @addr for English",
+    );
+    assert.ok(
+      systemOutput(VIETNAMESE).endsWith(
+        "@addr|<speaker>|<listener>|<how the speaker refers to themself>|<how the speaker addresses the listener>   (Vietnamese words: pronoun, kinship word or title)\nUse the same names as in the speaker field.",
+      ),
+    );
     assert.equal(
       systemAskSummary(SPANISH),
       "As the very last line: @sum|<the story so far in Spanish, at most 60 words, including this part>",
@@ -585,12 +597,16 @@ describe("buildPrompt: target language", () => {
       assert.ok(system.startsWith(systemIntro(target)), target.code);
       assert.ok(system.includes(`\n\n${styleBlock(target)}\n\n# Language rules\n## Korean`), target.code);
       assert.ok(system.includes(`@sum|<the story so far in ${target.name},`), target.code);
-      assert.ok(system.endsWith("# Forms of address (keep consistent)\nMina -> Jun: I / you"), target.code);
+      assert.ok(
+        system.endsWith(`# Forms of address (keep consistent)\n${PRONOUNS_LEGEND}\nMina -> Jun: I / you`),
+        target.code,
+      );
+      assert.equal(system.includes("@addr|"), target.code !== "en", `${target.code}: @addr request`);
     }
     const vi = buildPrompt(input({ ...series, target: VIETNAMESE }), IMAGE).system;
     assert.ok(vi.includes(KOREAN_BLOCK.hanViet));
     assert.ok(vi.includes(CHINESE_BLOCK.vi));
-    assert.ok(vi.endsWith("# Xưng hô (keep consistent)\nMina -> Jun: I / you"));
+    assert.ok(vi.endsWith(`# Xưng hô (keep consistent)\n${PRONOUNS_LEGEND}\nMina -> Jun: I / you`));
   });
 
   test("the user text does not depend on the target", () => {

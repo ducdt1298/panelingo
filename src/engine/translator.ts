@@ -37,6 +37,7 @@ import {
   createAccountant,
   isMergeSuspect,
   type PackOutcome,
+  type Address,
   type Term,
 } from "../shared/core/id-accounting.ts";
 import { createLineParser, type ItemRec, type Rec } from "../shared/core/line-parser.ts";
@@ -141,14 +142,22 @@ export function createTranslator(deps: TranslatorDeps): PackTranslator {
     transport ??= defaultDeps().transport;
     return transport(url, init);
   };
+  /** Models that rejected api.temperature (reasoning models take only their default): sent without it. */
+  const noTemperature = new Set<string>();
   return {
-    translate: (pack, onUnit) => translatePack(deps, baseTransport, pack, onUnit),
+    translate: (pack, onUnit) => translatePack(deps, baseTransport, noTemperature, pack, onUnit),
   };
+}
+
+/** A 400 that names the temperature: the model accepts only its default one. */
+function rejectsTemperature(info: ErrorInfo): boolean {
+  return info.code === "api.bad_request" && info.detail === "temperature";
 }
 
 async function translatePack(
   deps: TranslatorDeps,
   baseTransport: Transport,
+  noTemperature: Set<string>,
   pack: TranslatePack,
   onUnit: (result: UnitResult) => void,
 ): Promise<PackReport> {
@@ -177,6 +186,8 @@ async function translatePack(
   let reportedLang: Lang | null = null;
   /** @term lines of every answer (first rendering per original wins) and the last @sum of a full request. */
   const terms = new Map<string, Term>();
+  /** @addr lines of every answer, first report per speaker → listener pair. */
+  const addresses = new Map<string, Address>();
   let summary: string | null = null;
   let answered = false;
   let ladderUsed = 0;
@@ -324,6 +335,10 @@ async function translatePack(
       const key = term.original.normalize("NFC").trim();
       if (!terms.has(key)) terms.set(key, { ...term });
     }
+    for (const address of outcome.addresses) {
+      const key = `${address.a.normalize("NFC").trim()}\u0000${address.b.normalize("NFC").trim()}`;
+      if (!addresses.has(key)) addresses.set(key, { ...address });
+    }
     if (job.mode === "full" && outcome.summary !== null) summary = outcome.summary;
   };
 
@@ -405,7 +420,7 @@ async function translatePack(
       baseUrl: endpoint.baseUrl,
       apiKey: endpoint.apiKey,
       model: api.model,
-      temperature: api.temperature,
+      temperature: noTemperature.has(api.model) ? null : api.temperature,
       messages,
       onLine: (line) => parser.push(line),
       firstByteTimeoutMs: api.firstByteTimeoutMs,
@@ -420,12 +435,27 @@ async function translatePack(
       quietly("uploads.record", () => deps.uploads.record(built.jpeg.byteLength));
     };
     report.requests += 1;
-    try {
-      const result = await streamChat(options, {
+    const send = (): ReturnType<typeof streamChat> =>
+      streamChat(options, {
         transport,
         now: () => clock.now(),
         setTimer: (fn, ms) => clock.setTimer(fn, ms),
       });
+    try {
+      let result: Awaited<ReturnType<typeof streamChat>>;
+      try {
+        result = await send();
+      } catch (error) {
+        if (options.temperature === null || options.temperature === undefined) throw error;
+        if (!rejectsTemperature(toErrorInfo(error))) throw error;
+        // The answer came before any line: ask again at once without it, and leave it out for this model.
+        noTemperature.add(api.model);
+        log.info("the model rejects the temperature setting, sending without it", { model: api.model });
+        options.temperature = null;
+        recordUpload();
+        report.requests += 1;
+        result = await send();
+      }
       parser.end();
       recordUpload();
       const outcome = accountant.finish(result.sawDone);
@@ -660,7 +690,12 @@ async function translatePack(
   });
   report.lang = reportedLang ?? fallbackLang;
   if (answered || reportedLang !== null) {
-    const learning: PackLearning = { terms: [...terms.values()], summary, lang: reportedLang };
+    const learning: PackLearning = {
+      terms: [...terms.values()],
+      addresses: [...addresses.values()],
+      summary,
+      lang: reportedLang,
+    };
     report.learning = learning;
   }
   report.totalMs = clock.now() - started;

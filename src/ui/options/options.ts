@@ -351,9 +351,7 @@ async function main(): Promise<void> {
     onError: logFailure,
   });
 
-  replace(
-    root,
-    h("h1", null, `${msg().ui.appName} – ${msg().options.title}`),
+  const sections = [
     apiSection,
     offline.element,
     languageSection,
@@ -363,12 +361,22 @@ async function main(): Promise<void> {
     transfer,
     debugSection,
     advanced.element,
-    h("p", { class: "muted" }, msg().popup.build(__BUILD_ID__)),
+  ];
+  const nav = settingsNav(sections);
+  replace(
+    root,
+    h(
+      "header",
+      { class: "page-header" },
+      h("img", { class: "logo", src: "../assets/icons/icon-48.png", width: 36, height: 36, alt: "" }),
+      h("h1", null, `${msg().ui.appName} – ${msg().options.title}`),
+      h("span", { class: "build muted" }, msg().popup.build(__BUILD_ID__)),
+    ),
+    h("div", { class: "settings-layout" }, nav, h("div", { class: "settings-form" }, ...sections)),
   );
   sitesView.render(sites);
   renderPrivacy();
   void refreshHealth();
-  if (location.hash === "#privacy") privacySection.scrollIntoView();
 
   watchSettings((next) => {
     const previous = settings;
@@ -401,3 +409,71 @@ async function main(): Promise<void> {
 }
 
 main().catch((error: unknown) => logFailure("options page failed to start", error));
+
+/** The section's own heading (its first h2), for the side navigation. */
+function headingOf(section: HTMLElement): string {
+  const heading = typeof section.querySelector === "function" ? section.querySelector("h2") : null;
+  return heading?.textContent?.trim() || section.id;
+}
+
+/**
+ * Tabs of the options page: one section at a time, chosen from the left column. The tab follows the URL hash, so
+ * deep links (#privacy from the popup, #sites…) and the browser's back button work; the first section is the
+ * default. A section with a collapsible body (Advanced) opens it when its tab is shown.
+ */
+function settingsNav(sections: readonly HTMLElement[]): HTMLElement {
+  const links = new Map<HTMLElement, HTMLElement>();
+  for (const section of sections) {
+    links.set(
+      section,
+      h(
+        "a",
+        {
+          class: "settings-nav-item",
+          href: `#${section.id}`,
+          role: "tab",
+          // Switch at once; the hash (deep links, back button) follows through hashchange.
+          onclick: () => show(section.id),
+        },
+        headingOf(section),
+      ),
+    );
+  }
+  const nav = h(
+    "nav",
+    { class: "settings-nav", role: "tablist", "aria-label": msg().options.title },
+    ...links.values(),
+  );
+  // Some sections draw their heading after the first render (status blocks, the site list): label them then.
+  const relabel = (): void => {
+    for (const [section, link] of links) {
+      const label = headingOf(section);
+      if (link.textContent !== label) link.textContent = label;
+    }
+  };
+  if (typeof MutationObserver === "function") {
+    const watcher = new MutationObserver(relabel);
+    for (const section of sections) watcher.observe(section, { childList: true, subtree: true });
+  }
+  const show = (id: string): void => {
+    const current = sections.find((section) => section.id === id) ?? sections[0];
+    for (const [section, link] of links) {
+      const active = section === current;
+      section.hidden = !active;
+      link.className = active ? "settings-nav-item is-active" : "settings-nav-item";
+      link.setAttribute("aria-selected", String(active));
+      if (active && typeof section.querySelector === "function") {
+        const details = section.querySelector("details");
+        if (details !== null) details.open = true;
+      }
+    }
+  };
+  show(location.hash.slice(1));
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener("hashchange", () => {
+      show(location.hash.slice(1));
+      window.scrollTo(0, 0);
+    });
+  }
+  return nav;
+}

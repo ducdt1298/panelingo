@@ -56,6 +56,25 @@ describe("normalizeBaseUrl", () => {
     );
   });
 
+  test("doubled slashes in the path collapse (a pasted https://host//v1 would request //v1/models)", () => {
+    assert.equal(normalizeBaseUrl("https://api.example.org//v1"), "https://api.example.org/v1");
+    assert.equal(normalizeBaseUrl("https://api.example.org//v1//"), "https://api.example.org/v1");
+    assert.equal(
+      normalizeBaseUrl("https://gw.example.org/proxy//openai/v1"),
+      "https://gw.example.org/proxy/openai/v1",
+    );
+    assert.equal(normalizeBaseUrl("https://api.example.org//"), "https://api.example.org/v1");
+    assert.equal(
+      normalizeBaseUrl("http://my-ai-server:8080/v1?tenant=a"),
+      "http://my-ai-server:8080/v1?tenant=a",
+    );
+  });
+
+  test("a stored base URL with a doubled slash is repaired on load", () => {
+    const migrated = migrateSettings({ api: { baseUrl: "https://api.example.org//v1" } });
+    assert.equal(migrated.api.baseUrl, "https://api.example.org/v1");
+  });
+
   test("text that is not a URL is only trimmed (configProblem reports it later)", () => {
     assert.equal(normalizeBaseUrl("  not a url/ "), "not a url");
     assert.equal(normalizeBaseUrl(""), "");

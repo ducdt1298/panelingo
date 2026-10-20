@@ -87,19 +87,19 @@ Status column:
 
 ### `api`: AI endpoint
 
-| Setting                  | Default                     | Limits        | Status | Description                                                                                                                 |
-| ------------------------ | --------------------------- | ------------- | ------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `api.baseUrl`            | `https://api.openai.com/v1` | http(s) URL   | UI     | Base URL including the version path. A bare origin gets `/v1`.                                                              |
-| `api.apiKey`             | `""`                        |               | UI     | Sent as `Authorization: Bearer <key>` when not empty. Stored locally in plain text (see [PRIVACY.md](PRIVACY.md)).          |
-| `api.model`              | `gpt-4o-mini`               | no whitespace | UI     | Model id sent with every request. It must accept image input.                                                               |
-| `api.temperature`        | `0.2`                       | 0–2 or `null` | UI     | Sampling temperature. `null` omits the field and leaves the provider default.                                               |
-| `api.concurrency`        | `2`                         | 1–4           | UI     | Normal request lanes ("Parallel translation requests").                                                                     |
-| `api.urgentLane`         | `true`                      |               | UI     | Adds one extra lane reserved for images currently on screen.                                                                |
-| `api.maxInFlight`        | `4`                         | 1–4           | UI     | Hard cap on requests in flight, urgent lane included. Never lower than `concurrency`. Chrome allows 6 connections per host. |
-| `api.firstByteTimeoutMs` | `180000`                    | 10000–900000  | UI     | Abort when no response byte arrives within this time.                                                                       |
-| `api.idleTimeoutMs`      | `60000`                     | 10000–300000  | UI     | Abort when the stream stalls for this long after the first byte.                                                            |
-| `api.totalTimeoutMs`     | `600000`                    | 60000–1200000 | UI     | Abort any request after this long.                                                                                          |
-| `api.healthTimeoutMs`    | `5000`                      | 500–30000     | UI     | Timeout of `GET /models` health checks and **Test connection**.                                                             |
+| Setting                  | Default                     | Limits        | Status | Description                                                                                                                                                                                                          |
+| ------------------------ | --------------------------- | ------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api.baseUrl`            | `https://api.openai.com/v1` | http(s) URL   | UI     | Base URL including the version path. A bare origin gets `/v1`.                                                                                                                                                       |
+| `api.apiKey`             | `""`                        |               | UI     | Sent as `Authorization: Bearer <key>` when not empty. Stored locally in plain text (see [PRIVACY.md](PRIVACY.md)).                                                                                                   |
+| `api.model`              | `gpt-4o-mini`               | no whitespace | UI     | Model id sent with every request. It must accept image input.                                                                                                                                                        |
+| `api.temperature`        | `0.2`                       | 0–2 or `null` | UI     | Sampling temperature. `null` omits the field and leaves the provider default. A model that rejects it (some reasoning models take only their default) is asked again at once without it, and gets none from then on. |
+| `api.concurrency`        | `2`                         | 1–4           | UI     | Normal request lanes ("Parallel translation requests").                                                                                                                                                              |
+| `api.urgentLane`         | `true`                      |               | UI     | Adds one extra lane reserved for images currently on screen.                                                                                                                                                         |
+| `api.maxInFlight`        | `4`                         | 1–4           | UI     | Hard cap on requests in flight, urgent lane included. Never lower than `concurrency`. Chrome allows 6 connections per host.                                                                                          |
+| `api.firstByteTimeoutMs` | `180000`                    | 10000–900000  | UI     | Abort when no response byte arrives within this time.                                                                                                                                                                |
+| `api.idleTimeoutMs`      | `60000`                     | 10000–300000  | UI     | Abort when the stream stalls for this long after the first byte.                                                                                                                                                     |
+| `api.totalTimeoutMs`     | `600000`                    | 60000–1200000 | UI     | Abort any request after this long.                                                                                                                                                                                   |
+| `api.healthTimeoutMs`    | `5000`                      | 500–30000     | UI     | Timeout of `GET /models` health checks and **Test connection**.                                                                                                                                                      |
 
 ### `ui` and `translate`: languages and requests
 
@@ -182,14 +182,15 @@ earlier lines of the chapter and a running story summary go with every request (
 [ARCHITECTURE.md](ARCHITECTURE.md#series-memory)). The glossary and the per-series settings are edited in the side
 panel's Glossary view.
 
-| Setting                   | Default | Limits | Status | Description                                                                                                         |
-| ------------------------- | ------- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------- |
-| `memory.enabled`          | `true`  |        | UI     | Series memory on or off. Off: no glossary, history or summary in requests, and nothing is learned from the answers. |
-| `memory.glossaryInPrompt` | `60`    | 0–200  | UI     | Glossary entries sent with each request: manual first, then confirmed, then learned. Suggestions are never sent.    |
-| `memory.termMinSightings` | `2`     | 1–10   | UI     | Different requests that must name a term (`@term`) before the suggestion becomes a learned entry that is sent.      |
-| `memory.historyMaxLines`  | `20`    | 0–60   | UI     | Earlier lines of the chapter sent as context (page order, then reading order). 0 sends none.                        |
-| `memory.historyMaxTokens` | `700`   | 0–4000 | UI     | Token budget for those lines; the oldest go first.                                                                  |
-| `memory.summaryMaxWords`  | `60`    | 0–200  | UI     | Length of the running story summary the AI writes (`@sum`) and gets back. 0 turns summaries off.                    |
+| Setting                   | Default | Limits | Status | Description                                                                                                                                                  |
+| ------------------------- | ------- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `memory.enabled`          | `true`  |        | UI     | Series memory on or off. Off: no glossary, history or summary in requests, and nothing is learned from the answers.                                          |
+| `memory.glossaryInPrompt` | `60`    | 0–200  | UI     | Glossary entries sent with each request: manual first, then confirmed, then learned. Suggestions are never sent.                                             |
+| `memory.termMinSightings` | `2`     | 1–10   | UI     | Different requests that must name a term (`@term`) before the suggestion becomes a learned entry that is sent.                                               |
+| `memory.historyMaxLines`  | `20`    | 0–60   | UI     | Earlier lines of the chapter sent as context (page order, then reading order). 0 sends none.                                                                 |
+| `memory.historyMaxTokens` | `700`   | 0–4000 | UI     | Token budget for those lines; the oldest go first.                                                                                                           |
+| `memory.summaryMaxWords`  | `60`    | 0–200  | UI     | Length of the running story summary the AI writes (`@sum`) and gets back. 0 turns summaries off.                                                             |
+| `memory.warmUp`           | `true`  |        | UI     | While a series has no memory yet, its first request goes alone (at most 60 s) and the next ones start from what it reported: names, forms of address, lines. |
 
 ### `cache`: local caches
 

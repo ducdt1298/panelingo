@@ -153,6 +153,22 @@ describe("parseLine", () => {
     });
     assert.equal((parseLine("@summary: Kai đi lạc.") as { text: string }).text, "Kai đi lạc.");
     assert.equal(parseLine("@note|x").kind, "junk");
+    assert.deepEqual(parseLine("@addr| Zorvik |Kai|tớ|cậu | bạn"), {
+      kind: "addr",
+      a: "Zorvik",
+      b: "Kai",
+      aSelf: "tớ",
+      aToB: "cậu | bạn",
+      raw: "@addr| Zorvik |Kai|tớ|cậu | bạn",
+    });
+    assert.deepEqual(parseLine("@address|Kai|Zorvik|tớ"), {
+      kind: "addr",
+      a: "Kai",
+      b: "Zorvik",
+      aSelf: "tớ",
+      aToB: "",
+      raw: "@address|Kai|Zorvik|tớ",
+    });
   });
 
   test("prose, headings and malformed ids are junk", () => {

@@ -151,6 +151,19 @@ describe("pack queue lanes", () => {
 });
 
 describe("pack queue gate, drop and throttle", () => {
+  test("a task that is not ready keeps its place and takes no lane; the next ready one goes instead", () => {
+    const { queue, started } = setup({ concurrency: 2, cap: 3 });
+    let ready = false;
+    const held: FakeTask = { ...makeTask("held", started, { rank: [0] }), ready: () => ready };
+    queue.add(held);
+    queue.add(makeTask("next", started, { rank: [1] }));
+    assert.deepEqual(started, ["next"]);
+    assert.equal(queue.isQueued(held), true);
+    ready = true;
+    queue.pump();
+    assert.deepEqual(started, ["next", "held"]);
+  });
+
   test("nothing is sent while the gate is closed; pump() after it opens sends", () => {
     const { queue, started, state } = setup({ open: false });
     queue.add(makeTask("a", started));

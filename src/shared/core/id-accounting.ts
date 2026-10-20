@@ -28,6 +28,14 @@ export interface Term {
   note: string;
 }
 
+/** A form of address the model reported (@addr): how A refers to themself and addresses B. */
+export interface Address {
+  a: string;
+  b: string;
+  aSelf: string;
+  aToB: string;
+}
+
 export interface PackOutcome {
   /** Number of ids asked for (labels 1..n). */
   n: number;
@@ -56,6 +64,7 @@ export interface PackOutcome {
   /** True when `lang` came from an @lang line (only these should vote). */
   langReported: boolean;
   terms: Term[];
+  addresses: Address[];
   summary: string | null;
   /** Resolved ids (ok, keep-original, ignore) / n. */
   idCoverage: number;
@@ -76,6 +85,8 @@ export interface Accountant {
 export const MERGE_MIN_CHARS = 60;
 export const MERGE_RATIO = 4;
 export const MAX_TERMS = 10;
+/** @addr lines kept per answer. */
+export const MAX_ADDRESSES = 8;
 export const MAX_SUMMARY_CHARS = 1_000;
 
 const STRIP_FOR_COMPARE = /[\p{P}\p{S}\p{Z}\p{C}\s]+/gu;
@@ -140,6 +151,8 @@ export function createAccountant(n: number, srcLang?: Lang | "auto" | null, targ
   const junk: string[] = [];
   const terms: Term[] = [];
   const termKeys = new Set<string>();
+  const addresses: Address[] = [];
+  const addressKeys = new Set<string>();
   let reportedLang: Lang | null = null;
   let summary: string | null = null;
 
@@ -173,6 +186,20 @@ export function createAccountant(n: number, srcLang?: Lang | "auto" | null, targ
           ) {
             termKeys.add(key);
             terms.push({ original: rec.original, translation: rec.translation, note: rec.note });
+          }
+          return null;
+        }
+        case "addr": {
+          const key = `${compareKey(rec.a)}\u0000${compareKey(rec.b)}`;
+          if (
+            rec.a !== "" &&
+            rec.b !== "" &&
+            (rec.aSelf !== "" || rec.aToB !== "") &&
+            !addressKeys.has(key) &&
+            addresses.length < MAX_ADDRESSES
+          ) {
+            addressKeys.add(key);
+            addresses.push({ a: rec.a, b: rec.b, aSelf: rec.aSelf, aToB: rec.aToB });
           }
           return null;
         }
@@ -231,6 +258,7 @@ export function createAccountant(n: number, srcLang?: Lang | "auto" | null, targ
         lang: reportedLang ?? fallbackLang,
         langReported: reportedLang !== null,
         terms: [...terms],
+        addresses: [...addresses],
         summary,
         idCoverage: size === 0 ? 1 : (size - missing.length) / size,
       };

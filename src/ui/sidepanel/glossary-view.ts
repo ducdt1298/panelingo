@@ -1,15 +1,18 @@
 // Side panel "Glossary" view: the glossary and settings of the current tab's series (en:glossary-list), grouped by
-// state, with add, edit, delete and confirm, a small series-settings form, and JSON export (a download link) and
+// state, with add, edit, delete and confirm, the forms of address (learned or the reader's), a small series-settings
+// form, and JSON export (a download link) and
 // import (a file input). Opening the view is an explicit action, so its reads and writes start the engine when
 // needed. Pure helpers live in glossary-model.ts.
 
-import { SOURCE_LANGS } from "../../shared/core/memory.ts";
+import { addressKey, SOURCE_LANGS } from "../../shared/core/memory.ts";
 import { msg } from "../../shared/i18n/index.ts";
 import type { GlossaryEntry } from "../../shared/records.ts";
-import type { GlossaryEdit, Lang, SeriesProfile } from "../../shared/types.ts";
+import type { GlossaryEdit, Lang, PronounRule, SeriesProfile } from "../../shared/types.ts";
 import { h, replace, type Child } from "../common/dom.ts";
 import { callEngineEnsured } from "../common/engine-rpc.ts";
 import {
+  addressFromDraft,
+  addressRows,
   canConfirm,
   chunks,
   editFromDraft,
@@ -18,10 +21,14 @@ import {
   groupByState,
   IMPORT_CHUNK,
   importPatch,
+  isLearnedAddress,
   parseGlossaryImport,
   profileDraft,
   profilePatch,
   seriesLabel,
+  withAddress,
+  withoutAddress,
+  type AddressDraft,
   type ProfileDraft,
 } from "./glossary-model.ts";
 
@@ -53,6 +60,7 @@ interface Draft {
 }
 
 const emptyDraft = (): Draft => ({ orig: "", translation: "", note: "" });
+const emptyAddress = (): AddressDraft => ({ a: "", b: "", aSelf: "", aToB: "" });
 
 function valueOf(event: Event): string {
   return (event.target as HTMLInputElement | HTMLSelectElement | null)?.value ?? "";
@@ -76,8 +84,11 @@ export function createGlossaryView(deps: GlossaryViewDeps): GlossaryView {
   let adding: Draft = emptyDraft();
   let editing: (Draft & { key: string }) | null = null;
   let profile: ProfileDraft = profileDraft(null);
-  /** The settings form stays open across renders once opened. */
+  let addingAddress: AddressDraft = emptyAddress();
+  let editingAddress: (AddressDraft & { key: string }) | null = null;
+  /** The settings form and the add-a-form-of-address form stay open across renders once opened. */
   let profileOpen = false;
+  let addressFormOpen = false;
   /** Bumped per load, so a slow answer for another series is dropped. */
   let generation = 0;
   const t = (): ReturnType<typeof msg>["sidepanel"]["glossary"] => msg().sidepanel.glossary;
@@ -272,6 +283,183 @@ export function createGlossaryView(deps: GlossaryViewDeps): GlossaryView {
     );
   }
 
+  const rules = (): PronounRule[] => series?.pronouns ?? [];
+
+  /** Saves the whole list of forms of address (null: full of the reader's rules). */
+  async function saveAddresses(what: string, next: PronounRule[] | null): Promise<boolean> {
+    if (next === null) {
+      deps.say(t().address.full);
+      return false;
+    }
+    return run(what, async (key) => {
+      await callEngineEnsured("en:series-update", { seriesKey: key, patch: { pronouns: next } });
+      editingAddress = null;
+    });
+  }
+
+  function addAddress(): void {
+    const rule = addressFromDraft(addingAddress);
+    if (rule === null) {
+      deps.say(t().address.incomplete);
+      return;
+    }
+    void saveAddresses("address add", withAddress(rules(), rule)).then((done) => {
+      if (done) addingAddress = emptyAddress();
+    });
+  }
+
+  function addressNode(rule: PronounRule): HTMLElement {
+    const key = addressKey(rule);
+    const pair = `${rule.a} → ${rule.b}`;
+    if (editingAddress?.key === key) {
+      const draft = editingAddress;
+      return h(
+        "li",
+        { class: "entry editing" },
+        h("p", { class: "orig" }, pair),
+        textInput(t().address.self, draft.aSelf, (value) => {
+          draft.aSelf = value;
+        }),
+        textInput(t().address.other, draft.aToB, (value) => {
+          draft.aToB = value;
+        }),
+        h(
+          "div",
+          { class: "line-actions" },
+          h(
+            "button",
+            {
+              type: "button",
+              class: "primary",
+              disabled: busy,
+              onclick: () => {
+                const edited = addressFromDraft(draft);
+                if (edited === null) deps.say(t().address.incomplete);
+                else void saveAddresses("address edit", withAddress(rules(), edited));
+              },
+            },
+            msg().sidepanel.save,
+          ),
+          h(
+            "button",
+            {
+              type: "button",
+              onclick: () => {
+                editingAddress = null;
+                deps.changed();
+              },
+            },
+            msg().sidepanel.cancel,
+          ),
+        ),
+      );
+    }
+    const learned = isLearnedAddress(rule);
+    const buttons: Child[] = [
+      h(
+        "button",
+        {
+          type: "button",
+          disabled: busy,
+          onclick: () => {
+            editingAddress = { key, a: rule.a, b: rule.b, aSelf: rule.aSelf, aToB: rule.aToB };
+            deps.changed();
+          },
+        },
+        msg().sidepanel.edit,
+      ),
+    ];
+    if (learned) {
+      buttons.push(
+        h(
+          "button",
+          {
+            type: "button",
+            disabled: busy,
+            onclick: () => {
+              const kept = addressFromDraft(rule);
+              if (kept !== null) void saveAddresses("address keep", withAddress(rules(), kept));
+            },
+          },
+          t().address.keep,
+        ),
+      );
+    }
+    buttons.push(
+      h(
+        "button",
+        {
+          type: "button",
+          disabled: busy,
+          onclick: () => void saveAddresses("address delete", withoutAddress(rules(), rule)),
+        },
+        t().delete,
+      ),
+    );
+    const shown = (word: string): string => (word === "" ? "–" : word);
+    return h(
+      "li",
+      { class: `entry address ${learned ? "learned" : "mine"}` },
+      h(
+        "p",
+        { class: "term" },
+        h("span", { class: "orig" }, pair),
+        h("span", { class: "arrow" }, ": "),
+        h("span", { class: "rendering" }, `${shown(rule.aSelf)} / ${shown(rule.aToB)}`),
+      ),
+      h("p", { class: "seen muted" }, learned ? t().address.learned : t().address.mine),
+      h("div", { class: "line-actions" }, ...buttons),
+    );
+  }
+
+  function addressSection(): HTMLElement {
+    const list = addressRows(rules());
+    const details = h("details", { class: "add-address", open: addressFormOpen });
+    details.addEventListener("toggle", () => {
+      addressFormOpen = details.open;
+    });
+    details.append(
+      h("summary", null, t().address.addHeading),
+      h(
+        "form",
+        {
+          class: "add address-form",
+          onsubmit: (event) => {
+            event.preventDefault();
+            addAddress();
+          },
+        },
+        textInput(t().address.speaker, addingAddress.a, (value) => {
+          addingAddress.a = value;
+        }),
+        textInput(t().address.listener, addingAddress.b, (value) => {
+          addingAddress.b = value;
+        }),
+        textInput(t().address.self, addingAddress.aSelf, (value) => {
+          addingAddress.aSelf = value;
+        }),
+        textInput(t().address.other, addingAddress.aToB, (value) => {
+          addingAddress.aToB = value;
+        }),
+        h(
+          "div",
+          { class: "line-actions" },
+          h("button", { type: "submit", class: "primary", disabled: busy }, t().add),
+        ),
+      ),
+    );
+    return h(
+      "section",
+      { class: "group addresses" },
+      h("h2", null, `${t().address.heading} (${list.length})`),
+      h("p", { class: "muted hint" }, t().address.hint),
+      list.length === 0
+        ? h("p", { class: "muted empty" }, t().address.empty)
+        : h("ul", { class: "entries" }, ...list.map(addressNode)),
+      details,
+    );
+  }
+
   function addForm(): HTMLElement {
     return h(
       "form",
@@ -448,6 +636,7 @@ export function createGlossaryView(deps: GlossaryViewDeps): GlossaryView {
             h("ul", { class: "entries" }, ...group.entries.map(entryNode)),
           ),
         ),
+        loaded ? addressSection() : null,
         profileForm(),
       );
     },
@@ -459,6 +648,8 @@ export function createGlossaryView(deps: GlossaryViewDeps): GlossaryView {
         loaded = false;
         editing = null;
         adding = emptyDraft();
+        editingAddress = null;
+        addingAddress = emptyAddress();
         profile = profileDraft(null);
       }
       deps.changed();

@@ -302,6 +302,21 @@ export const FR: Catalog = {
       imported: (count: number): string =>
         `${count} ${plural(count, "entrée importée", "entrées importées")}.`,
       importFailed: "Ce fichier n'est pas un glossaire Panelingo.",
+      address: {
+        heading: "Formes d'adresse",
+        hint: "Comment chaque personnage se désigne et s'adresse à son interlocuteur. L'IA les remplit pendant la lecture et les garde identiques ; vos propres règles ne changent jamais.",
+        speaker: "Locuteur",
+        listener: "Interlocuteur",
+        self: "Se désigne comme",
+        other: "Appelle l'interlocuteur",
+        learned: "Apprise par l'IA",
+        mine: "La vôtre",
+        keep: "Garder",
+        addHeading: "Ajouter une forme d'adresse",
+        incomplete: "Saisissez les deux noms et au moins une forme d'adresse.",
+        full: "La liste est pleine. Supprimez d'abord une règle.",
+        empty: "Aucune pour l'instant. Les paires apparaissent ici quand l'IA les rencontre.",
+      },
     },
   },
   debug: {
@@ -718,6 +733,10 @@ export const FR: Catalog = {
       "memory.summaryMaxWords": {
         label: "Longueur du résumé de l'histoire (mots)",
         hint: "0 désactive le résumé continu.",
+      },
+      "memory.warmUp": {
+        label: "Préparer une nouvelle série",
+        hint: "Tant qu'une série n'a pas encore de mémoire, sa première requête part seule pour que les pages suivantes reprennent ses noms et ses formes d'adresse. Les premières pages prennent un peu plus de temps.",
       },
       "cache.translationTtlDays": {
         label: "Conserver les traductions inutilisées pendant (jours)",

@@ -381,6 +381,26 @@ test("without ports or work the engine reports sw:engine-idle after idleCloseMin
   assert.deepEqual(stub.idleCalls, [start]);
 });
 
+test("a page in auto mode loads the detector at hello; a manual page or a loaded detector does not", async () => {
+  const { browser, runtime, clock, services } = await boot();
+  assert.ok(runtime !== null);
+  const manual = connectContent(browser, "https://reader.example/1");
+  manual.post(csHello("manual"));
+  await browser.settle();
+  assert.equal(services.detector.warmups, 0, "a manual page may never send an image");
+  const auto = connectContent(browser, "https://reader.example/2");
+  auto.post(csHello("auto"));
+  await browser.settle();
+  assert.equal(services.detector.warmups, 1);
+  services.detector.current = { backend: "webgpu", state: "ready", canary: "pass" };
+  connectContent(browser, "https://reader.example/3").post(csHello("auto"));
+  await browser.settle();
+  assert.equal(services.detector.warmups, 1, "already loaded");
+  // The warm-up counts as activity: unused, the session is released after detectorReleaseMin.
+  await clock.advance(minutesToMs(DEFAULT_SETTINGS.engine.detectorReleaseMin));
+  assert.equal(services.detector.releases, 1);
+});
+
 test("the pipeline's detector reports activity, so an idle detector session is released", async () => {
   const captured: { pipeline: Parameters<ServiceFactories["createPipeline"]>[0] | null } = { pipeline: null };
   const { runtime, clock, services } = await boot({

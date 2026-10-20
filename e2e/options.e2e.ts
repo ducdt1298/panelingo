@@ -77,8 +77,15 @@ test("an Advanced setting typed in the options page is stored, clamped to its li
   await withDiagnostics(h, current, async () => {
     const { page } = current;
     await page.waitForSelector("#advanced-details", { timeout: 15_000 });
-    assert.equal(await page.$eval("#advanced-details", (el) => (el as HTMLDetailsElement).open), false);
-    await page.click("#advanced-details > summary");
+    // Settings are tabs: only the chosen section shows, and the Advanced tab opens its details.
+    assert.equal(
+      await page.$eval("#advanced", (el) => (el as HTMLElement).hidden),
+      true,
+      "not the first tab",
+    );
+    await page.click('a.settings-nav-item[href="#advanced"]');
+    assert.equal(await page.$eval("#advanced", (el) => (el as HTMLElement).hidden), false);
+    assert.equal(await page.$eval("#api", (el) => (el as HTMLElement).hidden), true, "one tab at a time");
     assert.equal(await page.$eval("#advanced-details", (el) => (el as HTMLDetailsElement).open), true);
 
     await typeInto(page, "#adv-memory-historyMaxLines", "5");
@@ -130,6 +137,7 @@ test("the per-site editor saves through the service worker and keeps the registr
   await withDiagnostics(h, current, async () => {
     const { page } = current;
     const row = `tr[data-site="${siteKey}"]`;
+    await page.click('a.settings-nav-item[href="#sites"]');
     await page.waitForSelector(row);
     const base = await page.$eval(`${row} button.site-toggle`, (el) => el.id.replace(/-toggle$/u, ""));
     await page.click(`#${base}-toggle`);

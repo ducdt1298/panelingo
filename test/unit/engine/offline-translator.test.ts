@@ -491,7 +491,7 @@ describe("offline pack translation", () => {
     const h = harness();
     const report = await h.run("auto");
     assert.equal(report.lang, "ko");
-    assert.deepEqual(report.learning, { terms: [], summary: null, lang: "ko" });
+    assert.deepEqual(report.learning, { terms: [], addresses: [], summary: null, lang: "ko" });
     assert.ok(h.world.calls.includes("ocr-cjk.run") && h.world.calls.includes("ocr-korean.run"));
     assert.equal(byKey(h.results)["a"]?.translation, "hello world!");
   });

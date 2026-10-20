@@ -112,6 +112,11 @@ export interface Settings {
     historyMaxLines: number;
     historyMaxTokens: number;
     summaryMaxWords: number;
+    /**
+     * While a series has no memory yet, its first request goes alone and the next ones start from what it reported
+     * (names, forms of address, lines), so the first pages do not each pick their own.
+     */
+    warmUp: boolean;
   };
   cache: {
     translationTtlDays: number;
@@ -233,6 +238,7 @@ export const DEFAULT_SETTINGS: Settings = {
     historyMaxLines: 20,
     historyMaxTokens: 700,
     summaryMaxWords: 60,
+    warmUp: true,
   },
   cache: {
     translationTtlDays: 30,
@@ -395,8 +401,10 @@ export function normalizeBaseUrl(value: string): string {
   const trimmed = value.trim().replace(/\/+$/u, "");
   try {
     const url = new URL(trimmed);
-    if (url.pathname === "/" || url.pathname === "") return `${url.origin}/v1`;
-    return trimmed;
+    // A doubled slash in the path ("https://host//v1", easy to paste) would reach the server as "//v1/models".
+    const path = url.pathname.replace(/\/{2,}/gu, "/").replace(/\/+$/u, "");
+    if (path === "") return `${url.origin}/v1`;
+    return `${url.origin}${path}${url.search}`;
   } catch {
     return trimmed;
   }

@@ -290,6 +290,21 @@ export const JA: Catalog = {
       import: "インポート",
       imported: (count: number): string => `${count} 件を読み込みました。`,
       importFailed: "このファイルは Panelingo の用語集ではありません。",
+      address: {
+        heading: "呼び方",
+        hint: "各キャラクターが自分と相手をどう呼ぶか。読み進めるうちに AI が記入し、同じ呼び方を保ちます。自分で決めたルールは変更されません。",
+        speaker: "話し手",
+        listener: "聞き手",
+        self: "自分の呼び方",
+        other: "相手の呼び方",
+        learned: "AI が学習",
+        mine: "あなたのルール",
+        keep: "固定",
+        addHeading: "呼び方を追加",
+        incomplete: "2人の名前と、少なくとも1つの呼び方を入力してください。",
+        full: "リストがいっぱいです。先にルールを削除してください。",
+        empty: "まだありません。AI が見つけた組み合わせがここに表示されます。",
+      },
     },
   },
   debug: { heading: "デバッグ（開発・テストビルドのみ）" },
@@ -685,6 +700,10 @@ export const JA: Catalog = {
       "memory.summaryMaxWords": {
         label: "あらすじの長さ（単語数）",
         hint: "0にすると、随時更新されるあらすじをオフにします。",
+      },
+      "memory.warmUp": {
+        label: "新しいシリーズを先に1回翻訳",
+        hint: "シリーズの記憶がまだないうちは最初のリクエストだけを送り、次のページはその名前と呼び方を引き継ぎます。最初のページは少し遅くなります。",
       },
       "cache.translationTtlDays": {
         label: "未使用の翻訳を保持する期間（日）",

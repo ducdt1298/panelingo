@@ -265,6 +265,21 @@ export const ZH_CN: Catalog = {
       import: "导入",
       imported: (count: number): string => `已导入 ${count} 个条目。`,
       importFailed: "此文件不是 Panelingo 术语表。",
+      address: {
+        heading: "称呼",
+        hint: "每个角色如何自称、如何称呼对方。AI 会在你阅读时填写并保持一致；你自己设定的规则永远不会被改动。",
+        speaker: "说话人",
+        listener: "听话人",
+        self: "自称",
+        other: "称呼对方",
+        learned: "AI 学到的",
+        mine: "你的",
+        keep: "固定",
+        addHeading: "添加称呼",
+        incomplete: "请输入两个名字，以及至少一种称呼。",
+        full: "列表已满，请先删除一条规则。",
+        empty: "暂无。AI 遇到的人物组合会显示在这里。",
+      },
     },
   },
   debug: { heading: "调试（仅限开发/测试版本）" },
@@ -645,6 +660,10 @@ export const ZH_CN: Catalog = {
       "memory.summaryMaxWords": {
         label: "剧情摘要长度（词数）",
         hint: "设为 0 则关闭持续更新的剧情摘要。",
+      },
+      "memory.warmUp": {
+        label: "新系列先预热",
+        hint: "系列还没有记忆时，先单独发送第一个请求，后面的页面沿用其中的人名和称呼。最初几页会稍慢一些。",
       },
       "cache.translationTtlDays": {
         label: "未使用译文的保留时间（天）",

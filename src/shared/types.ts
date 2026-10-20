@@ -216,6 +216,19 @@ export interface PronounRule {
   aSelf: string;
   /** How A addresses B. */
   aToB: string;
+  /**
+   * "learned": reported by the model (@addr lines) and kept consistent across the series. "manual" (or absent, as in
+   * rules stored before learning existed): set by the reader; the model never changes it.
+   */
+  source?: "manual" | "learned";
+  /** Distinct requests that reported this rule (learned rules). */
+  sightings?: number;
+  /** The last requests that reported it, so a request never counts twice. */
+  packIds?: string[];
+  /** A different rendering of the same pair, waiting for a second request before it replaces this one. */
+  pending?: { aSelf: string; aToB: string; packIds: string[] };
+  /** Epoch ms of the last report (learned rules); recent pairs win when the prompt has no room for all. */
+  updatedAt?: number;
 }
 
 export interface SeriesProfile {

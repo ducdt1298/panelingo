@@ -308,6 +308,21 @@ export const PL: Catalog = {
       imported: (count: number): string =>
         `Zaimportowano ${count} ${plural(count, "wpis", "wpisy", "wpisów")}.`,
       importFailed: "Ten plik nie jest słowniczkiem Panelingo.",
+      address: {
+        heading: "Formy zwracania się",
+        hint: "Jak każda postać mówi o sobie i zwraca się do rozmówcy. AI uzupełnia to w trakcie czytania i utrzymuje bez zmian; twoich własnych reguł nigdy nie zmienia.",
+        speaker: "Mówiący",
+        listener: "Rozmówca",
+        self: "Mówi o sobie",
+        other: "Zwraca się do rozmówcy",
+        learned: "Nauczona przez AI",
+        mine: "Twoja",
+        keep: "Zachowaj",
+        addHeading: "Dodaj formę zwracania się",
+        incomplete: "Wpisz oba imiona i co najmniej jedną formę zwracania się.",
+        full: "Lista jest pełna. Najpierw usuń regułę.",
+        empty: "Jeszcze brak. Pary pojawią się tutaj, gdy AI je napotka.",
+      },
     },
   },
   debug: { heading: "Debugowanie (tylko wersje dev/test)" },
@@ -714,6 +729,10 @@ export const PL: Catalog = {
       "memory.summaryMaxWords": {
         label: "Długość streszczenia fabuły (słowa)",
         hint: "0 wyłącza bieżące streszczenie.",
+      },
+      "memory.warmUp": {
+        label: "Rozgrzewka nowej serii",
+        hint: "Dopóki seria nie ma jeszcze pamięci, jej pierwsze żądanie idzie samo, aby kolejne strony używały jego imion i form zwracania się. Pierwsze strony trwają nieco dłużej.",
       },
       "cache.translationTtlDays": {
         label: "Przechowuj nieużywane tłumaczenia przez (dni)",

@@ -313,6 +313,21 @@ export const DE: Catalog = {
       import: "Importieren",
       imported: (count: number): string => `${count} ${plural(count, "Eintrag", "Einträge")} importiert.`,
       importFailed: "Diese Datei ist kein Panelingo-Glossar.",
+      address: {
+        heading: "Anredeformen",
+        hint: "Wie jede Figur sich selbst nennt und ihr Gegenüber anspricht. Die KI füllt das beim Lesen aus und hält es gleich; deine eigenen Regeln ändert sie nie.",
+        speaker: "Sprecher",
+        listener: "Angesprochene Person",
+        self: "Nennt sich selbst",
+        other: "Spricht das Gegenüber an mit",
+        learned: "Von der KI gelernt",
+        mine: "Deine",
+        keep: "Behalten",
+        addHeading: "Anredeform hinzufügen",
+        incomplete: "Gib beide Namen und mindestens eine Anredeform ein.",
+        full: "Die Liste ist voll. Lösche zuerst eine Regel.",
+        empty: "Noch keine. Paare erscheinen hier, sobald die KI sie trifft.",
+      },
     },
   },
   debug: { heading: "Debug (nur Dev-/Test-Builds)" },
@@ -722,6 +737,10 @@ export const DE: Catalog = {
       "memory.summaryMaxWords": {
         label: "Länge der Handlungszusammenfassung (Wörter)",
         hint: "0 schaltet die laufende Zusammenfassung ab.",
+      },
+      "memory.warmUp": {
+        label: "Neue Serie aufwärmen",
+        hint: "Solange eine Serie noch kein Gedächtnis hat, läuft ihre erste Anfrage allein, damit die nächsten Seiten deren Namen und Anredeformen übernehmen. Die ersten Seiten dauern etwas länger.",
       },
       "cache.translationTtlDays": {
         label: "Unbenutzte Übersetzungen behalten für (Tage)",

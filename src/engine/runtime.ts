@@ -3,7 +3,7 @@
 // sw:get-settings (2 s; on failure keep the mirror or the defaults), sw:ping codec self-test, log sink to the
 // LogStore, services through the factories in dependency order, first /models check (not awaited), phase "ready",
 // gate.drain(). Retention runs later, at most once per 24 h and only while idle. Nothing here awaits ORT: the
-// detector loads its model at the first detection.
+// detector loads its model when a page in auto mode says hello (or at the first detection).
 
 import { consoleSink, createLogger, type LogLevel, type LogSink, type Logger } from "../platform/log.ts";
 import { callSw } from "../platform/messaging.ts";
@@ -377,7 +377,15 @@ function compose(input: ComposeInput): EngineRuntime {
       }
     },
     unitsFrom: (raw, size, options, slices) => detector.unitsFrom(raw, size, options, slices),
-    warmup: () => detector.warmup(),
+    // A warm-up counts as activity: a session loaded for a page that never sends an image is released like any other.
+    warmup: async () => {
+      idle.detectionStarted();
+      try {
+        await detector.warmup();
+      } finally {
+        idle.detectionFinished();
+      }
+    },
     release: () => detector.release(),
   };
 
@@ -449,6 +457,8 @@ function compose(input: ComposeInput): EngineRuntime {
     now: () => clock.now(),
     onHello: (frame, hello) => {
       const codec = frames.hello(frame, hello);
+      // A page in auto mode submits its images next: the model loads (and WebGPU compiles) while they download.
+      if (hello.mode === "auto" && detector.state().state === "unloaded") void trackedDetector.warmup();
       if (hello.v !== PROTOCOL_VERSION)
         log.warn("content protocol mismatch", { frameKey: frame.info.frameKey });
       frame.post({

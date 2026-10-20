@@ -82,6 +82,7 @@ const CONTEXT_LENGTH = /context[_ ]length|maximum context|too many tokens|prompt
 const NO_VISION = /image|vision|multimodal|image_url/iu;
 const MODEL_UNKNOWN = /model.*(not found|does not exist|unknown|not available)|no such model|invalid model/iu;
 const TOO_LARGE = /too large|entity too large|payload|request size|body size/iu;
+const TEMPERATURE = /\btemperature\b/iu;
 /** A rejected key reported with a status other than 401/403 (Gemini answers a bad key with 400). */
 const INVALID_KEY =
   /api[_ ]?key(?: is)? (?:not valid|invalid|expired)|API_KEY_INVALID|invalid[_ ]api[_ ]key|incorrect api key|UNAUTHENTICATED/iu;
@@ -126,6 +127,8 @@ export function classifyHttpError(status: number, body: unknown): ErrorInfo {
   if (status === 400 || status === 422) {
     if (INVALID_KEY.test(`${text} ${e.nested ?? ""}`)) return info("api.unauthorized");
     if (e.code === "context_length_exceeded" || CONTEXT_LENGTH.test(text)) return info("api.context_length");
+    // OpenAI reasoning models: "Unsupported value: 'temperature' does not support 0.2 with this model."
+    if (TEMPERATURE.test(text)) return info("api.bad_request", "temperature");
     if (MODEL_UNKNOWN.test(text) || e.code === "model_not_found") return info("api.config");
     if (NO_VISION.test(text)) return info("api.config", "model without image input");
     return info("api.bad_request");

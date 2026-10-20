@@ -342,8 +342,9 @@ Spanish sources. The model answers line by line:
 The system message also carries the series context from [series memory](#series-memory): the glossary (manual,
 then confirmed, then learned entries, at most `memory.glossaryInPrompt`), the forms of address and the series' name
 style. The user message carries the running chapter summary and the earlier lines of the chapter. After the `#` lines
-the model may add `@term|original|rendering|note` lines for new names and terms, and, when a summary is asked for,
-`@sum|…` as the very last line. The text budget is capped at `translate.promptCharCap` characters: the history is
+the model may add `@term|original|rendering|note` lines for new names and terms, `@addr|speaker|listener|self|addressee`
+lines for pairs of characters that are not in the forms-of-address table yet (every target but English), and, when a
+summary is asked for, `@sum|…` as the very last line. The text budget is capped at `translate.promptCharCap` characters: the history is
 trimmed first, then learned glossary entries. A crops-only re-ask sends the neighboring translated lines instead of
 the chapter history, and asks for no summary.
 
@@ -458,13 +459,24 @@ the page URL (and title) of every pack:
   the rendering the model gives most often. **Manual** entries (typed or imported) and **confirmed** ones (suggestions
   you accepted) always win: the model never changes them. Learning runs one pack at a time, and each glossary update is
   a single transaction, so it cannot overwrite an entry you saved meanwhile.
+- `@addr` lines teach the **forms of address**: how each character refers to themself and to the one they talk to
+  (in Vietnamese, for example, tớ / cậu or anh / em). A new pair is learned at once, so the next requests of the series
+  get it back in the forms-of-address table and keep it. A different rendering of a learned pair replaces it only once
+  2 different requests gave it, so one odd answer does not flip how two characters talk. Your own rules (typed in the
+  side panel, imported, or stored before learning existed) are never changed. At most 20 rules are kept per series:
+  the learned rule reported least recently goes first; the prompt sends the newest learned rules and all of yours.
+- **Warm-up** (`memory.warmUp`): while a series has no memory at all (no glossary, forms of address, chapter lines or
+  summary), its first request goes alone and the other packs of the series wait until its answer is learned, at most
+  60 s. Without it, the first two or three requests of a new series run side by side and each picks its own forms of
+  address. A failed warm-up request hands over to the next pack; once a series has memory it is never held again.
 - `@sum` replaces the chapter summary only when it comes from a pack further down the chapter than the one that wrote
   it. `@lang` votes are counted on the series profile; the source language settles once one language leads with 2
   votes, unless you chose one.
 - The transcript flags a line whose translation misses the glossary rendering of a term in its original.
 
 The side panel's Glossary view edits all of this through `en:glossary-list`, `en:glossary-upsert`,
-`en:glossary-confirm`, `en:glossary-delete` and `en:series-update`, and exports or imports it as JSON
+`en:glossary-confirm`, `en:glossary-delete` and `en:series-update` (the forms of address: add, edit, keep a learned
+rule as yours, delete), and exports or imports it as JSON
 (`{version, series, glossary[]}`; imported entries become manual). `memory.enabled` turns series memory off. Memory
 never blocks translation: without the stores, or when a store fails, the pack goes without context.
 
