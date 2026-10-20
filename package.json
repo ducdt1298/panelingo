@@ -85,7 +85,7 @@
     "fake-indexeddb": "6.2.5",
     "prettier": "3.9.9",
     "puppeteer-core": "25.13.0",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "typescript-eslint": "8.71.1"
   }
 }
