@@ -1032,7 +1032,9 @@ describe("answers", () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(chatBody(1)),
     });
-    assert.equal(cut.chunks?.length, 2);
+    // The role frame and one text frame, then a clean end (counted in the body and on the server, not by HTTP chunks).
+    assert.equal(splitSseFrames(cut.body).length, 2);
+    assert.equal(lastRecord(mock).framesWritten, 2);
     assert.equal(lastRecord(mock).outcome, "truncated");
 
     mock.setScenario({ replayFile: "crlf.sse" });
