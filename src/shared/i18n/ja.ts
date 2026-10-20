@@ -319,6 +319,7 @@ export const JA: Catalog = {
   },
   popup: {
     siteToggle: "このサイトで翻訳する",
+    fastMode: "高速モード（精度は下がります）",
     progressDone: (count: number): string => `完了: このページの画像 ${count} 枚`,
     more: "このサイトのその他の設定",
     siteSettings: "このサイトのすべての設定",
@@ -383,6 +384,7 @@ export const JA: Catalog = {
       },
     },
     controlsHeading: "キーとクリック",
+    speedHeading: "速度",
     exportLog: "デバッグログをエクスポート",
     exportFailed: "デバッグログをエクスポートできませんでした。",
     exportEmpty: "デバッグログは空です。",
@@ -554,6 +556,10 @@ export const JA: Catalog = {
       "translate.offlineModel": {
         label: "オフライン翻訳モデル",
         hint: "オフラインモードでのみ使用されます。",
+      },
+      "translate.fastMode": {
+        label: "高速モード",
+        hint: "応答が速く、費用も抑えられます。AI は訳文だけを書き（話者や原文の書き起こしなし）、前の行も受け取らず、新しいことを学習しません。名前、呼び方、文脈に左右される台詞の精度は下がります。",
       },
       "translate.splitOnRefusal": {
         label: "拒否されたリクエストを分割",

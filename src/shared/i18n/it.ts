@@ -336,6 +336,7 @@ export const IT: Catalog = {
   },
   popup: {
     siteToggle: "Traduci su questo sito",
+    fastMode: "Modalità rapida (meno precisa)",
     progressDone: (count: number): string =>
       `Fatto: ${count} ${count === 1 ? "immagine" : "immagini"} in questa pagina`,
     more: "Altro per questo sito",
@@ -412,6 +413,7 @@ export const IT: Catalog = {
       },
     },
     controlsHeading: "Tasti e clic",
+    speedHeading: "Velocità",
     exportLog: "Esporta il registro di debug",
     exportFailed: "Impossibile esportare il registro di debug.",
     exportEmpty: "Il registro di debug è vuoto.",
@@ -594,6 +596,10 @@ export const IT: Catalog = {
       "translate.offlineModel": {
         label: "Modello di traduzione offline",
         hint: "Usato solo in modalità offline.",
+      },
+      "translate.fastMode": {
+        label: "Modalità rapida",
+        hint: "Risponde prima e costa meno: l'IA scrive solo la traduzione (senza chi parla né trascrizione), non riceve le righe precedenti e non impara nulla di nuovo. Nomi, forme di cortesia e righe che dipendono dal contesto sono meno precisi.",
       },
       "translate.splitOnRefusal": {
         label: "Suddividi le richieste rifiutate",

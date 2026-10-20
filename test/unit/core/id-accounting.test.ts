@@ -3,12 +3,19 @@ import { describe, test } from "node:test";
 import {
   compareKey,
   createAccountant,
+  isMergeSuspect,
   judgeItem,
   MAX_ADDRESSES,
   MAX_TERMS,
   type Outcome,
 } from "../../../src/shared/core/id-accounting.ts";
 import { parseLine, type ItemRec, type Rec } from "../../../src/shared/core/line-parser.ts";
+
+/** The item record of a parsed line. */
+function item(parsed: Rec): ItemRec {
+  assert.equal(parsed.kind, "item");
+  return parsed;
+}
 
 function rec(
   id: number,
@@ -258,6 +265,12 @@ describe("createAccountant", () => {
     assert.equal(fallback.langReported, false);
     assert.equal(createAccountant(1, "auto").finish(true).lang, null);
     assert.equal(createAccountant(1).finish(true).summary, null);
+  });
+
+  test("a long translation without a transcription (fast mode) is never a merge suspect", () => {
+    const long = "Đây là một câu thoại rất dài để thử xem bản dịch có bị nghi là gộp hai ô hay không nhé.";
+    assert.equal(isMergeSuspect(item(parseLine(`#1|dialogue|${long}`, true))), false);
+    assert.equal(isMergeSuspect(item(parseLine(`#1|dialogue||짧다|${long}`))), true);
   });
 
   test("@addr: pairs deduped (first wins), incomplete ones dropped, capped", () => {

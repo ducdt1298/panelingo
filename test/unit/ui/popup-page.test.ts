@@ -74,6 +74,14 @@ async function assertPopupIn(run: PageRun, t: Catalog): Promise<void> {
   assert.deepEqual(texts(site, "a"), [t.popup.siteSettings]);
 }
 
+describe("popup page: offline mode", () => {
+  test("no fast mode switch: it only changes what is asked of the AI endpoint", async () => {
+    const run = await openPopup({ ui: { locale: "en" }, translate: { engine: "offline" } });
+    await until(() => run.dom.byId("site").findById("target-lang") !== null, "site card");
+    assert.equal(run.dom.byId("site").findById("fast-mode"), null);
+  });
+});
+
 describe("popup page", () => {
   test("English: texts from msg(), the status line from GET {baseUrl}/models with the API key", async () => {
     const run = await openPopup({ ui: { locale: "en" } });
@@ -186,6 +194,15 @@ describe("popup page", () => {
 
     // The mode change is done (controls enabled again) before the next action.
     await until(() => site.findById("target-lang")?.["disabled"] === false, "idle again");
+    const fastMode = control(run, "fast-mode");
+    assert.equal(fastMode["checked"], false);
+    fastMode["checked"] = true;
+    run.dispatch(fastMode, "change");
+    await until(
+      () => (run.browser.storageGet("local", "settings") as Settings).translate.fastMode,
+      "fast mode on",
+    );
+    await until(() => site.findById("target-lang")?.["disabled"] === false, "idle after fast mode");
     const target = control(run, "target-lang");
     target.value = "fr";
     run.dispatch(target, "change");

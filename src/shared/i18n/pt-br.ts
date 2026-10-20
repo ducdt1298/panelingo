@@ -319,6 +319,7 @@ export const PT_BR: Catalog = {
   },
   popup: {
     siteToggle: "Traduzir neste site",
+    fastMode: "Modo rápido (menos preciso)",
     progressDone: (count: number): string =>
       `Pronto: ${count} ${count === 1 ? "imagem" : "imagens"} nesta página`,
     more: "Mais para este site",
@@ -392,6 +393,7 @@ export const PT_BR: Catalog = {
       },
     },
     controlsHeading: "Teclas e cliques",
+    speedHeading: "Velocidade",
     exportLog: "Exportar o log de depuração",
     exportFailed: "Não foi possível exportar o log de depuração.",
     exportEmpty: "O log de depuração está vazio.",
@@ -572,6 +574,10 @@ export const PT_BR: Catalog = {
       "translate.offlineModel": {
         label: "Modelo de tradução offline",
         hint: "Usado apenas no modo offline.",
+      },
+      "translate.fastMode": {
+        label: "Modo rápido",
+        hint: "Responde mais rápido e custa menos: a IA escreve só a tradução (sem quem fala nem transcrição), não recebe as falas anteriores e não aprende nada novo. Nomes, formas de tratamento e falas que dependem do contexto ficam menos precisos.",
       },
       "translate.splitOnRefusal": {
         label: "Dividir solicitações recusadas",

@@ -306,6 +306,7 @@ export const KO: Catalog = {
   },
   popup: {
     siteToggle: "이 사이트에서 번역",
+    fastMode: "빠른 모드(정확도 낮음)",
     progressDone: (count: number): string => `완료: 이 페이지의 이미지 ${count}개`,
     more: "이 사이트 추가 설정",
     siteSettings: "이 사이트의 모든 설정",
@@ -367,6 +368,7 @@ export const KO: Catalog = {
       },
     },
     controlsHeading: "키와 클릭",
+    speedHeading: "속도",
     exportLog: "디버그 로그 내보내기",
     exportFailed: "디버그 로그를 내보낼 수 없습니다.",
     exportEmpty: "디버그 로그가 비어 있습니다.",
@@ -533,6 +535,10 @@ export const KO: Catalog = {
       "translate.offlineModel": {
         label: "오프라인 번역 모델",
         hint: "오프라인 모드에서만 사용됩니다.",
+      },
+      "translate.fastMode": {
+        label: "빠른 모드",
+        hint: "더 빨리 답하고 비용도 줄어듭니다. AI는 번역만 쓰고(화자와 원문 받아쓰기 없음), 앞의 대사를 받지 않으며, 새로 학습하지 않습니다. 이름, 호칭, 문맥에 따라 달라지는 대사는 덜 정확해집니다.",
       },
       "translate.splitOnRefusal": {
         label: "거부된 요청 나누기",

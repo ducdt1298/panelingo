@@ -294,6 +294,7 @@ export const ZH_CN: Catalog = {
   },
   popup: {
     siteToggle: "在此网站翻译",
+    fastMode: "快速模式（准确度较低）",
     progressDone: (count: number): string => `完成：本页 ${count} 张图片`,
     more: "此网站的更多设置",
     siteSettings: "此网站的全部设置",
@@ -347,6 +348,7 @@ export const ZH_CN: Catalog = {
       },
     },
     controlsHeading: "按键与点击",
+    speedHeading: "速度",
     exportLog: "导出调试日志",
     exportFailed: "无法导出调试日志。",
     exportEmpty: "调试日志为空。",
@@ -508,6 +510,10 @@ export const ZH_CN: Catalog = {
       "translate.offlineModel": {
         label: "离线翻译模型",
         hint: "仅在离线模式下使用。",
+      },
+      "translate.fastMode": {
+        label: "快速模式",
+        hint: "回复更快、花费更少：AI 只写译文（不写说话人，也不抄写原文），不接收前面的台词，也不学习新内容。人名、称呼和依赖上下文的台词会不够准确。",
       },
       "translate.splitOnRefusal": {
         label: "拆分被拒绝的请求",

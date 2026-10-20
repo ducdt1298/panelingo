@@ -326,6 +326,7 @@ export const ES: Catalog = {
   },
   popup: {
     siteToggle: "Traducir en este sitio",
+    fastMode: "Modo rápido (menos preciso)",
     progressDone: (count: number): string =>
       `Listo: ${count} ${count === 1 ? "imagen" : "imágenes"} en esta página`,
     more: "Más para este sitio",
@@ -400,6 +401,7 @@ export const ES: Catalog = {
       },
     },
     controlsHeading: "Teclas y clics",
+    speedHeading: "Velocidad",
     exportLog: "Exportar el registro de depuración",
     exportFailed: "No se pudo exportar el registro de depuración.",
     exportEmpty: "El registro de depuración está vacío.",
@@ -580,6 +582,10 @@ export const ES: Catalog = {
       "translate.offlineModel": {
         label: "Modelo de traducción sin conexión",
         hint: "Solo se usa en el modo sin conexión.",
+      },
+      "translate.fastMode": {
+        label: "Modo rápido",
+        hint: "Responde antes y cuesta menos: la IA solo escribe la traducción (sin hablante ni transcripción), no recibe las líneas anteriores y no aprende nada nuevo. Los nombres, las formas de tratamiento y las líneas que dependen del contexto son menos precisos.",
       },
       "translate.splitOnRefusal": {
         label: "Dividir las solicitudes rechazadas",

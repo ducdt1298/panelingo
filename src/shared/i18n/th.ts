@@ -300,6 +300,7 @@ export const TH: Catalog = {
   },
   popup: {
     siteToggle: "แปลบนเว็บไซต์นี้",
+    fastMode: "โหมดเร็ว (แม่นยำน้อยลง)",
     progressDone: (count: number): string => `เสร็จแล้ว: ${count} ภาพในหน้านี้`,
     more: "เพิ่มเติมสำหรับเว็บไซต์นี้",
     siteSettings: "การตั้งค่าทั้งหมดของเว็บไซต์นี้",
@@ -364,6 +365,7 @@ export const TH: Catalog = {
       },
     },
     controlsHeading: "ปุ่มและการคลิก",
+    speedHeading: "ความเร็ว",
     exportLog: "ส่งออกบันทึกการดีบัก",
     exportFailed: "ไม่สามารถส่งออกบันทึกการดีบักได้",
     exportEmpty: "บันทึกการดีบักว่างเปล่า",
@@ -535,6 +537,10 @@ export const TH: Catalog = {
       "translate.offlineModel": {
         label: "โมเดลแปลออฟไลน์",
         hint: "ใช้ในโหมดออฟไลน์เท่านั้น",
+      },
+      "translate.fastMode": {
+        label: "โหมดเร็ว",
+        hint: "ตอบเร็วขึ้นและเสียค่าใช้จ่ายน้อยลง: AI เขียนเฉพาะคำแปล (ไม่ระบุผู้พูดหรือถอดข้อความต้นฉบับ) ไม่ได้รับบทพูดก่อนหน้า และไม่เรียนรู้อะไรใหม่ ชื่อ คำเรียกขาน และบทพูดที่ขึ้นกับบริบทจะแม่นยำน้อยลง",
       },
       "translate.splitOnRefusal": {
         label: "แบ่งคำขอที่ถูกปฏิเสธ",

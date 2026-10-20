@@ -322,6 +322,7 @@ export const TR: Catalog = {
   },
   popup: {
     siteToggle: "Bu sitede çevir",
+    fastMode: "Hızlı mod (daha az isabetli)",
     progressDone: (count: number): string => `Tamamlandı: bu sayfada ${count} görsel`,
     more: "Bu site için daha fazlası",
     siteSettings: "Bu sitenin tüm ayarları",
@@ -389,6 +390,7 @@ export const TR: Catalog = {
       },
     },
     controlsHeading: "Tuşlar ve tıklamalar",
+    speedHeading: "Hız",
     exportLog: "Hata ayıklama günlüğünü dışa aktar",
     exportFailed: "Hata ayıklama günlüğü dışa aktarılamadı.",
     exportEmpty: "Hata ayıklama günlüğü boş.",
@@ -564,6 +566,10 @@ export const TR: Catalog = {
       "translate.offlineModel": {
         label: "Çevrimdışı çeviri modeli",
         hint: "Yalnızca çevrimdışı modda kullanılır.",
+      },
+      "translate.fastMode": {
+        label: "Hızlı mod",
+        hint: "Daha çabuk yanıt verir ve daha az tutar: yapay zekâ yalnızca çeviriyi yazar (konuşan ve metin dökümü yok), önceki satırları almaz ve yeni bir şey öğrenmez. Adlar, hitap biçimleri ve bağlama dayalı satırlar daha az isabetli olur.",
       },
       "translate.splitOnRefusal": {
         label: "Reddedilen istekleri böl",

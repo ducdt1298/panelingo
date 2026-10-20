@@ -65,6 +65,14 @@ export interface Settings {
     engine: "api" | "offline";
     /** Offline translation model: Opus-MT per language pair (pivot through English), or NLLB-200 600M (any pair). */
     offlineModel: "opus-mt" | "nllb-600m";
+    /**
+     * Fast mode (AI endpoint only): the model writes only the type and the translation of each region (no speaker,
+     * no transcription), gets no chapter history and is asked for no glossary, forms of address or summary;
+     * composites are sent at a lower JPEG quality, the first request of an image on screen holds fewer balloons and a
+     * new series is not warmed up. Answers come sooner; names, forms of address and context-dependent lines are less
+     * accurate.
+     */
+    fastMode: boolean;
   };
   discovery: {
     minNaturalSide: number;
@@ -201,6 +209,7 @@ export const DEFAULT_SETTINGS: Settings = {
     splitOnRefusal: false,
     engine: "api",
     offlineModel: "opus-mt",
+    fastMode: false,
   },
   discovery: {
     minNaturalSide: 300,

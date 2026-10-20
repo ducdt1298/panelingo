@@ -143,6 +143,7 @@ describe("options page: Advanced section", () => {
     );
     const cardOf = {
       advanced: "advanced",
+      speed: "speed",
       memory: "memory",
       lettering: "lettering",
       controls: "controls",
@@ -234,6 +235,19 @@ describe("options page: Advanced section", () => {
     run.dispatch(search, "input");
     assert.equal(rowOf(run, "memory.historyMaxLines")["hidden"], false, String(search.value));
     assert.equal(rowOf(run, "memory.historyMaxTokens")["hidden"], true);
+  });
+
+  test("fast mode is a card of the Translation tab, shown with the AI endpoint only", async () => {
+    const run = await openOptions();
+    const speed = byId(run, "speed");
+    assert.deepEqual(texts(speed, "h3"), [msg().options.speedHeading]);
+    assert.ok(speed.findById("adv-translate-fastMode") !== null);
+    assert.equal(speed["hidden"], false);
+    change(run, "adv-translate-fastMode", true);
+    await until(() => stored(run).translate.fastMode, "fast mode saved");
+    change(run, "engine-offline", true);
+    await until(() => stored(run).translate.engine === "offline", "offline engine");
+    await until(() => byId(run, "speed")["hidden"] === true, "hidden in offline mode");
   });
 
   test("every control of the page has a label", async () => {

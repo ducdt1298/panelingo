@@ -2,6 +2,7 @@
 //
 //   @lang|<ko|ja|zh|en|other>
 //   #<n>|<type>|<speaker>|<original>|<vietnamese>        (split on the first 4 "|", so a "|" inside vi is kept)
+//   #<n>|<type>|<vietnamese>                             (fast mode's compact answers; a full record is still read)
 //   @term|<original>|<vietnamese>|<note>
 //   @sum|<summary>   or   @summary|<summary>
 //
@@ -174,7 +175,7 @@ function looksLatin(text: string): boolean {
   return letters > 0 && latin * 2 >= letters;
 }
 
-function parseItem(text: string, raw: string): ItemRec | null {
+function parseItem(text: string, raw: string, compact: boolean): ItemRec | null {
   const sep = firstSeparator(text);
   if (sep < 0) {
     return null;
@@ -186,6 +187,13 @@ function parseItem(text: string, raw: string): ItemRec | null {
   const id = Number.parseInt(head[1] ?? "", 10);
   const rest = text.slice(sep + 1);
   const fields = splitFirst(rest, fieldSeparator(rest), 3).map((field) => field.trim().normalize("NFC"));
+  if (compact && fields.length < 4) {
+    // "#n|type|translation": everything after the type is the translation (a "|" inside it is kept).
+    const [type = "", translation = ""] = splitFirst(rest, fieldSeparator(rest), 1).map((field) =>
+      field.trim().normalize("NFC"),
+    );
+    return { kind: "item", id, type: normalizeType(type), speaker: "", original: "", translation, raw };
+  }
   const type = fields[0] ?? "";
   let speaker = fields[1] ?? "";
   let original = fields[2] ?? "";
@@ -229,12 +237,15 @@ function parseControl(text: string, raw: string): LangRec | TermRec | SumRec | A
   return { kind: "sum", text: body.trim().normalize("NFC"), raw };
 }
 
-/** Parses one complete line (no line break). Stateless: think blocks, fences and continuations need the parser. */
-export function parseLine(line: string): Rec {
+/**
+ * Parses one complete line (no line break). Stateless: think blocks, fences and continuations need the parser.
+ * compact: item records are fast mode's #n|type|translation (full records are still read as such).
+ */
+export function parseLine(line: string, compact = false): Rec {
   const text = stripNoise(line);
   const first = text.charAt(0);
   if (first === "#" || first === "\uff03") {
-    const item = parseItem(text, line);
+    const item = parseItem(text, line, compact);
     if (item !== null) {
       return item;
     }
@@ -327,7 +338,8 @@ function isContinuation(line: string, item: ItemRec): boolean {
   return true;
 }
 
-export function createLineParser(onRec: (rec: Rec) => void): LineParser {
+export function createLineParser(onRec: (rec: Rec) => void, options: { compact?: boolean } = {}): LineParser {
+  const compact = options.compact === true;
   let inThink = false;
   let pending: ItemRec | null = null;
   let continuations = 0;
@@ -346,7 +358,7 @@ export function createLineParser(onRec: (rec: Rec) => void): LineParser {
       commit();
       return;
     }
-    const rec = parseLine(line);
+    const rec = parseLine(line, compact);
     if (rec.kind === "junk") {
       if (pending !== null && continuations < MAX_CONTINUATION_LINES && isContinuation(line, pending)) {
         const text = line.trim().normalize("NFC");

@@ -132,6 +132,8 @@ function charCount(text: string): number {
 
 /** An ok line longer than max(60, 4 × original) characters: maybe two lines merged into one id (suspect-merge). */
 export function isMergeSuspect(rec: ItemRec): boolean {
+  // Without the transcription (fast mode's compact answers) there is nothing to compare the length with.
+  if (rec.original.trim() === "") return false;
   return charCount(rec.translation) > Math.max(MERGE_MIN_CHARS, MERGE_RATIO * charCount(rec.original));
 }
 

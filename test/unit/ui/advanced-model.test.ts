@@ -129,7 +129,11 @@ describe("the Advanced table and docs/CONFIGURATION.md", () => {
 
 describe("where rows are edited, and search", () => {
   test("every row has one place; the Advanced tab keeps the rest, in table order", () => {
-    const places = ["advanced", "memory", "lettering", "controls", "custom"] as const;
+    const places = ["advanced", "speed", "memory", "lettering", "controls", "custom"] as const;
+    assert.deepEqual(
+      fieldsAt("speed").map((row) => row.path),
+      ["translate.fastMode"],
+    );
     const placed = places.flatMap((place) => fieldsAt(place).map((row) => row.path));
     assert.deepEqual([...placed].sort(), [...PATHS].sort(), "no row lost or shown twice");
     assert.deepEqual(

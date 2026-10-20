@@ -9,6 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Fast mode** (`translate.fastMode`, off by default; a switch in the popup and on the options page's Translation
+  tab). For the fastest answers at some cost in accuracy: the model writes only the type and the translation of each
+  balloon (no speaker, no transcription), gets no earlier lines of the chapter and writes no glossary, forms-of-address
+  or summary lines, so answers are about half as long; composites are lighter, the first request for the image on
+  screen holds at most 4 balloons and a new series starts without the warm-up. The glossary and the known forms of address are
+  still sent, so names stay the same.
+
 - **Offline mode (experimental).** `translate.engine: "offline"` translates without any AI endpoint: PaddleOCR
   PP-OCRv5 recognizers read the detected text boxes (lines and vertical columns found on the page's ink), and Opus-MT
   (direct or through English) or NLLB-200 distilled 600M (`translate.offlineModel`) translate them, all on

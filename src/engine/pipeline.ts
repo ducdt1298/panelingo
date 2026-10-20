@@ -126,6 +126,8 @@ export const MAX_IDLE_WORKS = 256;
 /** Images ahead of the reader wait this many times translate.packWaitMs for their neighbours, at most AHEAD_WAIT_MAX_MS. */
 export const AHEAD_WAIT_FACTOR = 8;
 export const AHEAD_WAIT_MAX_MS = 5_000;
+/** Cap on the first request of an image on screen in fast mode (settings.translate.fastMode). */
+export const FAST_URGENT_PACK_MAX = 4;
 /** Longest the other packs of a new series wait for its warm-up request (settings.memory.warmUp). */
 export const WARM_UP_MAX_MS = 60_000;
 /** urlKey → contentKey memo entries. */
@@ -1346,7 +1348,11 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
     const docOrderOf = new Map(items.map((item) => [item.work.contentKey, item.docOrder]));
     const workOf = (unit: PackUnit): ContentWork | undefined => byKey.get(unit.contentKey);
     const firstWork = involved[0];
-    const urgentMax = settings.current().translate.urgentPackMax;
+    const { urgentPackMax, fastMode } = settings.current().translate;
+    // Fast mode: the balloons on screen come back in a smaller first request (0 = no separate cap otherwise).
+    const urgentMax = fastMode
+      ? Math.min(urgentPackMax > 0 ? urgentPackMax : FAST_URGENT_PACK_MAX, FAST_URGENT_PACK_MAX)
+      : urgentPackMax;
     const plan = batcher.plan(units, {
       boxBudget: boxBudgetNow(),
       urgentMax: urgentMax > 0 && firstWork !== undefined && workOnScreen(firstWork) ? urgentMax : null,
@@ -1455,7 +1461,7 @@ export function createPipeline(deps: PipelineDeps): Pipeline {
 
   function warmUpOn(): boolean {
     const s = settings.current();
-    return s.memory.enabled && s.memory.warmUp && s.translate.engine === "api";
+    return s.memory.enabled && s.memory.warmUp && s.translate.engine === "api" && !s.translate.fastMode;
   }
 
   /** queue ready(): false while another pack of this cold series is the warm-up request. */

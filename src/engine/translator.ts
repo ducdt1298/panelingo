@@ -154,6 +154,9 @@ function rejectsTemperature(info: ErrorInfo): boolean {
   return info.code === "api.bad_request" && info.detail === "temperature";
 }
 
+/** JPEG quality cap of fast mode's composites (a smaller upload; crops stay legible). */
+export const FAST_JPEG_QUALITY = 0.8;
+
 async function translatePack(
   deps: TranslatorDeps,
   baseTransport: Transport,
@@ -297,6 +300,8 @@ async function translatePack(
 
   const target = promptTarget(settings);
   const memory = pack.memory;
+  // Fast mode: a shorter answer (no speaker, no transcription, no learning lines) and no chapter history.
+  const fast = tr.fastMode;
   const memoryLimits = {
     glossaryEntries: settings.memory.glossaryInPrompt,
     summaryWords: settings.memory.summaryMaxWords,
@@ -317,8 +322,9 @@ async function translatePack(
         glossary: memory?.glossary ?? [],
         pronouns: memory?.pronouns ?? [],
         summary: memory?.summary ?? null,
-        history: job.mode === "crops-only" ? neighbourLines(job.ids) : (memory?.history ?? []),
-        askSummary: job.mode === "full" && (memory?.askSummary ?? false),
+        history: job.mode === "crops-only" ? neighbourLines(job.ids) : fast ? [] : (memory?.history ?? []),
+        askSummary: !fast && job.mode === "full" && (memory?.askSummary ?? false),
+        compact: fast,
       },
       dataUrl,
       {
@@ -406,7 +412,7 @@ async function translatePack(
       emit(p, outcome.status === "ignore" ? "ignored" : "keep-original", rec, lang);
     };
 
-    const parser = createLineParser(onRec);
+    const parser = createLineParser(onRec, { compact: fast });
     let responded = false;
     const transport: Transport = async (url, init) => {
       const response = await baseTransport(url, init);
@@ -538,7 +544,7 @@ async function translatePack(
     let built: Built;
     let messages: ChatMessage[];
     try {
-      built = await compose(job, tr.jpegQuality);
+      built = await compose(job, fast ? Math.min(tr.jpegQuality, FAST_JPEG_QUALITY) : tr.jpegQuality);
       if (!built.ok) {
         compositeFailed(job, built.reason);
         return;

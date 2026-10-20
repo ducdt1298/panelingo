@@ -4,6 +4,7 @@ import {
   article,
   buildMessages,
   buildPrompt,
+  COMPACT_ITEM_LINE,
   CHINESE_BLOCK,
   cjkNamesLine,
   englishBlock,
@@ -21,6 +22,7 @@ import {
   systemAskSummary,
   systemIntro,
   systemOutput,
+  systemOutputCompact,
   VIETNAMESE,
   VIETNAMESE_STYLE,
   type PromptTarget,
@@ -92,6 +94,23 @@ Use the same names as in the speaker field.
 - Murim, historical and fantasy settings: Hán Việt for Sino-Korean terms (무림 -> võ lâm, 문파 -> môn phái, 장로 -> trưởng lão, 내공 -> nội công, 검 -> kiếm) and ta/ngươi, huynh/đệ where the register is old-fashioned.
 - Interjections: ㅋㅋ -> haha, 헐 -> hả/trời, 아이고 -> ôi trời, 응 -> ừ.
 - Webtoons put much text outside bubbles: narration boxes, thoughts over the art, phone screens, chat messages, signs and sound effects. Translate all of them and type them correctly.`;
+
+describe("fast mode's compact prompt", () => {
+  test("type and translation only; no learning lines and no @sum even when one is asked", () => {
+    const output = systemOutputCompact(VIETNAMESE);
+    assert.ok(output.includes(`\n${COMPACT_ITEM_LINE}\n`));
+    assert.ok(output.includes("- translation: the Vietnamese translation of region n only"));
+    assert.ok(!output.includes("speaker") && !output.includes("original:"));
+    const { system } = buildPrompt(input({ compact: true, askSummary: true }), IMAGE);
+    assert.ok(system.includes(output));
+    assert.ok(!system.includes("@term|") && !system.includes("@addr|") && !system.includes("@sum|"));
+    assert.equal(
+      systemOutputCompact({ code: "fr", name: "French" }).replaceAll("French", "<target>"),
+      systemOutputCompact(VIETNAMESE).replaceAll("Vietnamese", "<target>"),
+      "the same contract for every target",
+    );
+  });
+});
 
 describe("buildMessages: shape", () => {
   test("exactly [system, user{text, image_url}]", () => {

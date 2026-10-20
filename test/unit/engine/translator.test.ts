@@ -24,6 +24,7 @@ import type {
 import {
   CONTEXT_NEIGHBOURS,
   createTranslator,
+  FAST_JPEG_QUALITY,
   MAX_PAUSES_PER_REQUEST,
   promptTarget,
   type TranslatorDeps,
@@ -31,6 +32,7 @@ import {
 import { createLogger } from "../../../src/platform/log.ts";
 import type { HealthReading } from "../../../src/shared/core/health.ts";
 import {
+  COMPACT_ITEM_LINE,
   cropsOnlyLine,
   GLOSSARY_HEADER,
   KOREAN_BLOCK,
@@ -723,6 +725,55 @@ describe("translator: streaming and replay", () => {
     const report = await h.translate(makePack(0));
     assert.equal(report.requests, 0);
     assert.deepEqual(h.results, []);
+  });
+});
+
+/** Fast mode's compact answer line for a unit: #n|type|translation. */
+function koCompact(src: string, label: number): string {
+  const entry = KO[Number(src.slice(1)) - 1];
+  assert.ok(entry !== undefined, `unknown unit ${src}`);
+  return entry.type === "ignore" ? `#${label}|ignore|` : `#${label}|${entry.type}|${entry.translation}`;
+}
+
+describe("translator: fast mode", () => {
+  const MEMORY: PackMemory = {
+    lang: null,
+    style: { genre: "", koNames: "romanized", keepJaHonorifics: false },
+    glossary: [{ original: "지호", translation: "Jiho", source: "manual" }],
+    pronouns: [{ a: "Jiho", b: "Yuna", aSelf: "tớ", aToB: "cậu" }],
+    history: [{ pos: 1_000, speaker: "Jiho", original: "어제 봤지?", translation: "Hôm qua thấy chưa?" }],
+    summary: "Jiho and Yuna go to the market.",
+    askSummary: true,
+  };
+  const fast = (s: Settings): void => {
+    s.translate.fastMode = true;
+  };
+
+  test("the compact contract: type and translation only, no history, no learning lines; names still sent", async () => {
+    const h = setup([(req) => sse(answerText(req, koCompact))], fast);
+    const report = await h.translate(makePack(KO.length, { memory: MEMORY }));
+    const req = h.sent[0];
+    assert.ok(req !== undefined);
+    assert.ok(req.system.includes(COMPACT_ITEM_LINE));
+    assert.ok(!req.system.includes("#<n>|<type>|<speaker>|<original>|<translation>"));
+    assert.ok(
+      !req.system.includes("@term|") && !req.system.includes("@addr|") && !req.system.includes("@sum|"),
+    );
+    assert.ok(req.system.includes("지호 -> Jiho"), "the glossary keeps names right");
+    assert.ok(req.system.includes("Jiho -> Yuna: tớ / cậu"), "and the forms of address");
+    assert.ok(!req.user.includes(USER_HISTORY_HEADER), "no chapter history");
+    assert.ok(req.user.includes(USER_SUMMARY_HEADER), "the short summary stays");
+    assert.deepEqual(statuses(h.results), ALL_OK);
+    assert.equal(h.results.find((r) => r.status === "ok")?.original, "", "no transcription");
+    assert.deepEqual(report.learning?.terms, []);
+    assert.equal(report.learning?.summary, null);
+    assert.equal(h.composite.calls[0]?.quality, FAST_JPEG_QUALITY, "a lighter composite");
+  });
+
+  test("a full answer is still read in fast mode", async () => {
+    const h = setup([answer()], fast);
+    await h.translate();
+    assert.deepEqual(statuses(h.results), ALL_OK);
   });
 });
 

@@ -465,6 +465,18 @@ function field(value: string): string {
     .trim();
 }
 
+/** The item line the extension's fast mode asks for (src/shared/core/prompt.ts COMPACT_ITEM_LINE). */
+export const COMPACT_REQUEST = "#<n>|<type>|<translation>";
+
+/**
+ * A full item line as fast mode's compact answer: `#n|<type>|<speaker>|<original>|<translation>` becomes
+ * `#n|<type>|<translation>` (the line ending is kept); anything else is returned unchanged.
+ */
+export function compactLine(line: string): string {
+  const match = /^(#\d+)\|([^|\r\n]*)\|[^|\r\n]*\|[^|\r\n]*\|([^\r\n]*)(\r?\n?)$/u.exec(line);
+  return match === null ? line : `${match[1]}|${match[2]}|${match[3]}${match[4]}`;
+}
+
 /** `#n|<type>|<speaker>|<original>|<translation>`, or `#n|ignore|||` for no match and for ignore units. */
 export function oracleLine(
   n: number,

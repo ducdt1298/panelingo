@@ -305,6 +305,7 @@ export const ID: Catalog = {
   },
   popup: {
     siteToggle: "Terjemahkan di situs ini",
+    fastMode: "Mode cepat (kurang akurat)",
     progressDone: (count: number): string => `Selesai: ${count} gambar di halaman ini`,
     more: "Lainnya untuk situs ini",
     siteSettings: "Semua setelan untuk situs ini",
@@ -373,6 +374,7 @@ export const ID: Catalog = {
       },
     },
     controlsHeading: "Tombol dan klik",
+    speedHeading: "Kecepatan",
     exportLog: "Ekspor log debug",
     exportFailed: "Log debug tidak dapat diekspor.",
     exportEmpty: "Log debug kosong.",
@@ -552,6 +554,10 @@ export const ID: Catalog = {
       "translate.offlineModel": {
         label: "Model terjemahan offline",
         hint: "Hanya digunakan dalam mode offline.",
+      },
+      "translate.fastMode": {
+        label: "Mode cepat",
+        hint: "Jawaban lebih cepat dan lebih murah: AI hanya menulis terjemahan (tanpa penutur atau transkripsi), tidak menerima baris sebelumnya, dan tidak mempelajari hal baru. Nama, sapaan, dan baris yang bergantung pada konteks menjadi kurang akurat.",
       },
       "translate.splitOnRefusal": {
         label: "Pecah permintaan yang ditolak",

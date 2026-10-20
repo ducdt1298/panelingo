@@ -343,6 +343,7 @@ export const DE: Catalog = {
   },
   popup: {
     siteToggle: "Auf dieser Website übersetzen",
+    fastMode: "Schnellmodus (ungenauer)",
     progressDone: (count: number): string =>
       `Fertig: ${count} ${count === 1 ? "Bild" : "Bilder"} auf dieser Seite`,
     more: "Mehr für diese Website",
@@ -417,6 +418,7 @@ export const DE: Catalog = {
       },
     },
     controlsHeading: "Tasten und Klicks",
+    speedHeading: "Geschwindigkeit",
     exportLog: "Debug-Protokoll exportieren",
     exportFailed: "Das Debug-Protokoll konnte nicht exportiert werden.",
     exportEmpty: "Das Debug-Protokoll ist leer.",
@@ -598,6 +600,10 @@ export const DE: Catalog = {
       "translate.offlineModel": {
         label: "Offline-Übersetzungsmodell",
         hint: "Wird nur im Offline-Modus verwendet.",
+      },
+      "translate.fastMode": {
+        label: "Schnellmodus",
+        hint: "Antwortet schneller und kostet weniger: Die KI schreibt nur die Übersetzung (ohne Sprecher und Abschrift), bekommt keine früheren Zeilen und lernt nichts Neues dazu. Namen, Anredeformen und vom Kontext abhängige Zeilen werden ungenauer.",
       },
       "translate.splitOnRefusal": {
         label: "Abgelehnte Anfragen aufteilen",

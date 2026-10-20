@@ -29,6 +29,8 @@ import { isAbsolute, relative, resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import {
   answerFromGroundTruth,
+  COMPACT_REQUEST,
+  compactLine,
   decodeTestUnits,
   GroundTruthStore,
   TEST_UNITS_HEADER,
@@ -826,7 +828,11 @@ export async function createMockServer(opts: MockServerOptions = {}): Promise<Mo
       return;
     }
 
-    const answer = await buildAnswer(sc, rec.n, testUnits);
+    const built = await buildAnswer(sc, rec.n, testUnits);
+    // A request in the extension's fast mode gets the compact #n|type|translation lines it asked for.
+    const answer = rec.systemText.includes(COMPACT_REQUEST)
+      ? { ...built, segments: built.segments.map(compactLine) }
+      : built;
     rec.oracle = answer.report;
     const latency =
       sc.latencyProfile !== null

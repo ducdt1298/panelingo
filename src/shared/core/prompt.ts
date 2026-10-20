@@ -68,6 +68,11 @@ export interface PromptInput {
   history: readonly HistoryLine[];
   /** Ask for an @sum line at the end. */
   askSummary: boolean;
+  /**
+   * Fast mode: each region is answered as #n|type|translation (no speaker, no transcription) and no @term or @addr
+   * lines are asked for, so the answer is shorter.
+   */
+  compact?: boolean;
 }
 
 export interface SystemMessage {
@@ -119,6 +124,28 @@ export const SYSTEM_INPUT = [
   '- RIGHT: an enlarged crop of every numbered region, under a header "#n" in the same colour. Read the text from these crops. Use the left views only to understand the scene: who speaks, to whom, gender, age and mood.',
   "The numbers 1..N follow the reading order. The user message gives N.",
 ].join("\n");
+
+/** The item line of fast mode's compact answers (the mock server looks for it too). */
+export const COMPACT_ITEM_LINE = "#<n>|<type>|<translation>";
+
+/** Fast mode's output contract: type and translation only, no learning lines. */
+export function systemOutputCompact(target: PromptTarget): string {
+  return [
+    "# Output",
+    "Plain text lines only. No markdown, no code fences, no explanations.",
+    "Line 1: @lang|<ko, ja, zh, en, es or other>   (main language of the source text)",
+    "Then exactly one line for each number from 1 to N, in increasing order:",
+    COMPACT_ITEM_LINE,
+    "- type: dialogue (speech), thought (inner thought), narration (caption or narrator box), sign (written text in the scene: signs, screens, messages, labels), sfx (sound-effect lettering), ignore (watermark, site logo, URL, credits, page number, or no readable text).",
+    `- translation: the ${target.name} translation of region n only, on one line. Do not write the source text.`,
+    "For type ignore, leave the translation empty.",
+    "Hard rules:",
+    "- Every number from 1 to N appears exactly once. Never skip a number, never repeat one, never use a number outside 1..N.",
+    "- Never merge regions. If one sentence runs across several regions, split the translation across the same regions in the same order, so each line holds only its own part.",
+    '- Never put the character "|" inside a field.',
+    "Nothing after the last # line.",
+  ].join("\n");
+}
 
 export function systemOutput(target: PromptTarget): string {
   return [
@@ -436,9 +463,12 @@ interface Selection {
 
 function systemText(input: PromptInput, sel: Selection, limits: PromptLimits): string {
   const target = input.target ?? VIETNAMESE;
-  const output = input.askSummary
-    ? `${systemOutput(target)}\n${systemAskSummary(target, limits.summaryWords)}`
-    : systemOutput(target);
+  const output =
+    input.compact === true
+      ? systemOutputCompact(target)
+      : input.askSummary
+        ? `${systemOutput(target)}\n${systemAskSummary(target, limits.summaryWords)}`
+        : systemOutput(target);
   const genre = oneLine(input.style.genre ?? "");
   const base = styleBlock(target);
   const style = genre === "" ? base : `${base}\nGenre and tone: ${genre}.`;

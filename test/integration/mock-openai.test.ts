@@ -10,9 +10,12 @@ import { after, afterEach, before, describe, test } from "node:test";
 import { setTimeout as sleep } from "node:timers/promises";
 import { defaultDeps, streamChat, type StreamChatOptions } from "../../src/engine/api-client.ts";
 import { classifyHttpError } from "../../src/shared/core/api-errors.ts";
+import { COMPACT_ITEM_LINE } from "../../src/shared/core/prompt.ts";
 import { readinessFrom } from "../../src/shared/core/health.ts";
 import { CtvError } from "../../src/shared/errors.ts";
 import {
+  COMPACT_REQUEST,
+  compactLine,
   groundTruthCandidates,
   normalizeGroundTruth,
   oracleLine,
@@ -1426,6 +1429,15 @@ describe("oracle mode", () => {
     assert.ok(unit);
     assert.equal(oracleVi(unit), "VI:MỞ CỬA");
     assert.equal(oracleLine(5, unit), "#5|sign||OPEN/24H|VI:MỞ CỬA", "a | inside a field is replaced");
+  });
+
+  test("compactLine: fast mode's #n|type|translation, line endings kept, other lines unchanged", () => {
+    assert.equal(compactLine("#3|dialogue|Mina|안녕|Xin chào\n"), "#3|dialogue|Xin chào\n");
+    assert.equal(compactLine("#4|ignore|||"), "#4|ignore|");
+    assert.equal(compactLine("#5|sfx||쾅|RẦM\r\n"), "#5|sfx|RẦM\r\n");
+    assert.equal(compactLine("@lang|ko\n"), "@lang|ko\n");
+    assert.equal(compactLine("#6|dialogue|already compact\n"), "#6|dialogue|already compact\n");
+    assert.equal(COMPACT_REQUEST, COMPACT_ITEM_LINE, "the mock looks for the extension's own line");
   });
 });
 

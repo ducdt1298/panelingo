@@ -272,12 +272,15 @@ async function main(): Promise<void> {
   });
 
   const fieldDeps = { settings: () => settings, save: saveAdvanced, onError: logFailure };
+  const speed = settingsCard("speed", msg().options.speedHeading, fieldsAt("speed"), fieldDeps);
   const memory = settingsCard("memory", msg().optionsAdvanced.groups.memory, fieldsAt("memory"), fieldDeps);
 
   const showEngine = (): void => {
     const engine = settings.translate.engine;
     for (const radio of engineRadios) radio.checked = radio.value === engine;
     apiSection.hidden = engine !== "api";
+    // Fast mode only changes what is asked of the AI endpoint.
+    speed.element.hidden = engine !== "api";
     offline.element.hidden = engine !== "offline";
   };
 
@@ -463,7 +466,7 @@ async function main(): Promise<void> {
   });
 
   const cards: Record<OptionTab, HTMLElement[]> = {
-    engine: [engineSection, apiSection, offline.element, memory.element],
+    engine: [engineSection, apiSection, offline.element, speed.element, memory.element],
     display: [languageSection, lettering.element, controls.element],
     sites: [sitesView.element],
     privacy: [privacySection, cacheSection, transfer, debugSection],
@@ -519,6 +522,7 @@ async function main(): Promise<void> {
     advanced.update(next);
     lettering.update(next);
     controls.update(next);
+    speed.update(next);
     memory.update(next);
     offline.update(next);
     showEngine();

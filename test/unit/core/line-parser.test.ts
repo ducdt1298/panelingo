@@ -89,6 +89,18 @@ describe("parseLine", () => {
     assert.equal(latin.translation, "");
   });
 
+  test("compact (fast mode): #n|type|translation, a | inside the translation kept; full records still read", () => {
+    const rec = item(parseLine("#3| dialogue |Xin chào | bạn", true));
+    assert.deepEqual(
+      [rec.id, rec.type, rec.speaker, rec.original, rec.translation],
+      [3, "dialogue", "", "", "Xin chào | bạn"],
+    );
+    assert.equal(item(parseLine("#4|ignore|", true)).type, "ignore");
+    const full = item(parseLine("#5|sfx|Kai|쾅|RẦM", true));
+    assert.deepEqual([full.speaker, full.original, full.translation], ["Kai", "쾅", "RẦM"]);
+    assert.equal(item(parseLine("#3|dialogue|Xin chào")).speaker, "Xin chào", "without compact: positional");
+  });
+
   test("short records read positionally with an empty translation", () => {
     const rec = item(parseLine("#7|dialogue"));
     assert.equal(rec.type, "dialogue");

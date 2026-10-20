@@ -232,6 +232,12 @@ async function main(): Promise<void> {
       return null;
     });
   };
+  const onFast = (on: boolean): void => {
+    run(async () => {
+      state.settings = await saveSettings({ translate: { fastMode: on } });
+      return null;
+    });
+  };
   const onTarget = (targetLang: string): void => {
     run(async () => {
       state.settings = await saveSettings({ translate: { targetLang } });
@@ -382,7 +388,20 @@ async function main(): Promise<void> {
       );
     }
     if (site.enabled) children.push(modeSelector(site));
-    children.push(targetRow(), progressBar());
+    children.push(targetRow());
+    // Fast mode changes what is asked of the AI endpoint; offline mode has nothing to speed up this way.
+    if (!offlineMode()) {
+      children.push(
+        switchRow(
+          "fast-mode",
+          msg().popup.fastMode,
+          state.settings.translate.fastMode,
+          onFast,
+          msg().optionsAdvanced.fields["translate.fastMode"].hint,
+        ),
+      );
+    }
+    children.push(progressBar());
     children.push(
       h(
         "div",

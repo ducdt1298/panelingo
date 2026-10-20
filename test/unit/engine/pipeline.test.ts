@@ -36,7 +36,12 @@ import type {
   UnitResult,
   UnitStore,
 } from "../../../src/engine/contracts.ts";
-import { AHEAD_WAIT_FACTOR, createPipeline, WARM_UP_MAX_MS } from "../../../src/engine/pipeline.ts";
+import {
+  AHEAD_WAIT_FACTOR,
+  createPipeline,
+  FAST_URGENT_PACK_MAX,
+  WARM_UP_MAX_MS,
+} from "../../../src/engine/pipeline.ts";
 import type { CtvDatabase } from "../../../src/platform/db-schema.ts";
 import { createLogger } from "../../../src/platform/log.ts";
 import { INITIAL_HEALTH, isSendable, type HealthReading } from "../../../src/shared/core/health.ts";
@@ -1078,6 +1083,27 @@ describe("lanes and priorities", () => {
     }
   });
 
+  test("fast mode: the first request of an on-screen image holds at most FAST_URGENT_PACK_MAX units", async () => {
+    for (const [cap, sizes] of [
+      [8, [FAST_URGENT_PACK_MAX, 9 - FAST_URGENT_PACK_MAX]],
+      [2, [2, 7]],
+      [0, [FAST_URGENT_PACK_MAX, 9 - FAST_URGENT_PACK_MAX]],
+    ] as const) {
+      const h = harness();
+      h.settings.value.translate.fastMode = true;
+      h.settings.value.translate.urgentPackMax = cap;
+      const frame = new FakeFrame(1);
+      frame.info.viewport = { scrollY: 0, innerHeight: 900, secondsPerScreen: 4, onScreen: ["1.0"] };
+      h.pipeline.submit(frame, submitOf("1.0", h.image("p1", 9)));
+      await settle();
+      assert.deepEqual(
+        h.translator.calls.map((c) => c.keys.length),
+        [...sizes],
+        `urgentPackMax ${cap}`,
+      );
+    }
+  });
+
   test("lower priority values go first; img:priority reorders unsent packs", async () => {
     const h = harness({ concurrency: 1 });
     h.translator.auto = false;
@@ -1714,6 +1740,9 @@ describe("series warm-up (memory.warmUp)", () => {
       },
       (s: Settings) => {
         s.memory.enabled = false;
+      },
+      (s: Settings) => {
+        s.translate.fastMode = true;
       },
     ];
     for (const off of offs) {

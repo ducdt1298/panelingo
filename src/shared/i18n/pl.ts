@@ -338,6 +338,7 @@ export const PL: Catalog = {
   },
   popup: {
     siteToggle: "Tłumacz w tej witrynie",
+    fastMode: "Tryb szybki (mniej dokładny)",
     progressDone: (count: number): string =>
       `Gotowe: ${count} ${plural(count, "obraz", "obrazy", "obrazów")} na tej stronie`,
     more: "Więcej dla tej witryny",
@@ -410,6 +411,7 @@ export const PL: Catalog = {
       },
     },
     controlsHeading: "Klawisze i kliknięcia",
+    speedHeading: "Szybkość",
     exportLog: "Eksportuj dziennik debugowania",
     exportFailed: "Nie udało się wyeksportować dziennika debugowania.",
     exportEmpty: "Dziennik debugowania jest pusty.",
@@ -588,6 +590,10 @@ export const PL: Catalog = {
       "translate.offlineModel": {
         label: "Model tłumaczenia offline",
         hint: "Używany tylko w trybie offline.",
+      },
+      "translate.fastMode": {
+        label: "Tryb szybki",
+        hint: "Odpowiada szybciej i taniej: AI pisze tylko tłumaczenie (bez mówiącego i transkrypcji), nie dostaje wcześniejszych kwestii i niczego nowego się nie uczy. Imiona, formy zwracania się i kwestie zależne od kontekstu są mniej trafne.",
       },
       "translate.splitOnRefusal": {
         label: "Dziel odrzucone zapytania",

@@ -353,6 +353,7 @@ export const EN = {
   },
   popup: {
     siteToggle: "Translate on this site",
+    fastMode: "Fast mode (less accurate)",
     progressDone: (count: number): string => `All done: ${count} image${count === 1 ? "" : "s"} on this page`,
     more: "More for this site",
     siteSettings: "All settings for this site",
@@ -420,6 +421,7 @@ export const EN = {
       },
     },
     controlsHeading: "Keys and clicks",
+    speedHeading: "Speed",
     exportLog: "Export the debug log",
     exportFailed: "Could not export the debug log.",
     exportEmpty: "The debug log is empty.",
@@ -592,6 +594,10 @@ export const EN = {
       "translate.offlineModel": {
         label: "Offline translation model",
         hint: "Used in offline mode only.",
+      },
+      "translate.fastMode": {
+        label: "Fast mode",
+        hint: "Answers sooner and costs less: the AI writes only the translation (no speaker or transcription), gets no earlier lines and learns nothing new. Names, forms of address and lines that depend on context are less accurate.",
       },
       "translate.splitOnRefusal": {
         label: "Split refused requests",

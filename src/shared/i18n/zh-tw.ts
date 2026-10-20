@@ -294,6 +294,7 @@ export const ZH_TW: Catalog = {
   },
   popup: {
     siteToggle: "在此網站翻譯",
+    fastMode: "快速模式（準確度較低）",
     progressDone: (count: number): string => `完成：本頁 ${count} 張圖片`,
     more: "此網站的更多設定",
     siteSettings: "此網站的所有設定",
@@ -347,6 +348,7 @@ export const ZH_TW: Catalog = {
       },
     },
     controlsHeading: "按鍵與點擊",
+    speedHeading: "速度",
     exportLog: "匯出偵錯記錄",
     exportFailed: "無法匯出偵錯記錄。",
     exportEmpty: "偵錯記錄是空的。",
@@ -508,6 +510,10 @@ export const ZH_TW: Catalog = {
       "translate.offlineModel": {
         label: "離線翻譯模型",
         hint: "僅在離線模式下使用。",
+      },
+      "translate.fastMode": {
+        label: "快速模式",
+        hint: "回覆更快、花費更少：AI 只寫譯文（不寫說話者，也不抄寫原文），不接收前面的台詞，也不學習新內容。人名、稱呼和依賴上下文的台詞會不夠準確。",
       },
       "translate.splitOnRefusal": {
         label: "分割遭拒的請求",

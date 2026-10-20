@@ -348,6 +348,14 @@ summary is asked for, `@sum|…` as the very last line. The text budget is cappe
 trimmed first, then learned glossary entries. A crops-only re-ask sends the neighboring translated lines instead of
 the chapter history, and asks for no summary.
 
+**Fast mode** (`translate.fastMode`) trades accuracy for speed: the model answers each region as
+`#n|type|translation` (no speaker, no transcription), gets no chapter history (the glossary, the forms of address and
+the summary stay) and is asked for no `@term`, `@addr` or `@sum` lines, so the answer is roughly half as long on
+the fixtures. Composites go at JPEG quality 0.8 at most, the first request of an image on screen holds at most 4
+balloons (`FAST_URGENT_PACK_MAX`), and a new series is not warmed up. The parser still reads full
+records in fast mode; without a transcription, keep-original and merge suspicion have nothing to compare with, so
+neither applies.
+
 ### 11. Streaming, parsing and id accounting
 
 - `src/engine/api-client.ts` posts with `stream: true`, `credentials: "omit"` and `Authorization: Bearer <key>` when

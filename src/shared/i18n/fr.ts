@@ -334,6 +334,7 @@ export const FR: Catalog = {
   },
   popup: {
     siteToggle: "Traduire sur ce site",
+    fastMode: "Mode rapide (moins précis)",
     progressDone: (count: number): string =>
       `Terminé : ${count} ${plural(count, "image", "images")} sur cette page`,
     more: "Plus pour ce site",
@@ -410,6 +411,7 @@ export const FR: Catalog = {
       },
     },
     controlsHeading: "Touches et clics",
+    speedHeading: "Vitesse",
     exportLog: "Exporter le journal de débogage",
     exportFailed: "Impossible d'exporter le journal de débogage.",
     exportEmpty: "Le journal de débogage est vide.",
@@ -594,6 +596,10 @@ export const FR: Catalog = {
       "translate.offlineModel": {
         label: "Modèle de traduction hors ligne",
         hint: "Utilisé uniquement en mode hors ligne.",
+      },
+      "translate.fastMode": {
+        label: "Mode rapide",
+        hint: "Répond plus vite et coûte moins : l'IA n'écrit que la traduction (ni locuteur ni transcription), ne reçoit pas les lignes précédentes et n'apprend rien de nouveau. Les noms, les formes d'adresse et les lignes qui dépendent du contexte sont moins justes.",
       },
       "translate.splitOnRefusal": {
         label: "Découper les requêtes refusées",

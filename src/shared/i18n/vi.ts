@@ -313,6 +313,7 @@ export const VI: Catalog = {
   },
   popup: {
     siteToggle: "Dịch trên trang này",
+    fastMode: "Dịch nhanh (kém chính xác hơn)",
     progressDone: (count: number): string => `Xong: ${count} ảnh trên trang này`,
     more: "Thêm cho trang này",
     siteSettings: "Mọi cài đặt của trang này",
@@ -379,6 +380,7 @@ export const VI: Catalog = {
       },
     },
     controlsHeading: "Phím và thao tác chuột",
+    speedHeading: "Tốc độ",
     exportLog: "Xuất nhật ký debug",
     exportFailed: "Không xuất được nhật ký debug.",
     exportEmpty: "Nhật ký debug đang trống.",
@@ -542,6 +544,10 @@ export const VI: Catalog = {
       "translate.offlineModel": {
         label: "Model dịch ngoại tuyến",
         hint: "Chỉ dùng ở chế độ ngoại tuyến.",
+      },
+      "translate.fastMode": {
+        label: "Dịch nhanh",
+        hint: "Trả lời sớm hơn và tốn ít hơn: AI chỉ viết bản dịch (không ghi người nói, không chép lại chữ gốc), không nhận các câu trước đó và không học thêm gì mới. Tên riêng, xưng hô và câu phụ thuộc ngữ cảnh sẽ kém chính xác hơn.",
       },
       "translate.splitOnRefusal": {
         label: "Chia nhỏ yêu cầu bị từ chối",

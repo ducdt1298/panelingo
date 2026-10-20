@@ -85,6 +85,7 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
   bool("translate.splitOnRefusal"),
   { kind: "select", path: "translate.engine", choices: ["api", "offline"] },
   { kind: "select", path: "translate.offlineModel", choices: ["opus-mt", "nllb-600m"] },
+  bool("translate.fastMode"),
 
   { kind: "select", path: "detector.backend", choices: ["auto", "webgpu", "wasm"] },
   num("detector.scoreMin", 0.05),
@@ -143,15 +144,16 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
 ];
 
 /**
- * Where a row is edited when it is not in the Advanced tab: the Translation tab's series-memory card ("memory"), the
+ * Where a row is edited when it is not in the Advanced tab: the Translation tab's speed and series-memory cards, the
  * Language & display tab's lettering and keys cards, or its own control on the Translation tab ("custom": the engine
  * choice and the offline model).
  */
-export type FieldPlace = "advanced" | "memory" | "lettering" | "controls" | "custom";
+export type FieldPlace = "advanced" | "speed" | "memory" | "lettering" | "controls" | "custom";
 
 const PLACES: Readonly<Partial<Record<SettingPath, FieldPlace>>> = {
   "translate.engine": "custom",
   "translate.offlineModel": "custom",
+  "translate.fastMode": "speed",
   "memory.enabled": "memory",
   "memory.warmUp": "memory",
   "render.font": "lettering",
