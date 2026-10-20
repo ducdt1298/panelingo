@@ -67,7 +67,7 @@ jobs:
       # Anyone can check that the archive was built by this workflow from this tag:
       #   gh attestation verify panelingo-<version>.zip --repo <owner>/panelingo
       - name: Attest build provenance
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: panelingo-${{ steps.version.outputs.version }}.zip
 
