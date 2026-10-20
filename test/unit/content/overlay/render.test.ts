@@ -22,7 +22,7 @@ import {
   shouldPaint,
   unitHitBox,
 } from "../../../../src/content/overlay/render.ts";
-import type { PlanOptions, UnitPlan } from "../../../../src/content/overlay/render.ts";
+import type { PlanLine, PlanOptions, UnitPlan } from "../../../../src/content/overlay/render.ts";
 import { MALI_METRICS, PATRICK_HAND_METRICS, lineBox } from "../../../../src/shared/core/fit-text.ts";
 import type { Measure } from "../../../../src/shared/core/fit-text.ts";
 import type { Box, RGB, UnitGeometry, UnitRender, UnitStatus } from "../../../../src/shared/types.ts";
@@ -596,7 +596,7 @@ describe("vertical lettering (Japanese and Traditional Chinese in tategaki ballo
       assert.ok(col.x >= tall.x1 - 1e-9 && col.x + col.width <= tall.x2 + 1e-9, `column ${i} x`);
       assert.ok(col.y >= tall.y1 - 1e-9 && col.y + (col.height ?? 0) <= tall.y2 + 1e-9, `column ${i} y`);
       // Typed explicitly: newer @types/node assertion signatures make the inference circular here.
-      const next: (typeof plan.lines)[number] | undefined = plan.lines[i + 1];
+      const next: PlanLine | undefined = plan.lines[i + 1];
       if (next !== undefined) assert.ok(next.x < col.x, "right to left");
     }
     assert.ok(plan.patch !== null, "the erase patch is drawn as usual");
