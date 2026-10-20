@@ -318,11 +318,15 @@ export const PT_BR: Catalog = {
     return `${days} ${plural(days, "dia", "dias")}`;
   },
   popup: {
+    siteToggle: "Traduzir neste site",
+    progressDone: (count: number): string =>
+      `Pronto: ${count} ${count === 1 ? "imagem" : "imagens"} nesta página`,
+    more: "Mais para este site",
+    siteSettings: "Todas as configurações deste site",
     openTranscript: "Abrir a transcrição",
     cookies: "Enviar cookies ao carregar imagens",
     cookiesHint:
       "Para sites que só mostram imagens a leitores conectados. Os cookies vão só para o servidor de imagens, nunca para a IA.",
-    apiHeading: "Endpoint de IA",
     engineHeading: "Mecanismo de tradução",
     siteHeading: "Este site",
     checking: "Verificando…",
@@ -343,8 +347,6 @@ export const PT_BR: Catalog = {
       `Fila: ${queued} aguardando · ${inFlight} enviando · ${done} concluídos · ${failed} com falha`,
     pausedBy: (title: string): string => `Em pausa: ${title}`,
     siteUnsupported: "Esta página não pode ser traduzida (apenas páginas http/https).",
-    siteOn: "A tradução está ativada neste site.",
-    siteOff: "A tradução está desativada neste site.",
     modeLabel: "Modo",
     visibleSent: (count: number): string =>
       count > 0
@@ -363,6 +365,33 @@ export const PT_BR: Catalog = {
     build: (id: string): string => `Compilação ${id}`,
   },
   options: {
+    tabs: {
+      engine: {
+        label: "Tradução",
+        intro:
+          "O que traduz os quadrinhos: um modelo de IA que você conecta, ou os modelos offline experimentais deste dispositivo.",
+      },
+      display: {
+        label: "Idioma e exibição",
+        intro: "O idioma em que você lê, o idioma da interface e a aparência das traduções na página.",
+      },
+      sites: {
+        label: "Sites",
+        intro:
+          "Sites em que o Panelingo traduz. Ative um site pelo pop-up da barra de ferramentas enquanto o lê.",
+      },
+      privacy: {
+        label: "Privacidade e dados",
+        intro:
+          "O que é enviado à IA, o que fica neste dispositivo e como fazer backup das suas configurações.",
+      },
+      advanced: {
+        label: "Avançado",
+        intro:
+          "Ajuste fino de solicitações, detecção de texto, busca de imagens e caches. Os padrões servem para a maioria dos casos; cada alteração é salva quando você sai do campo.",
+      },
+    },
+    controlsHeading: "Teclas e cliques",
     exportLog: "Exportar o log de depuração",
     exportFailed: "Não foi possível exportar o log de depuração.",
     exportEmpty: "O log de depuração está vazio.",
@@ -399,7 +428,6 @@ export const PT_BR: Catalog = {
     save: "Salvar",
     saved: "Salvo.",
     saveFailed: "Não foi possível salvar.",
-    sitesHeading: "Sites",
     sitesEmpty:
       "Nenhum site ainda. Abra uma página de quadrinhos, clique no ícone da extensão e ative a tradução nela.",
     siteEnabled: "Ativado",
@@ -446,10 +474,10 @@ export const PT_BR: Catalog = {
     },
   },
   optionsAdvanced: {
-    heading: "Configurações avançadas",
-    intro:
-      "Ajustes finos para solicitações, detecção de texto, letreiramento e caches. Os padrões servem para a " +
-      "maioria dos usos. Cada alteração é salva quando você sai do campo.",
+    search: "Pesquisar configurações",
+    modifiedOnly: "Só as configurações alteradas",
+    matches: (count: number): string => `${count} ${count === 1 ? "configuração" : "configurações"}`,
+    noMatch: "Nenhuma configuração corresponde à pesquisa.",
     defaultIs: (value: string): string => `Padrão: ${value}`,
     range: (min: string, max: string): string => `Intervalo permitido: de ${min} a ${max}`,
     automatic: "automático",

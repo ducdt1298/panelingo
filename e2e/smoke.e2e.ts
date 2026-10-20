@@ -55,20 +55,17 @@ test("the popup shows the endpoint as ready with the configured model, without s
       (value) => value === EN.readiness.ready.label,
       15_000,
     );
-    assert.equal(await text(page, "#api h2"), EN.popup.apiHeading);
-    const facts = await page.$$eval("#api .facts li", (items) => items.map((li) => li.textContent ?? ""));
-    assert.ok(facts.includes(EN.popup.model(h.api.model)), `facts: ${JSON.stringify(facts)}`);
-    assert.ok(facts.includes(EN.popup.endpoint(h.api.baseUrl)), `facts: ${JSON.stringify(facts)}`);
+    assert.equal(await text(page, "#api .status-detail"), h.api.model, "the status line names the model");
     assert.ok(
       await page.$eval("#api .pill", (el) => el.classList.contains("tone-ok")),
       "the readiness pill has the ok tone",
     );
     // The popup asked the mock itself (GET /v1/models); rendering must not start the engine.
     assert.ok(h.api.requests().some((r) => r.path === "/v1/models" && r.status === 200));
-    await waitUntil(
-      "the engine block",
-      () => text(page, "#engine .pill"),
-      (v) => v === EN.popup.engineStopped,
+    assert.equal(
+      await page.$eval("#engine", (el) => (el as HTMLElement).hidden),
+      true,
+      "no engine note while nothing is wrong",
     );
     assert.equal(await engineDocumentOpen(h), false, "the popup must not start the engine");
   });
@@ -113,8 +110,8 @@ test("the options page renders the endpoint settings and the language pickers", 
   current = await openExtensionPage(h, "options");
   const { page } = current;
   await withDiagnostics(h, current, async () => {
-    await page.waitForSelector("#languages h2", { timeout: 15_000 });
-    assert.equal(await text(page, "#languages h2"), EN.options.languageHeading);
+    await page.waitForSelector("#languages h3", { timeout: 15_000 });
+    assert.equal(await text(page, "#languages h3"), EN.options.languageHeading);
     assert.equal(await page.title(), `${EN.ui.appName} – ${EN.options.title}`);
     assert.equal(await page.$eval("#base-url", (el) => (el as HTMLInputElement).value), h.api.baseUrl);
     assert.equal(await page.$eval("#model", (el) => (el as HTMLInputElement).value), h.api.model);
@@ -136,7 +133,7 @@ test("choosing Vietnamese as the interface language localizes the options page a
     await page.select("#ui-locale", "vi");
     await waitUntil(
       "the Vietnamese language heading",
-      () => text(page, "#languages h2"),
+      () => text(page, "#languages h3"),
       (v) => v === VI.options.languageHeading,
       15_000,
     );
@@ -156,9 +153,9 @@ test("choosing Vietnamese as the interface language localizes the options page a
       (v) => v === VI.readiness.ready.label,
       15_000,
     );
-    assert.equal(await text(popup, "#api h2"), VI.popup.apiHeading);
+    assert.equal(await text(popup, "#open-options"), VI.popup.options);
     assert.equal(await text(popup, "#site h2"), VI.popup.siteHeading);
-    assert.notEqual(VI.popup.apiHeading, EN.popup.apiHeading, "the catalog string differs from English");
+    assert.notEqual(VI.popup.siteHeading, EN.popup.siteHeading, "the catalog string differs from English");
     await popup.close();
   });
 });

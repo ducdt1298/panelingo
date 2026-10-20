@@ -352,11 +352,14 @@ export const EN = {
     return `${Math.round(hours / 24)} days`;
   },
   popup: {
+    siteToggle: "Translate on this site",
+    progressDone: (count: number): string => `All done: ${count} image${count === 1 ? "" : "s"} on this page`,
+    more: "More for this site",
+    siteSettings: "All settings for this site",
     openTranscript: "Open the transcript",
     cookies: "Send cookies with image requests",
     cookiesHint:
       "For sites that only show images to signed-in readers. Cookies go to the image server only, never to the AI.",
-    apiHeading: "AI endpoint",
     engineHeading: "Translation engine",
     siteHeading: "This site",
     checking: "Checking…",
@@ -376,8 +379,6 @@ export const EN = {
       `Queue: ${queued} waiting · ${inFlight} sending · ${done} done · ${failed} failed`,
     pausedBy: (title: string): string => `Paused: ${title}`,
     siteUnsupported: "This page cannot be translated (http/https pages only).",
-    siteOn: "Translation is on for this site.",
-    siteOff: "Translation is off for this site.",
     modeLabel: "Mode",
     visibleSent: (count: number): string =>
       count > 0
@@ -394,6 +395,31 @@ export const EN = {
     build: (id: string): string => `Build ${id}`,
   },
   options: {
+    tabs: {
+      engine: {
+        label: "Translation",
+        intro:
+          "What translates the comics: an AI model you connect, or the experimental offline models on this device.",
+      },
+      display: {
+        label: "Language & display",
+        intro: "The language you read in, the interface language, and how translations look on the page.",
+      },
+      sites: {
+        label: "Sites",
+        intro: "Sites where Panelingo translates. Turn a site on from the toolbar popup while you read it.",
+      },
+      privacy: {
+        label: "Privacy & data",
+        intro: "What is sent to the AI, what stays on this device, and how to back up your settings.",
+      },
+      advanced: {
+        label: "Advanced",
+        intro:
+          "Fine-tuning for requests, text detection, finding images and caches. The defaults suit most uses; each change is saved when you leave the field.",
+      },
+    },
+    controlsHeading: "Keys and clicks",
     exportLog: "Export the debug log",
     exportFailed: "Could not export the debug log.",
     exportEmpty: "The debug log is empty.",
@@ -426,7 +452,6 @@ export const EN = {
     save: "Save",
     saved: "Saved.",
     saveFailed: "Could not save.",
-    sitesHeading: "Sites",
     sitesEmpty: "No sites yet. Open a comic page, click the extension icon and turn translation on for it.",
     siteEnabled: "On",
     siteMode: "Mode",
@@ -469,10 +494,10 @@ export const EN = {
   },
   /** Options page: the Advanced section, the per-site editor and settings export/import. */
   optionsAdvanced: {
-    heading: "Advanced settings",
-    intro:
-      "Fine-tuning for requests, text detection, lettering and caches. The defaults suit most uses. Each change " +
-      "is saved when you leave the field.",
+    search: "Search settings",
+    modifiedOnly: "Only changed settings",
+    matches: (count: number): string => `${count} setting${count === 1 ? "" : "s"}`,
+    noMatch: "No setting matches your search.",
     defaultIs: (value: string): string => `Default: ${value}`,
     range: (min: string, max: string): string => `Allowed: ${min} to ${max}`,
     automatic: "automatic",
@@ -502,7 +527,7 @@ export const EN = {
     fields: {
       "api.temperature": {
         label: "Temperature",
-        hint: "How varied the answers are. Leave empty to use the provider's default.",
+        hint: "Lower keeps translations steady and close to the original; higher makes the wording more varied. Leave empty to use the provider's default.",
       },
       "api.urgentLane": {
         label: "Extra lane for images on screen",

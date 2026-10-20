@@ -12,11 +12,18 @@ main {
   padding: 12px;
 }
 
+/* ---- header ---- */
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 h1 {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0 0 2px;
   font-size: 16px;
 }
 
@@ -25,64 +32,73 @@ h1 .logo {
   border-radius: 6px;
 }
 
-h2 {
-  margin: 0 0 8px;
-  font-size: 11px;
-  font-weight: 650;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--muted);
+/* settings: a named button, so it is found at a glance */
+.settings-button {
+  gap: 6px;
+  padding: 5px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
 }
 
-h3 {
-  margin: 0 0 6px;
-  font-size: 13px;
+.gear {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black'%3E%3Ccircle cx='12' cy='12' r='6.5' stroke-width='2.2'/%3E%3Ccircle cx='12' cy='12' r='2.4' stroke-width='2'/%3E%3Cpath stroke-width='3.2' d='M12 2.2v3.4M12 18.4v3.4M2.2 12h3.4M18.4 12h3.4M5.1 5.1l2.4 2.4M16.5 16.5l2.4 2.4M5.1 18.9l2.4-2.4M16.5 7.5l2.4-2.4'/%3E%3C/svg%3E")
+    center / contain no-repeat;
 }
+
+/* ---- site card ---- */
 
 .card {
-  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
 }
 
-.site-key {
-  margin: 0 0 8px;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--muted);
+.site-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.site-avatar {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.site-host {
+  min-width: 0;
+  font-size: 14.5px;
   overflow-wrap: anywhere;
 }
 
-.actions button {
-  flex: 1 1 auto;
-}
-
-.check {
-  margin-top: 10px;
-  font-size: 12.5px;
-}
-
-.uploads {
-  margin: 0;
-  padding: 0 2px;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-footer {
+/* on/off rows: the label on the left, the switch on the right */
+.switch-row {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 4px 14px;
-  padding: 2px 2px 0;
-  font-size: 12.5px;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  cursor: pointer;
+  font-weight: 600;
 }
 
-footer a {
-  white-space: nowrap;
-}
-
-footer .muted {
-  flex-basis: 100%;
-  font-size: 11px;
+.switch-row input[type="checkbox"] {
+  margin: 0;
 }
 
 /* the mode switch spans the card: two equal halves that may wrap their text */
@@ -90,6 +106,7 @@ fieldset.mode {
   display: grid;
   grid-template-columns: 1fr 1fr;
   width: 100%;
+  margin: 0;
 }
 
 fieldset.mode .radio {
@@ -99,4 +116,189 @@ fieldset.mode .radio {
   text-align: center;
   white-space: normal;
   line-height: 1.3;
+  font-size: 12.5px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.row > label {
+  font-weight: 600;
+}
+
+.row > select {
+  flex: 0 1 190px;
+  min-width: 0;
+}
+
+/* ---- progress ---- */
+
+.progress .bar {
+  display: flex;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+.progress .fill {
+  background: var(--accent);
+  transition: width 0.3s;
+}
+
+.progress.settled .fill {
+  background: var(--ok);
+}
+
+.progress .fill.failed {
+  background: var(--error);
+}
+
+.progress-text {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ---- actions ---- */
+
+.actions {
+  margin: 0;
+}
+
+.actions button {
+  flex: 1 1 auto;
+}
+
+button.link {
+  flex: 0 0 100%;
+  border-color: transparent;
+  background: transparent;
+  color: var(--accent);
+  padding: 4px;
+}
+
+button.link:hover:not(:disabled) {
+  background: var(--accent-soft);
+}
+
+.message {
+  margin: 0;
+}
+
+details.more {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+}
+
+details.more > summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+details.more[open] > summary {
+  margin-bottom: 10px;
+}
+
+details.more .switch-row {
+  font-weight: 500;
+}
+
+details.more .hint {
+  margin: 6px 2px 8px;
+}
+
+details.more a {
+  font-size: 12.5px;
+}
+
+/* ---- engine note ---- */
+
+.engine-note {
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  border-left: 3px solid var(--warn);
+  background: var(--warn-soft);
+}
+
+.engine-note .note-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.engine-note .hint {
+  margin: 4px 0 0;
+  color: var(--text);
+}
+
+.engine-note button {
+  margin-top: 8px;
+}
+
+/* ---- status line ---- */
+
+footer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.status-line {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  width: 100%;
+  padding: 8px 28px 8px 10px;
+  border-color: var(--border);
+  background: var(--surface);
+  text-align: left;
+  white-space: normal;
+}
+
+.status-line.trouble {
+  border-color: var(--error);
+}
+
+.status-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.status-detail {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-go {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.status-hint {
+  color: var(--text);
+  font-size: 12px;
+}
+
+.uploads {
+  margin: 0;
+  padding: 0 2px;
+  font-size: 11.5px;
+  color: var(--muted);
 }

@@ -109,5 +109,5 @@ key with a low spending limit, or explain how to point the extension at a free l
 a small vision model). Also describe the flow:
 
 1. Enter the endpoint in Options and click **Test connection**.
-2. Open a comic page and click **Translate this site** in the popup.
+2. Open a comic page and switch on **Translate on this site** in the popup.
 3. Accept the privacy notice.

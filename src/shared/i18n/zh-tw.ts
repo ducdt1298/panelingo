@@ -293,10 +293,13 @@ export const ZH_TW: Catalog = {
     return `${Math.round(hours / 24)} 天`;
   },
   popup: {
+    siteToggle: "在此網站翻譯",
+    progressDone: (count: number): string => `完成：本頁 ${count} 張圖片`,
+    more: "此網站的更多設定",
+    siteSettings: "此網站的所有設定",
     openTranscript: "開啟台詞列表",
     cookies: "載入圖片時傳送 Cookie",
     cookiesHint: "適用於只向已登入讀者顯示圖片的網站。Cookie 只會傳送到圖片伺服器，絕不會傳送給 AI。",
-    apiHeading: "AI 端點",
     engineHeading: "翻譯引擎",
     siteHeading: "目前網站",
     checking: "正在檢查…",
@@ -316,8 +319,6 @@ export const ZH_TW: Catalog = {
       `佇列：等待 ${queued} · 傳送中 ${inFlight} · 已完成 ${done} · 失敗 ${failed}`,
     pausedBy: (title: string): string => `已暫停：${title}`,
     siteUnsupported: "無法翻譯此網頁（僅支援 http/https 網頁）。",
-    siteOn: "此網站已開啟翻譯。",
-    siteOff: "此網站未開啟翻譯。",
     modeLabel: "模式",
     visibleSent: (count: number): string =>
       count > 0 ? `已傳送 ${count} 張圖片進行翻譯。` : "目前沒有可見的漫畫圖片。",
@@ -332,6 +333,20 @@ export const ZH_TW: Catalog = {
     build: (id: string): string => `建置版本 ${id}`,
   },
   options: {
+    tabs: {
+      engine: {
+        label: "翻譯方式",
+        intro: "用什麼翻譯漫畫：你連接的 AI 模型，或在本裝置上執行的實驗性離線模型。",
+      },
+      display: { label: "語言與顯示", intro: "你閱讀的語言、介面語言，以及譯文在頁面上的樣子。" },
+      sites: { label: "網站", intro: "Panelingo 會翻譯的網站。閱讀時從工具列彈出視窗開啟網站。" },
+      privacy: { label: "隱私與資料", intro: "會傳送給 AI 的內容、保留在本裝置上的內容，以及如何備份設定。" },
+      advanced: {
+        label: "進階",
+        intro: "微調請求、文字偵測、尋找圖片與快取。預設值適合大多數情況；每項變更會在離開輸入框時儲存。",
+      },
+    },
+    controlsHeading: "按鍵與點擊",
     exportLog: "匯出偵錯記錄",
     exportFailed: "無法匯出偵錯記錄。",
     exportEmpty: "偵錯記錄是空的。",
@@ -364,7 +379,6 @@ export const ZH_TW: Catalog = {
     save: "儲存",
     saved: "已儲存。",
     saveFailed: "無法儲存。",
-    sitesHeading: "網站",
     sitesEmpty: "尚未加入任何網站。開啟漫畫網頁，點選擴充功能圖示，然後為該網站開啟翻譯。",
     siteEnabled: "啟用",
     siteMode: "模式",
@@ -396,8 +410,10 @@ export const ZH_TW: Catalog = {
     logLevels: { debug: "詳細（偵錯）", info: "資訊", warn: "警告", error: "僅限錯誤" },
   },
   optionsAdvanced: {
-    heading: "進階設定",
-    intro: "微調請求、文字偵測、嵌字和快取。預設值適合大多數用途。每項變更會在你離開該欄位時自動儲存。",
+    search: "搜尋設定",
+    modifiedOnly: "只看已變更的設定",
+    matches: (count: number): string => `${count} 項設定`,
+    noMatch: "沒有符合搜尋的設定。",
     defaultIs: (value: string): string => `預設：${value}`,
     range: (min: string, max: string): string => `允許範圍：${min} 至 ${max}`,
     automatic: "自動",
@@ -426,7 +442,7 @@ export const ZH_TW: Catalog = {
     },
     fields: {
       "api.temperature": {
-        label: "溫度",
+        label: "溫度（Temperature）",
         hint: "決定回答的多樣程度。留空則使用服務供應商的預設值。",
       },
       "api.urgentLane": {

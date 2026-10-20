@@ -1,7 +1,13 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { createLogger } from "../../../src/platform/log.ts";
-import { CLEAR_BADGE, badgeFor, createBadgeFeed, type BadgeRequest } from "../../../src/engine/badge-feed.ts";
+import {
+  CLEAR_BADGE,
+  badgeFor,
+  createBadgeFeed,
+  progressOf,
+  type BadgeRequest,
+} from "../../../src/engine/badge-feed.ts";
 
 function feed(): { sent: BadgeRequest[]; badges: ReturnType<typeof createBadgeFeed> } {
   const sent: BadgeRequest[] = [];
@@ -16,6 +22,26 @@ function feed(): { sent: BadgeRequest[]; badges: ReturnType<typeof createBadgeFe
 }
 
 describe("toolbar badge feed", () => {
+  test("progressOf and progress(tabId): every frame's images of the tab, by state", () => {
+    assert.deepEqual(progressOf([]), { total: 0, working: 0, paused: 0, failed: 0 });
+    assert.deepEqual(progressOf(["done", "no-text", "queued", "translating", "paused", "error"]), {
+      total: 6,
+      working: 2,
+      paused: 1,
+      failed: 1,
+    });
+    const { badges } = feed();
+    badges.observe(3, "f1", "a", "done");
+    badges.observe(3, "f1", "b", "translating");
+    badges.observe(3, "f2", "c", "queued");
+    badges.observe(4, "g", "d", "error");
+    assert.deepEqual(badges.progress(3), { total: 3, working: 2, paused: 0, failed: 0 });
+    badges.observe(3, "f1", "b", "done");
+    badges.forgetFrame("f2");
+    assert.deepEqual(badges.progress(3), { total: 2, working: 0, paused: 0, failed: 0 });
+    assert.deepEqual(badges.progress(99), { total: 0, working: 0, paused: 0, failed: 0 });
+  });
+
   test("badgeFor: images in progress are counted; pauses and errors win; settled tabs clear", () => {
     assert.deepEqual(badgeFor([]), CLEAR_BADGE);
     assert.deepEqual(badgeFor(["done", "no-text", "partial", "refused", "stale"]), CLEAR_BADGE);

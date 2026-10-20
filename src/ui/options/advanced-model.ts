@@ -142,6 +142,64 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
   num("debug.logCapacity"),
 ];
 
+/**
+ * Where a row is edited when it is not in the Advanced tab: the Translation tab's series-memory card ("memory"), the
+ * Language & display tab's lettering and keys cards, or its own control on the Translation tab ("custom": the engine
+ * choice and the offline model).
+ */
+export type FieldPlace = "advanced" | "memory" | "lettering" | "controls" | "custom";
+
+const PLACES: Readonly<Partial<Record<SettingPath, FieldPlace>>> = {
+  "translate.engine": "custom",
+  "translate.offlineModel": "custom",
+  "memory.enabled": "memory",
+  "memory.warmUp": "memory",
+  "render.font": "lettering",
+  "render.verticalText": "lettering",
+  "render.minFontPx": "lettering",
+  "render.maxFontPx": "lettering",
+  "render.sfxLabels": "lettering",
+  "render.eraseSfx": "lettering",
+  "render.showDoneBadge": "lettering",
+  "render.peekKey": "controls",
+  "render.peekWithAlt": "controls",
+  "render.popupWithAltClick": "controls",
+};
+
+export function placeOf(field: AdvancedField): FieldPlace {
+  return PLACES[field.path] ?? "advanced";
+}
+
+/** The rows edited in one place, in table order. */
+export function fieldsAt(
+  place: FieldPlace,
+  fields: readonly AdvancedField[] = ADVANCED_FIELDS,
+): AdvancedField[] {
+  return fields.filter((field) => placeOf(field) === place);
+}
+
+/** Lower case without accents or marks, for search ("Lời thoại" finds "loi thoai", "Đ" finds "d"). */
+export function searchKey(text: string): string {
+  return text.normalize("NFD").replace(/\p{M}/gu, "").replace(/[đĐ]/gu, "d").toLowerCase();
+}
+
+/**
+ * Every word of the query appears in the row's label, hint, group title or setting path (so "maxFontPx" and
+ * "font size" both find the row). An empty query matches everything.
+ */
+export function fieldMatches(field: AdvancedField, query: string, t: Catalog): boolean {
+  const words = searchKey(query)
+    .split(/\s+/u)
+    .filter((word) => word !== "");
+  if (words.length === 0) return true;
+  const text = fieldText(field, t);
+  const group = (t.optionsAdvanced.groups as Readonly<Record<string, string | undefined>>)[
+    sectionOf(field.path)
+  ];
+  const haystack = searchKey(`${text.label} ${text.hint} ${group ?? ""} ${field.path}`);
+  return words.every((word) => haystack.includes(word));
+}
+
 /** Font names are proper names: shown as is in every language. */
 const FONT_NAMES: Readonly<Record<string, string>> = { "patrick-hand": "Patrick Hand", mali: "Mali" };
 

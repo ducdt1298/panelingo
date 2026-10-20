@@ -325,11 +325,15 @@ export const ES: Catalog = {
     return `${days} ${plural(days, "día", "días")}`;
   },
   popup: {
+    siteToggle: "Traducir en este sitio",
+    progressDone: (count: number): string =>
+      `Listo: ${count} ${count === 1 ? "imagen" : "imágenes"} en esta página`,
+    more: "Más para este sitio",
+    siteSettings: "Todos los ajustes de este sitio",
     openTranscript: "Abrir la transcripción",
     cookies: "Enviar cookies al cargar imágenes",
     cookiesHint:
       "Para sitios que solo muestran imágenes a lectores con sesión iniciada. Las cookies van solo al servidor de imágenes, nunca a la IA.",
-    apiHeading: "Endpoint de IA",
     engineHeading: "Motor de traducción",
     siteHeading: "Este sitio",
     checking: "Comprobando…",
@@ -350,8 +354,6 @@ export const ES: Catalog = {
       `Cola: ${queued} en espera · ${inFlight} enviando · ${done} completados · ${failed} con error`,
     pausedBy: (title: string): string => `En pausa: ${title}`,
     siteUnsupported: "Esta página no se puede traducir (solo páginas http/https).",
-    siteOn: "La traducción está activada en este sitio.",
-    siteOff: "La traducción está desactivada en este sitio.",
     modeLabel: "Modo",
     visibleSent: (count: number): string =>
       count > 0
@@ -371,6 +373,33 @@ export const ES: Catalog = {
     build: (id: string): string => `Compilación ${id}`,
   },
   options: {
+    tabs: {
+      engine: {
+        label: "Traducción",
+        intro:
+          "Qué traduce los cómics: un modelo de IA que conectas o los modelos sin conexión experimentales de este dispositivo.",
+      },
+      display: {
+        label: "Idioma y visualización",
+        intro: "El idioma en que lees, el idioma de la interfaz y cómo se ven las traducciones en la página.",
+      },
+      sites: {
+        label: "Sitios",
+        intro:
+          "Sitios donde Panelingo traduce. Activa un sitio desde la ventana de la barra de herramientas mientras lo lees.",
+      },
+      privacy: {
+        label: "Privacidad y datos",
+        intro:
+          "Qué se envía a la IA, qué se queda en este dispositivo y cómo hacer una copia de tus ajustes.",
+      },
+      advanced: {
+        label: "Avanzado",
+        intro:
+          "Ajuste fino de las solicitudes, la detección de texto, la búsqueda de imágenes y las cachés. Los valores predeterminados sirven en la mayoría de los casos; cada cambio se guarda al salir del campo.",
+      },
+    },
+    controlsHeading: "Teclas y clics",
     exportLog: "Exportar el registro de depuración",
     exportFailed: "No se pudo exportar el registro de depuración.",
     exportEmpty: "El registro de depuración está vacío.",
@@ -406,7 +435,6 @@ export const ES: Catalog = {
     save: "Guardar",
     saved: "Guardado.",
     saveFailed: "No se pudo guardar.",
-    sitesHeading: "Sitios",
     sitesEmpty:
       "Aún no hay sitios. Abre una página de cómics, haz clic en el icono de la extensión y activa la traducción " +
       "para ese sitio.",
@@ -454,10 +482,10 @@ export const ES: Catalog = {
     },
   },
   optionsAdvanced: {
-    heading: "Ajustes avanzados",
-    intro:
-      "Ajustes finos de las solicitudes, la detección de texto, la rotulación y las cachés. Los valores " +
-      "predeterminados sirven para la mayoría de los casos. Cada cambio se guarda al salir del campo.",
+    search: "Buscar ajustes",
+    modifiedOnly: "Solo los ajustes cambiados",
+    matches: (count: number): string => `${count} ${count === 1 ? "ajuste" : "ajustes"}`,
+    noMatch: "Ningún ajuste coincide con tu búsqueda.",
     defaultIs: (value: string): string => `Predeterminado: ${value}`,
     range: (min: string, max: string): string => `Rango permitido: de ${min} a ${max}`,
     automatic: "automático",

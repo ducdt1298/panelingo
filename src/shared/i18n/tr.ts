@@ -321,11 +321,14 @@ export const TR: Catalog = {
     return `${Math.round(hours / 24)} gün`;
   },
   popup: {
+    siteToggle: "Bu sitede çevir",
+    progressDone: (count: number): string => `Tamamlandı: bu sayfada ${count} görsel`,
+    more: "Bu site için daha fazlası",
+    siteSettings: "Bu sitenin tüm ayarları",
     openTranscript: "Metin dökümünü aç",
     cookies: "Görsel isteklerinde çerezleri gönder",
     cookiesHint:
       "Görselleri yalnızca oturum açmış okurlara gösteren siteler için. Çerezler yalnızca görsel sunucusuna gider, yapay zekâya asla gitmez.",
-    apiHeading: "Yapay zeka uç noktası",
     engineHeading: "Çeviri motoru",
     siteHeading: "Bu site",
     checking: "Kontrol ediliyor…",
@@ -345,8 +348,6 @@ export const TR: Catalog = {
       `Kuyruk: ${queued} bekliyor · ${inFlight} gönderiliyor · ${done} tamamlandı · ${failed} başarısız`,
     pausedBy: (title: string): string => `Duraklatıldı: ${title}`,
     siteUnsupported: "Bu sayfa çevrilemez (yalnızca http/https sayfaları).",
-    siteOn: "Bu sitede çeviri açık.",
-    siteOff: "Bu sitede çeviri kapalı.",
     modeLabel: "Mod",
     visibleSent: (count: number): string =>
       count > 0 ? `Çeviri için ${count} görsel gönderildi.` : "Görünürde çizgi roman görseli yok.",
@@ -363,6 +364,31 @@ export const TR: Catalog = {
     build: (id: string): string => `Derleme ${id}`,
   },
   options: {
+    tabs: {
+      engine: {
+        label: "Çeviri",
+        intro:
+          "Çizgi romanları neyin çevireceği: bağladığın bir yapay zekâ modeli ya da bu cihazdaki deneysel çevrimdışı modeller.",
+      },
+      display: {
+        label: "Dil ve görünüm",
+        intro: "Okuduğun dil, arayüz dili ve çevirilerin sayfada nasıl göründüğü.",
+      },
+      sites: {
+        label: "Siteler",
+        intro: "Panelingo'nun çeviri yaptığı siteler. Bir siteyi okurken araç çubuğundaki pencereden aç.",
+      },
+      privacy: {
+        label: "Gizlilik ve veriler",
+        intro: "Yapay zekâya ne gönderildiği, bu cihazda ne kaldığı ve ayarlarının nasıl yedekleneceği.",
+      },
+      advanced: {
+        label: "Gelişmiş",
+        intro:
+          "İstekler, metin algılama, görsel bulma ve önbellekler için ince ayar. Varsayılanlar çoğu kullanım için uygundur; her değişiklik alandan çıkınca kaydedilir.",
+      },
+    },
+    controlsHeading: "Tuşlar ve tıklamalar",
     exportLog: "Hata ayıklama günlüğünü dışa aktar",
     exportFailed: "Hata ayıklama günlüğü dışa aktarılamadı.",
     exportEmpty: "Hata ayıklama günlüğü boş.",
@@ -397,7 +423,6 @@ export const TR: Catalog = {
     save: "Kaydet",
     saved: "Kaydedildi.",
     saveFailed: "Kaydedilemedi.",
-    sitesHeading: "Siteler",
     sitesEmpty:
       "Henüz site yok. Bir çizgi roman sayfası açın, eklenti simgesine tıklayın ve o sitede çeviriyi açın.",
     siteEnabled: "Açık",
@@ -441,10 +466,10 @@ export const TR: Catalog = {
     },
   },
   optionsAdvanced: {
-    heading: "Gelişmiş ayarlar",
-    intro:
-      "İstekler, metin algılama, metin yerleşimi ve önbellekler için ince ayarlar. Varsayılanlar çoğu kullanım " +
-      "için uygundur. Her değişiklik, alandan ayrıldığınızda kaydedilir.",
+    search: "Ayarlarda ara",
+    modifiedOnly: "Yalnızca değiştirilen ayarlar",
+    matches: (count: number): string => `${count} ayar`,
+    noMatch: "Aramanla eşleşen ayar yok.",
     defaultIs: (value: string): string => `Varsayılan: ${value}`,
     range: (min: string, max: string): string => `İzin verilen aralık: ${min} – ${max}`,
     automatic: "otomatik",
@@ -473,7 +498,7 @@ export const TR: Catalog = {
     },
     fields: {
       "api.temperature": {
-        label: "Sıcaklık",
+        label: "Sıcaklık (temperature)",
         hint: "Yanıtların ne kadar çeşitli olacağı. Sağlayıcının varsayılanını kullanmak için boş bırakın.",
       },
       "api.urgentLane": {

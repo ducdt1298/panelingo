@@ -46,7 +46,7 @@ you. Pull requests are welcome; see [CONTRIBUTING.md](../CONTRIBUTING.md).
 - **Capture everywhere.** The screen-capture fallback also works inside reader iframes (an offset chain through the
   parent frames tells the frame where it sits in the tab) and for images wider than the viewport (columns, or a grid
   of tiles when both sides exceed it).
-- **Settings UI.** Every setting in effect is editable in the options page: an Advanced section, a per-site editor
+- **Settings UI.** Every setting in effect is editable in the options page: a searchable Advanced tab, a per-site editor
   (layout, source language, Referer and cookie policy, subdomains, reader frames, prepare-ahead) and a JSON backup and
   restore.
 - **Signed releases.** Every tag builds the extension zip with a SHA-256 and a signed build provenance attestation.

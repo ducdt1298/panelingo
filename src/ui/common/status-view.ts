@@ -1,12 +1,11 @@
 // API endpoint readiness (or, in offline mode, the offline engine's state), engine status and the daily upload counter
-// as view models (pure, unit-tested) plus one DOM renderer shared by the extension pages. Texts and remediation:
+// as view models (pure, unit-tested) shared by the extension pages. Texts and remediation:
 // msg().readiness, msg().errors, msg().popup, msg().offlineState.
 
 import type { HealthReading } from "../../shared/core/health.ts";
 import { toErrorInfo } from "../../shared/errors.ts";
 import { msg } from "../../shared/i18n/index.ts";
 import type { ApiReadiness, EngineStatus, OfflineStatus } from "../../shared/types.ts";
-import { h, replace } from "./dom.ts";
 
 export type Tone = "ok" | "warn" | "error" | "pending" | "idle";
 
@@ -135,17 +134,4 @@ export function engineBlock(state: EngineState | null): StatusBlock {
 export function uploadsLine(status: EngineStatus | null): string | null {
   if (status === null) return null;
   return msg().ui.uploadsToday(status.uploads.today, status.uploads.bytesToday / MB);
-}
-
-export function renderStatusBlock(el: Element, heading: string, block: StatusBlock): void {
-  replace(
-    el,
-    h("h2", null, heading),
-    h("p", { class: `pill tone-${block.tone}` }, block.title),
-    block.hint === "" ? null : h("p", { class: "hint" }, block.hint),
-    block.lines.length === 0
-      ? null
-      : h("ul", { class: "facts" }, ...block.lines.map((line) => h("li", null, line))),
-    ...block.warnings.map((warning) => h("p", { class: "warning", role: "alert" }, warning)),
-  );
 }

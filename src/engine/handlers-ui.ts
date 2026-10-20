@@ -27,6 +27,7 @@ import type {
   EngineStatus,
   GlossaryEdit,
   OfflineStatus,
+  TabProgress,
   Transcript,
   TranscriptItem,
 } from "../shared/types.ts";
@@ -177,6 +178,8 @@ export interface UiHandlerDeps {
   frames: FrameRegistry;
   lifecycle: Lifecycle;
   status: () => EngineStatus;
+  /** Where a tab's images are (the toolbar badge's counts). */
+  tabProgress?: (tabId: number) => TabProgress;
   /** The status may have changed (settings applied, edit, cache cleared). */
   changed?: () => void;
   /** Time source for glossary and series edits (default systemClock). */
@@ -335,6 +338,10 @@ export function createUiHandlers(deps: UiHandlerDeps): Handlers<EngineApi> {
       phase: deps.lifecycle.phase(),
     }),
     "en:status": () => deps.status(),
+    "en:tab-progress": (payload) => {
+      if (!Number.isInteger(payload.tabId)) throw invalid("en:tab-progress");
+      return deps.tabProgress?.(payload.tabId) ?? { total: 0, working: 0, paused: 0, failed: 0 };
+    },
     "en:transcript": (payload) => {
       if (!Number.isInteger(payload.tabId)) throw invalid("en:transcript");
       return buildTranscript(deps, payload.tabId);

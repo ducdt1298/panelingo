@@ -17,13 +17,17 @@ import {
   fieldDefault,
   fieldId,
   fieldRange,
+  fieldMatches,
+  fieldsAt,
   fieldText,
   formatNumber,
   getSetting,
   isDefault,
   parseInput,
   patchFor,
+  placeOf,
   resetAllPatch,
+  searchKey,
   setSetting,
   storesIntegers,
   toInput,
@@ -120,6 +124,55 @@ describe("the Advanced table and docs/CONFIGURATION.md", () => {
     const editable = [...SITE_DOC].filter(([, status]) => status === "UI").map(([key]) => key);
     assert.deepEqual([...editable].sort(), [...SITE_EDITOR_FIELDS].sort());
     assert.ok(![...SITE_DOC.values()].includes("Advanced"), "no per-site setting is hand-edited only");
+  });
+});
+
+describe("where rows are edited, and search", () => {
+  test("every row has one place; the Advanced tab keeps the rest, in table order", () => {
+    const places = ["advanced", "memory", "lettering", "controls", "custom"] as const;
+    const placed = places.flatMap((place) => fieldsAt(place).map((row) => row.path));
+    assert.deepEqual([...placed].sort(), [...PATHS].sort(), "no row lost or shown twice");
+    assert.deepEqual(
+      fieldsAt("memory").map((row) => row.path),
+      ["memory.enabled", "memory.warmUp"],
+    );
+    assert.deepEqual(
+      fieldsAt("controls").map((row) => row.path),
+      ["render.peekKey", "render.peekWithAlt", "render.popupWithAltClick"],
+    );
+    assert.ok(fieldsAt("lettering").every((row) => row.path.startsWith("render.")));
+    assert.deepEqual(
+      fieldsAt("custom").map((row) => row.path),
+      ["translate.engine", "translate.offlineModel"],
+    );
+    assert.equal(placeOf(field("api.temperature")), "advanced");
+    assert.deepEqual(
+      advancedGroups(fieldsAt("advanced")).map((group) => group.section),
+      ["api", "translate", "detector", "engine", "discovery", "memory", "cache", "privacy", "debug"],
+    );
+  });
+
+  test("searchKey drops case, accents and marks (đ is d)", () => {
+    assert.equal(searchKey("Lời thoại ĐẦU"), "loi thoai dau");
+    assert.equal(searchKey("Café Élan"), "cafe elan");
+    assert.equal(searchKey("フォント"), "フォント".normalize("NFD").replace(/\p{M}/gu, ""));
+  });
+
+  test("fieldMatches: every word in the label, hint, group title or path; empty matches everything", () => {
+    const t = catalogFor("en");
+    const lines = field("memory.historyMaxLines");
+    assert.equal(fieldMatches(lines, "", t), true);
+    assert.equal(fieldMatches(lines, "   ", t), true);
+    assert.equal(fieldMatches(lines, "earlier lines", t), true);
+    assert.equal(fieldMatches(lines, "LINES earlier", t), true, "any order and case");
+    assert.equal(fieldMatches(lines, "series memory", t), true, "the group title");
+    assert.equal(fieldMatches(lines, "historyMaxLines", t), true, "the setting path");
+    assert.equal(fieldMatches(lines, "earlier zebra", t), false, "every word must match");
+    const vi = catalogFor("vi");
+    assert.equal(
+      fieldMatches(lines, searchKey(vi.optionsAdvanced.fields["memory.historyMaxLines"].label), vi),
+      true,
+    );
   });
 });
 

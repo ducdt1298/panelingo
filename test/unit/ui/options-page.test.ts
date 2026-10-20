@@ -6,7 +6,12 @@ import { afterEach, describe, test } from "node:test";
 import { catalogFor, msg, uiLocales, type Catalog } from "../../../src/shared/i18n/index.ts";
 import { TARGET_LANGUAGES } from "../../../src/shared/languages.ts";
 import type { Settings } from "../../../src/shared/settings.ts";
-import { API_PRESETS, formatDateTime, LOG_LEVELS } from "../../../src/ui/options/options-model.ts";
+import {
+  API_PRESETS,
+  formatDateTime,
+  LOG_LEVELS,
+  OPTION_TABS,
+} from "../../../src/ui/options/options-model.ts";
 import { until } from "../sw/sw-helpers.ts";
 import type { FakeElement } from "./fake-dom.ts";
 import { closePage, json, openPage, pillText, texts, type PageRun } from "./page-harness.ts";
@@ -54,9 +59,22 @@ async function assertOptionsIn(run: PageRun, t: Catalog): Promise<void> {
   const title = `${t.ui.appName} – ${t.options.title}`;
   assert.equal(run.dom.document.title, title);
   assert.deepEqual(texts(run.dom.byId("app"), "h1"), [title]);
+  // Five tabs: the navigation and each tab's heading and introduction.
+  const nav = run.dom.byId("app").findAll("nav")[0];
+  assert.ok(nav !== undefined);
+  assert.deepEqual(
+    texts(nav, "a"),
+    OPTION_TABS.map((tab) => t.options.tabs[tab].label),
+  );
+  for (const tab of OPTION_TABS) {
+    const panel = section(run, `tab-${tab}`);
+    assert.deepEqual(texts(panel.findAll("header")[0] as FakeElement, "h2"), [t.options.tabs[tab].label]);
+    assert.ok(texts(panel, "p").includes(t.options.tabs[tab].intro), tab);
+    assert.equal(panel["hidden"], tab !== "engine", `only the first tab is shown: ${tab}`);
+  }
 
-  assert.deepEqual(texts(api, "h2"), [t.options.apiHeading]);
-  assert.deepEqual(texts(api, "li"), [t.popup.endpoint(BASE_URL), t.popup.model(MODEL)]);
+  assert.deepEqual(texts(api, "h3"), [t.options.apiHeading]);
+  assert.deepEqual(texts(api, "li"), [], "the form shows the endpoint; no duplicate facts");
   assert.deepEqual(texts(api, "label"), [
     t.options.preset,
     t.options.baseUrl,
@@ -82,8 +100,8 @@ async function assertOptionsIn(run: PageRun, t: Catalog): Promise<void> {
   ]);
 
   const languages = section(run, "languages");
-  assert.deepEqual(texts(languages, "h2"), [t.options.languageHeading]);
-  assert.deepEqual(texts(languages, "label"), [t.options.uiLanguage, t.options.targetLanguage]);
+  assert.deepEqual(texts(languages, "h3"), [t.options.languageHeading]);
+  assert.deepEqual(texts(languages, "label"), [t.options.targetLanguage, t.options.uiLanguage]);
   // The picker lists every UI locale by its own name (not translated), English first.
   const localeOptions = texts(control(run, "ui-locale"), "option");
   assert.deepEqual(localeOptions, [t.options.languageAuto, ...uiLocales().map((locale) => locale.name)]);
@@ -96,20 +114,21 @@ async function assertOptionsIn(run: PageRun, t: Catalog): Promise<void> {
   ]);
 
   const sites = section(run, "sites");
-  assert.deepEqual(texts(sites, "h2"), [t.options.sitesHeading]);
   assert.ok(texts(sites, "p").includes(t.options.sitesEmpty));
 
   const privacy = section(run, "privacy");
-  assert.deepEqual(texts(privacy, "h2"), [t.options.privacyHeading]);
+  assert.deepEqual(texts(privacy, "h3"), [t.options.privacyHeading]);
   assert.deepEqual(texts(privacy, "li"), t.options.privacyPoints);
   assert.ok(texts(privacy, "p").includes(t.options.privacyNotAcked));
 
   const cache = section(run, "cache");
-  assert.deepEqual(texts(cache, "h2"), [t.options.cacheHeading]);
+  assert.deepEqual(texts(cache, "h3"), [t.options.cacheHeading]);
   assert.deepEqual(texts(cache, "button"), [t.options.cacheClear]);
 
   const debug = section(run, "debug");
-  assert.deepEqual(texts(debug, "h2"), [t.options.debugHeading]);
+  assert.deepEqual(texts(debug, "h3"), [t.options.debugHeading]);
+  // The engine is not running: its status says so, and the page never starts it.
+  await until(() => texts(debug, "p").includes(t.popup.engineStopped), "engine status");
   assert.deepEqual(
     texts(debug, "option"),
     LOG_LEVELS.map((level) => t.options.logLevels[level]),

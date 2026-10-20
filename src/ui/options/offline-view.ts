@@ -1,7 +1,6 @@
-// The options page's "Offline mode (experimental)" card (docs/OFFLINE-MODE.md): the translation engine (the AI
-// endpoint or on-device models) and the offline translation model, with what to expect (quality, download sizes,
-// language pairs, licences), and the size of the downloaded models with a button that deletes them. The two selects
-// write the same settings as their rows in the Advanced section (translate.engine, translate.offlineModel).
+// The options page's "Offline mode (experimental)" card (docs/OFFLINE-MODE.md), shown on the Translation tab when the
+// offline engine is chosen: the offline translation model (translate.offlineModel), what to expect (quality,
+// download sizes, language pairs, licences), and the size of the downloaded models with a button that deletes them.
 
 import type { SettingsPatch } from "../../platform/storage.ts";
 import { msg } from "../../shared/i18n/index.ts";
@@ -22,7 +21,6 @@ export interface OfflineView {
   update(settings: Settings): void;
 }
 
-const ENGINES = ["api", "offline"] as const;
 const MODELS = ["opus-mt", "nllb-600m"] as const;
 
 /** Bytes of the downloaded models in Cache Storage (shared with the engine's offscreen document). */
@@ -40,11 +38,6 @@ export async function storedModelBytes(): Promise<number> {
 export function offlineSection(deps: OfflineViewDeps): OfflineView {
   const t = (): ReturnType<typeof msg>["offline"] => msg().offline;
   const message = h("p", { class: "message", role: "status" });
-  const engineSelect = h(
-    "select",
-    { id: "offline-engine" },
-    ...ENGINES.map((engine) => h("option", { value: engine }, t().engineChoices[engine])),
-  );
   const modelSelect = h(
     "select",
     { id: "offline-model" },
@@ -54,9 +47,7 @@ export function offlineSection(deps: OfflineViewDeps): OfflineView {
   const deleteButton = h("button", { type: "button", id: "offline-delete" }, t().deleteModels);
 
   const show = (settings: Settings): void => {
-    if (document.activeElement !== engineSelect) engineSelect.value = settings.translate.engine;
     if (document.activeElement !== modelSelect) modelSelect.value = settings.translate.offlineModel;
-    modelSelect.disabled = settings.translate.engine !== "offline";
   };
 
   const measure = (): void => {
@@ -81,10 +72,6 @@ export function offlineSection(deps: OfflineViewDeps): OfflineView {
       });
   };
 
-  engineSelect.addEventListener("change", () => {
-    const engine = ENGINES.find((value) => value === engineSelect.value);
-    if (engine !== undefined) save({ translate: { engine } });
-  });
   modelSelect.addEventListener("change", () => {
     const offlineModel = MODELS.find((value) => value === modelSelect.value);
     if (offlineModel !== undefined) save({ translate: { offlineModel } });
@@ -109,9 +96,8 @@ export function offlineSection(deps: OfflineViewDeps): OfflineView {
   const element = h(
     "section",
     { class: "card", id: "offline" },
-    h("h2", null, t().heading),
+    h("h3", null, t().heading),
     h("p", { class: "hint" }, t().intro),
-    field("offline-engine", t().engine, engineSelect),
     field("offline-model", t().model, modelSelect),
     h("p", { class: "hint" }, t().download),
     h("p", { class: "hint" }, t().pairs),

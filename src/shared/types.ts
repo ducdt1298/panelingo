@@ -196,6 +196,17 @@ export interface TranscriptItem {
   flags: Array<"inconsistent" | "suspect-merge" | "overflow">;
 }
 
+/** Images of one tab by where they are (en:tab-progress, the popup's progress bar). */
+export interface TabProgress {
+  /** Images the content scripts of the tab track (every frame). */
+  total: number;
+  /** Queued, downloading, detecting or being translated. */
+  working: number;
+  /** Waiting for something the user may fix (a paused queue). */
+  paused: number;
+  failed: number;
+}
+
 export interface Transcript {
   tabId: number;
   seriesKey: string | null;

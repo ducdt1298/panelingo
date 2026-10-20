@@ -83,7 +83,7 @@ provider supports one.
 - Cached AI translations that have not been used for 30 days (configurable) are deleted automatically, and so are the
   image records that no longer have a translation. Translations you edited by hand are kept until you clear the
   cache.
-- **Options → Cache → Clear the whole cache** deletes all cached translations, regions and erase patches.
+- **Options → Privacy & data → Clear the whole cache** deletes all cached translations, regions and erase patches.
 - Removing the site from the options page stops all processing on it.
 - Uninstalling the extension deletes all of its local data, including settings and the API key.
 

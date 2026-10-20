@@ -28,14 +28,30 @@ import {
   parseBaseUrl,
   parseConcurrency,
   parseModel,
+  OPTION_TABS,
   presetFor,
   siteRows,
+  tabFor,
 } from "../../../src/ui/options/options-model.ts";
 import { callCount, startBrowser, stopBrowser, until } from "../sw/sw-helpers.ts";
 
 afterEach(stopBrowser);
 
 describe("options model", () => {
+  test("tabFor: a tab's hash opens it; an old card anchor opens the tab that holds the card; else the first tab", () => {
+    assert.deepEqual(OPTION_TABS, ["engine", "display", "sites", "privacy", "advanced"]);
+    for (const tab of OPTION_TABS) assert.equal(tabFor(tab), tab);
+    assert.equal(tabFor("api"), "engine");
+    assert.equal(tabFor("offline"), "engine");
+    assert.equal(tabFor("languages"), "display");
+    assert.equal(tabFor("cache"), "privacy");
+    assert.equal(tabFor("transfer"), "privacy");
+    assert.equal(tabFor("debug"), "privacy");
+    assert.equal(tabFor(""), "engine");
+    assert.equal(tabFor("nonsense"), "engine");
+    assert.equal(tabFor("constructor"), "engine", "no prototype keys");
+  });
+
   test("API presets: unique ids, normalized base URLs, OpenAI first and matching the defaults", () => {
     assert.deepEqual(
       API_PRESETS.map((preset) => preset.id),

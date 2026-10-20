@@ -10,8 +10,8 @@ The default stays the API mode (`translate.engine: "api"`), unchanged.
 
 ## Turning it on
 
-1. Open **Options → Offline mode (experimental)**.
-2. Set **Translation engine** to _Offline on this device (experimental)_.
+1. Open **Options → Translation**.
+2. Choose _Offline on this device (experimental)_ at the top. The endpoint form gives way to the offline card.
 3. Pick the **Offline translation model**:
    - **Opus-MT** (default): one small model per language direction, about 115 MB each. Korean, Japanese, Chinese and
      Spanish are translated into English; English into Vietnamese, Spanish, French, German, Italian and Indonesian.
@@ -21,8 +21,7 @@ The default stays the API mode (`translate.engine: "api"`), unchanged.
    - **NLLB-200 600M**: one model for every pair of the target languages (about 910 MB). **Its licence, CC-BY-NC-4.0,
      allows non-commercial use only.**
 
-The same two settings are in the Advanced section (`translate.engine`, `translate.offlineModel`,
-[CONFIGURATION.md](CONFIGURATION.md)). The card also shows how much the downloaded models take on this device and can
+These two settings are `translate.engine` and `translate.offlineModel` ([CONFIGURATION.md](CONFIGURATION.md)). The card also shows how much the downloaded models take on this device and can
 delete them.
 
 Nothing else needs to be set up: no endpoint, no key. In offline mode the extension never contacts the AI endpoint

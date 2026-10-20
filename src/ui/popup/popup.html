@@ -8,12 +8,16 @@
   </head>
   <body>
     <main id="app">
-      <h1><img class="logo" src="../assets/icons/icon-32.png" width="20" height="20" alt="" />Panelingo</h1>
-      <section id="api" class="card" aria-live="polite"></section>
-      <section id="engine" class="card" aria-live="polite"></section>
+      <header class="popup-header">
+        <h1><img class="logo" src="../assets/icons/icon-32.png" width="22" height="22" alt="" />Panelingo</h1>
+        <button id="open-options" type="button" class="settings-button"></button>
+      </header>
       <section id="site" class="card"></section>
-      <p id="uploads" class="uploads" hidden></p>
-      <footer id="footer"></footer>
+      <section id="engine" class="engine-note" aria-live="polite" hidden></section>
+      <footer id="footer">
+        <button id="api" type="button" class="status-line" aria-live="polite"></button>
+        <p id="uploads" class="uploads" hidden></p>
+      </footer>
     </main>
     <script type="module" src="popup.js"></script>
   </body>

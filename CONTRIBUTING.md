@@ -122,7 +122,7 @@ UI catalogs live in [`src/shared/i18n/`](src/shared/i18n/). English (`en.ts`) is
    do.
 5. **Check the manifest strings.** `ui.appName`, `manifest.description` (≤ 132 characters) and `manifest.commands.*`
    become `_locales/<dir>/messages.json` at build time. `pt-br` becomes `pt_BR`, for example.
-6. Run `npm run check`, build, set **Options → Interface language** to your language and click through the popup and
+6. Run `npm run check`, build, set **Options → Language & display → Interface language** to your language and click through the popup and
    options page. Look for text that overflows its control.
 
 To fix a translation in an existing catalog, edit that file and run `npm run check`.

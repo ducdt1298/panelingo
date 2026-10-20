@@ -318,11 +318,14 @@ export const JA: Catalog = {
     return `${Math.round(hours / 24)}日`;
   },
   popup: {
+    siteToggle: "このサイトで翻訳する",
+    progressDone: (count: number): string => `完了: このページの画像 ${count} 枚`,
+    more: "このサイトのその他の設定",
+    siteSettings: "このサイトのすべての設定",
     openTranscript: "セリフ一覧を開く",
     cookies: "画像の読み込み時に Cookie を送信",
     cookiesHint:
       "ログインした読者にだけ画像を表示するサイト向けです。Cookie は画像サーバーにのみ送られ、AI には送られません。",
-    apiHeading: "AIエンドポイント",
     engineHeading: "翻訳エンジン",
     siteHeading: "このサイト",
     checking: "確認中…",
@@ -342,8 +345,6 @@ export const JA: Catalog = {
       `キュー：待機中${queued}件、送信中${inFlight}件、完了${done}件、失敗${failed}件`,
     pausedBy: (title: string): string => `一時停止中：${title}`,
     siteUnsupported: "このページは翻訳できません（http/httpsのページのみ対応）。",
-    siteOn: "このサイトでは翻訳がオンです。",
-    siteOff: "このサイトでは翻訳がオフです。",
     modeLabel: "モード",
     visibleSent: (count: number): string =>
       count > 0 ? `${count}枚の画像を翻訳に送りました。` : "表示中のマンガの画像はありません。",
@@ -360,6 +361,28 @@ export const JA: Catalog = {
     build: (id: string): string => `ビルド：${id}`,
   },
   options: {
+    tabs: {
+      engine: {
+        label: "翻訳エンジン",
+        intro: "漫画を何で翻訳するか: 接続した AI モデル、またはこの端末で動く試験的なオフラインモデル。",
+      },
+      display: { label: "言語と表示", intro: "読む言語、画面の言語、ページ上での翻訳の見え方。" },
+      sites: {
+        label: "サイト",
+        intro:
+          "Panelingo が翻訳するサイトです。読んでいるときにツールバーのポップアップからサイトをオンにします。",
+      },
+      privacy: {
+        label: "プライバシーとデータ",
+        intro: "AI に送られるもの、この端末に残るもの、設定のバックアップ方法。",
+      },
+      advanced: {
+        label: "詳細",
+        intro:
+          "リクエスト、文字検出、画像の検出、キャッシュの細かな調整です。ほとんどの場合は既定値で十分です。変更は欄を離れたときに保存されます。",
+      },
+    },
+    controlsHeading: "キーとクリック",
     exportLog: "デバッグログをエクスポート",
     exportFailed: "デバッグログをエクスポートできませんでした。",
     exportEmpty: "デバッグログは空です。",
@@ -395,7 +418,6 @@ export const JA: Catalog = {
     save: "保存",
     saved: "保存しました。",
     saveFailed: "保存できませんでした。",
-    sitesHeading: "サイト",
     sitesEmpty:
       "まだサイトがありません。マンガのページを開き、拡張機能のアイコンをクリックして、そのサイトの翻訳をオンにしてください。",
     siteEnabled: "有効",
@@ -434,10 +456,10 @@ export const JA: Catalog = {
     logLevels: { debug: "詳細（debug）", info: "情報", warn: "警告", error: "エラーのみ" },
   },
   optionsAdvanced: {
-    heading: "詳細設定",
-    intro:
-      "リクエスト、テキスト検出、訳文の表示、キャッシュを細かく調整します。ほとんどの場合は初期値のままで問題ありません。" +
-      "変更は入力欄から離れたときに保存されます。",
+    search: "設定を検索",
+    modifiedOnly: "変更した設定のみ",
+    matches: (count: number): string => `${count} 件の設定`,
+    noMatch: "検索に一致する設定はありません。",
     defaultIs: (value: string): string => `初期値：${value}`,
     range: (min: string, max: string): string => `設定範囲：${min}〜${max}`,
     automatic: "自動",

@@ -136,6 +136,7 @@ const ENGINE_TYPES: Readonly<Record<keyof EngineApi, true>> = {
   "en:ping": true,
   "en:status": true,
   "en:transcript": true,
+  "en:tab-progress": true,
   "en:edit-unit": true,
   "en:retranslate": true,
   "en:glossary-list": true,

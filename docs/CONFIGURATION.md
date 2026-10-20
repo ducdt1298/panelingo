@@ -18,12 +18,13 @@ defaults and limits is [`src/shared/settings.ts`](../src/shared/settings.ts) (`D
    suggestions from the result. It does not save anything; click **Save** when the test passes.
 3. **Languages.** Choose the interface language and the language to translate into. Both default to your browser
    language.
-4. **Turn translation on for a site.** On a comic page, open the popup and click **Translate this site**. The first time,
+4. **Turn translation on for a site.** On a comic page, open the popup and switch on **Translate on this site**. The first time,
    the extension shows what will be sent to your endpoint and asks for confirmation.
 
-The options page exposes the endpoint, model, parallel requests, both languages, the site list with a per-site editor,
-a cache reset, settings backup and restore, the log level and a collapsed **Advanced settings** section with every other
-setting that is in effect. See [Editing settings](#editing-advanced-settings).
+The options page has five tabs: **Translation** (the endpoint or offline mode, parallel requests, series memory),
+**Language & display** (both languages, lettering, keys), **Sites** (the site list with a per-site editor), **Privacy &
+data** (what is sent, cache reset, settings backup and restore, the log level) and **Advanced**, a searchable list of
+every other setting that is in effect. See [Editing settings](#editing-advanced-settings).
 
 ## Providers
 
@@ -80,8 +81,8 @@ Defaults and inclusive limits come straight from `DEFAULT_SETTINGS` and `LIMITS`
 
 Status column:
 
-- **UI**: editable on the options page (the basic sections, the per-site **Settings** editor or the collapsed
-  **Advanced settings** section) or in the popup.
+- **UI**: editable on the options page (its tabs, the per-site **Settings** editor or the **Advanced** tab) or in
+  the popup.
 - **Advanced**: in effect, but only editable by hand (development and test builds only).
 - **Reserved**: stored, but not used yet; it exists for a [planned feature](ROADMAP.md).
 
@@ -250,11 +251,15 @@ turned it on or off from the popup or the options page.
 
 Everything marked **UI** above is on the options page:
 
-- **Advanced settings** (the collapsed section at the bottom) lists every other setting that is in effect, grouped by
-  section, with its default and allowed range. A change is saved when you leave the field and is clamped like a
-  stored value; the row then says which value was saved. **Reset** puts one setting back to its default, and
-  **Reset all advanced settings** does it for the whole section. Timeouts are shown in seconds, image limits in MiB
-  and megapixels.
+- **Language & display** holds the lettering (`render.font`, `render.verticalText`, text sizes, sound effects, the
+  done badge) and the keys (`render.peekKey`, `render.peekWithAlt`, `render.popupWithAltClick`); **Translation**
+  holds the engine choice, the offline model and `memory.enabled` / `memory.warmUp`.
+- **Advanced** lists every other setting that is in effect, in collapsible groups by section, with its default and
+  allowed range. The search box finds a setting by its name, its description, its group or its key (accents and case
+  do not matter); **Only changed settings** shows what differs from the defaults. A change is saved when you leave
+  the field and is clamped like a stored value; the row then says which value was saved. **Reset** puts one setting
+  back to its default, and **Reset all advanced settings** does it for the whole tab. Timeouts are shown in seconds,
+  image limits in MiB and megapixels.
 - **Sites → Settings** opens a site's editor: layout and reading direction, source language, Referer policy,
   cookies, subdomains, preparing images ahead and reader frames from other origins (one origin per line). Site changes take effect through
   the service worker, which re-registers the content script right away.

@@ -17,7 +17,8 @@ import {
   translateVisible,
   updateSite,
 } from "../../../src/ui/popup/popup-actions.ts";
-import { siteView, toggleStep, visibleMessage } from "../../../src/ui/popup/popup-model.ts";
+import { progressView, siteView, toggleStep, visibleMessage } from "../../../src/ui/popup/popup-model.ts";
+import { hostOf, initialOf } from "../../../src/ui/common/site-label.ts";
 import type { FakeBrowserOptions } from "../../support/chrome-fake.ts";
 import { startBrowser, stopBrowser } from "../sw/sw-helpers.ts";
 
@@ -29,6 +30,39 @@ const acked: Settings = {
 };
 
 describe("popup model", () => {
+  test("progressView: nothing without images; translating counts settled images; all settled says so", () => {
+    assert.equal(progressView(null), null);
+    assert.equal(progressView({ total: 0, working: 0, paused: 0, failed: 0 }), null);
+    assert.deepEqual(progressView({ total: 15, working: 3, paused: 0, failed: 1 }), {
+      done: 11,
+      failed: 1,
+      total: 15,
+      busy: true,
+      text: msg().ui.progress(11, 15),
+    });
+    assert.equal(
+      progressView({ total: 4, working: 0, paused: 2, failed: 0 })?.busy,
+      true,
+      "paused is not done",
+    );
+    assert.deepEqual(progressView({ total: 5, working: 0, paused: 0, failed: 0 }), {
+      done: 5,
+      failed: 0,
+      total: 5,
+      busy: false,
+      text: msg().popup.progressDone(5),
+    });
+  });
+
+  test("site labels: the host (scheme only when not https) and an avatar letter", () => {
+    assert.equal(hostOf("https://reader.example.com"), "reader.example.com");
+    assert.equal(hostOf("http://127.0.0.1:8080"), "http://127.0.0.1:8080");
+    assert.equal(hostOf("not a url"), "not a url");
+    assert.equal(initialOf("https://www.manga.example"), "M");
+    assert.equal(initialOf("http://127.0.0.1:8080"), "1");
+    assert.equal(initialOf(""), "?");
+  });
+
   test("siteView: http(s) tabs get their site (mode, cookies); other pages are unsupported", () => {
     const sites = {
       "https://reader.example": migrateSite({ enabled: true, mode: "manual" }, 1),

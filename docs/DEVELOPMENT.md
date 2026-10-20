@@ -109,7 +109,7 @@ The build also checks the output. It fails on a missing icon, a model with the w
   store.
 - **Content script.** Use the page's own DevTools and select the extension's context in the console's context picker.
   In test builds the overlay uses open shadow roots, so you can inspect it.
-- **Log level.** Options → _Debug log_, or `debug.logLevel`. Development builds also print to the console.
+- **Log level.** Options → _Privacy & data_ → _Debug log_, or `debug.logLevel`. Development builds also print to the console.
 - **Engine restarts.** The engine closes after `engine.idleCloseMin` minutes of inactivity. A new page or popup starts it
   again.
 

@@ -333,11 +333,15 @@ export const FR: Catalog = {
     return `${days} ${plural(days, "jour", "jours")}`;
   },
   popup: {
+    siteToggle: "Traduire sur ce site",
+    progressDone: (count: number): string =>
+      `Terminé : ${count} ${plural(count, "image", "images")} sur cette page`,
+    more: "Plus pour ce site",
+    siteSettings: "Tous les paramètres de ce site",
     openTranscript: "Ouvrir la transcription",
     cookies: "Envoyer les cookies avec les requêtes d'images",
     cookiesHint:
       "Pour les sites qui n'affichent les images qu'aux lecteurs connectés. Les cookies ne vont qu'au serveur d'images, jamais à l'IA.",
-    apiHeading: "Point de terminaison IA",
     engineHeading: "Moteur de traduction",
     siteHeading: "Ce site",
     checking: "Vérification…",
@@ -359,8 +363,6 @@ export const FR: Catalog = {
       `${plural(done, "terminée", "terminées")} · ${failed} en échec`,
     pausedBy: (title: string): string => `En pause : ${title}`,
     siteUnsupported: "Impossible de traduire cette page (pages http/https uniquement).",
-    siteOn: "La traduction est activée pour ce site.",
-    siteOff: "La traduction est désactivée pour ce site.",
     modeLabel: "Mode",
     visibleSent: (count: number): string =>
       count > 0
@@ -380,6 +382,34 @@ export const FR: Catalog = {
     build: (id: string): string => `Version ${id}`,
   },
   options: {
+    tabs: {
+      engine: {
+        label: "Traduction",
+        intro:
+          "Ce qui traduit les bandes dessinées : un modèle d'IA que vous connectez, ou les modèles hors ligne expérimentaux de cet appareil.",
+      },
+      display: {
+        label: "Langue et affichage",
+        intro:
+          "La langue dans laquelle vous lisez, la langue de l'interface et l'apparence des traductions sur la page.",
+      },
+      sites: {
+        label: "Sites",
+        intro:
+          "Les sites où Panelingo traduit. Activez un site depuis la fenêtre de la barre d'outils pendant que vous le lisez.",
+      },
+      privacy: {
+        label: "Confidentialité et données",
+        intro:
+          "Ce qui est envoyé à l'IA, ce qui reste sur cet appareil et comment sauvegarder vos paramètres.",
+      },
+      advanced: {
+        label: "Avancé",
+        intro:
+          "Réglages fins des requêtes, de la détection du texte, de la recherche d'images et des caches. Les valeurs par défaut conviennent dans la plupart des cas ; chaque modification est enregistrée quand vous quittez le champ.",
+      },
+    },
+    controlsHeading: "Touches et clics",
     exportLog: "Exporter le journal de débogage",
     exportFailed: "Impossible d'exporter le journal de débogage.",
     exportEmpty: "Le journal de débogage est vide.",
@@ -418,7 +448,6 @@ export const FR: Catalog = {
     save: "Enregistrer",
     saved: "Modifications enregistrées.",
     saveFailed: "Impossible d'enregistrer.",
-    sitesHeading: "Sites",
     sitesEmpty:
       "Aucun site pour le moment. Ouvrez une page de BD, cliquez sur l'icône de l'extension et activez la traduction " +
       "pour ce site.",
@@ -466,10 +495,10 @@ export const FR: Catalog = {
     },
   },
   optionsAdvanced: {
-    heading: "Paramètres avancés",
-    intro:
-      "Ajustements fins des requêtes, de la détection du texte, du lettrage et des caches. Les valeurs par " +
-      "défaut conviennent à la plupart des usages. Chaque modification est enregistrée dès que vous quittez le champ.",
+    search: "Rechercher un paramètre",
+    modifiedOnly: "Paramètres modifiés uniquement",
+    matches: (count: number): string => `${count} ${plural(count, "paramètre", "paramètres")}`,
+    noMatch: "Aucun paramètre ne correspond à votre recherche.",
     defaultIs: (value: string): string => `Par défaut : ${value}`,
     range: (min: string, max: string): string => `Valeurs autorisées : de ${min} à ${max}`,
     automatic: "automatique",

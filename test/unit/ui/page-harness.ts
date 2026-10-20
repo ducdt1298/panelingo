@@ -124,9 +124,12 @@ export async function closePage(): Promise<void> {
   setLocale("en");
 }
 
-/** Text of the status pill inside a container (renderStatusBlock), or null when there is none yet. */
+/** Text of the status pill (a <p> or <span> of class "pill tone-…") inside a container, or null when there is none yet. */
 export function pillText(container: FakeElement): string | null {
-  return container.findAll("p").find((p) => p.className.startsWith("pill "))?.textContent ?? null;
+  return (
+    [...container.findAll("p"), ...container.findAll("span")].find((el) => el.className.startsWith("pill "))
+      ?.textContent ?? null
+  );
 }
 
 /** Texts of the direct or nested elements with this tag. */

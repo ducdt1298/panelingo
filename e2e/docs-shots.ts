@@ -199,16 +199,17 @@ async function capturePopup(h: Harness, comic: Page, raw: string): Promise<void>
       width: Math.ceil(document.documentElement.scrollWidth),
       height: Math.ceil(document.documentElement.scrollHeight),
     }));
-    // Sharper pixels for the store images; keep the 1x capture where the popup cannot be emulated at 2x.
-    dpr["popup"] = 1;
+    // Sharper pixels for the store images: where the action popup cannot be emulated at 2x, the popup page is
+    // captured in a tab instead (below), which can.
     try {
       await popup.setViewport({ ...size, deviceScaleFactor: 2 });
       await sleep(500);
-      dpr["popup"] = 2;
     } catch (error) {
-      log(`popup kept at 1x (${error instanceof Error ? error.message : String(error)})`);
+      await popup.close().catch(() => undefined);
+      throw error;
     }
-    await popup.screenshot({ path: file });
+    dpr["popup"] = 2;
+    await popup.screenshot({ path: file, fullPage: true });
     await popup.close().catch(() => undefined);
     log(`popup (action popup, ${size.width}x${size.height} CSS px)`);
     return;
@@ -227,7 +228,10 @@ async function capturePopup(h: Harness, comic: Page, raw: string): Promise<void>
   await sleep(2_000);
   const size = await page.evaluate(() => ({
     width: Math.ceil(document.documentElement.scrollWidth),
-    height: Math.ceil(document.documentElement.scrollHeight),
+    // The page is as tall as the tab: measure the popup itself.
+    height: Math.ceil(
+      document.querySelector("main")?.getBoundingClientRect().bottom ?? document.documentElement.scrollHeight,
+    ),
   }));
   await page.screenshot({
     path: file,

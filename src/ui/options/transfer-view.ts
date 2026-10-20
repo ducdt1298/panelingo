@@ -116,7 +116,7 @@ export function transferSection(deps: TransferDeps): HTMLElement {
   return h(
     "section",
     { class: "card", id: "transfer" },
-    h("h2", null, t.heading),
+    h("h3", null, t.heading),
     h("p", { class: "hint" }, t.hint),
     h(
       "div",

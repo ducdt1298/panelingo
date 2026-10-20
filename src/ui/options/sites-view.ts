@@ -1,5 +1,5 @@
-// The options page's site list: one row per stored site (on/off, mode, settings, remove) and, per site, an
-// expandable editor with every per-site setting in effect: layout and reading direction, source language, Referer
+// The options page's site list: one item per stored site (on/off, mode, settings, remove) and, per site, an
+// expandable editor inside the item with every per-site setting in effect: layout and reading direction, source language, Referer
 // policy, cookies, subdomains and reader frames from other origins. Patches go through sw:site-set, so the
 // content-script registration is re-synced before the save resolves; turning a site on asks for the privacy notice
 // first when it was never confirmed.
@@ -7,6 +7,7 @@
 import { msg } from "../../shared/i18n/index.ts";
 import type { Settings, SiteSettings } from "../../shared/settings.ts";
 import { h, replace, type Child } from "../common/dom.ts";
+import { hostOf, initialOf } from "../common/site-label.ts";
 import { acknowledgePrivacy, needsPrivacyAck, privacyNotice } from "../common/privacy-notice.ts";
 import { errorTitle } from "../common/status-view.ts";
 import { deleteSite, updateSite } from "./options-actions.ts";
@@ -217,28 +218,20 @@ export function sitesSection(deps: SitesDeps): SitesView {
     const note = h("p", { class: "message", "aria-live": "polite" }, notes.get(siteKey) ?? "");
     editors.set(siteKey, { layout, sourceLang, referer, cookies, subdomains, prefetch, frames, note });
     return h(
-      "tr",
+      "div",
       { id: `${base}-editor`, class: "site-editor", "data-site": siteKey },
-      h(
-        "td",
-        { colspan: 4 },
-        h(
-          "div",
-          { class: "site-form" },
-          field(`${base}-layout`, t.layout, layout, ""),
-          field(`${base}-sourceLang`, langs.sourceLang, sourceLang, t.sourceLangHint),
-          field(`${base}-referer`, t.referer, referer, t.refererHint),
-          checkField(`${base}-credentials`, msg().popup.cookies, cookies, msg().popup.cookiesHint),
-          checkField(`${base}-includeSubdomains`, t.subdomains, subdomains, t.subdomainsHint),
-          checkField(`${base}-prefetchAhead`, t.prefetch, prefetch, t.prefetchHint),
-          field(`${base}-extraFrameOrigins`, t.frames, frames, t.framesHint),
-          note,
-        ),
-      ),
+      field(`${base}-layout`, t.layout, layout, ""),
+      field(`${base}-sourceLang`, langs.sourceLang, sourceLang, t.sourceLangHint),
+      field(`${base}-referer`, t.referer, referer, t.refererHint),
+      checkField(`${base}-credentials`, msg().popup.cookies, cookies, msg().popup.cookiesHint),
+      checkField(`${base}-includeSubdomains`, t.subdomains, subdomains, t.subdomainsHint),
+      checkField(`${base}-prefetchAhead`, t.prefetch, prefetch, t.prefetchHint),
+      field(`${base}-extraFrameOrigins`, t.frames, frames, t.framesHint),
+      note,
     );
   };
 
-  const rowElements = (row: SiteRow): HTMLElement[] => {
+  const itemFor = (row: SiteRow): HTMLElement => {
     const siteKey = row.siteKey;
     const base = idOf(siteKey);
     const open = expanded.has(siteKey);
@@ -259,6 +252,8 @@ export function sitesSection(deps: SitesDeps): SitesView {
       id: `${base}-enabled`,
       name: "enabled",
       checked: row.enabled,
+      "aria-label": msg().options.siteEnabled,
+      title: msg().options.siteEnabled,
     });
     enabledBox.addEventListener("change", () =>
       edit(siteKey, { field: "enabled", value: enabledBox.checked }),
@@ -295,19 +290,23 @@ export function sitesSection(deps: SitesDeps): SitesView {
       },
       msg().options.siteRemove,
     );
-    const out: HTMLElement[] = [
-      h(
-        "tr",
-        { class: open ? "site-row open" : "site-row", "data-site": siteKey },
-        h("td", { class: "site-key" }, siteKey),
-        h("td", null, h("label", { for: `${base}-enabled` }, enabledBox, ` ${msg().options.siteEnabled}`)),
-        h("td", null, modeSelect),
-        h("td", { class: "site-buttons" }, toggle, " ", remove),
-      ),
-    ];
     const site = sites[siteKey];
-    if (open && site !== undefined) out.push(editorRow(siteKey, site, base));
-    return out;
+    return h(
+      "li",
+      { class: `site-item${open ? " open" : ""}${row.enabled ? "" : " off"}`, "data-site": siteKey },
+      h(
+        "div",
+        { class: "site-row" },
+        h(
+          "div",
+          { class: "site-name", title: siteKey },
+          h("span", { class: "site-avatar", "aria-hidden": "true" }, initialOf(siteKey)),
+          h("span", { class: "site-host" }, hostOf(siteKey)),
+        ),
+        h("div", { class: "site-controls" }, enabledBox, modeSelect, toggle, remove),
+      ),
+      open && site !== undefined ? editorRow(siteKey, site, base) : null,
+    );
   };
 
   /** Shows stored values and notes in the open editors, leaving the control being edited alone. */
@@ -350,9 +349,9 @@ export function sitesSection(deps: SitesDeps): SitesView {
     editors.clear();
     const focused = focusedId();
     const rows = siteRows(sites);
-    const children: Child[] = [h("h2", null, msg().options.sitesHeading)];
-    if (rows.length === 0) children.push(h("p", { class: "hint" }, msg().options.sitesEmpty));
-    else children.push(h("table", { class: "sites" }, h("tbody", null, ...rows.flatMap(rowElements))));
+    const children: Child[] = [];
+    if (rows.length === 0) children.push(h("p", { class: "hint empty" }, msg().options.sitesEmpty));
+    else children.push(h("ul", { class: "site-list" }, ...rows.map(itemFor)));
     const pending = consentFor;
     if (pending !== null) {
       children.push(

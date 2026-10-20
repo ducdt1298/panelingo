@@ -1,29 +1,31 @@
-// Popup entry, top to bottom: (1) the AI endpoint's readiness from the popup's own GET /models, so it shows without
-// the engine (in offline mode: the offline engine's state instead, and no request to the endpoint); (2) engine
-// status, only when the engine already runs; (3) this site: opt-in (the first enable goes through the privacy
-// notice), mode and quick actions; (4) today's upload counter (not in offline mode). Rendering never starts the
-// engine.
+// Popup entry, top to bottom: (1) the site card: turn translation on for this site (the first time through the
+// privacy notice), when it translates, the target language, the tab's progress and the actions (translate what is on
+// screen, translate the page again, open the transcript), with per-site options folded away; (2) a note when the
+// engine is paused or failed; (3) the status line: the AI endpoint's readiness from the popup's own GET /models, so it
+// shows without the engine (in offline mode: the offline engine's state instead, and no request to the endpoint), and
+// today's upload counter. Rendering never starts the engine.
 
 import { createLogger } from "../../platform/log.ts";
 import { callEngine } from "../../platform/messaging.ts";
-import { loadAll, watchSettings, watchSites } from "../../platform/storage.ts";
+import { loadAll, saveSettings, watchSettings, watchSites } from "../../platform/storage.ts";
 import { errorMessage } from "../../shared/errors.ts";
 import { currentLocale, msg } from "../../shared/i18n/index.ts";
 import { applyLocale } from "../../platform/locale.ts";
+import { TARGET_LANGUAGES } from "../../shared/languages.ts";
 import type { Settings, SiteSettings } from "../../shared/settings.ts";
-import type { EngineStatus } from "../../shared/types.ts";
+import type { EngineStatus, TabProgress } from "../../shared/types.ts";
 import { endpointOf, fetchApiHealth, type HealthResult } from "../common/api-health.ts";
 import { h, replace, type Child } from "../common/dom.ts";
 import { engineRunning, watchEngine } from "../common/engine-rpc.ts";
 import { privacyNotice } from "../common/privacy-notice.ts";
+import { hostOf, initialOf } from "../common/site-label.ts";
 import {
   apiBlock,
-  engineBlock,
   errorTitle,
   offlineBlock,
-  renderStatusBlock,
   uploadsLine,
   type EngineState,
+  type StatusBlock,
 } from "../common/status-view.ts";
 import {
   acceptNoticeAndEnable,
@@ -32,7 +34,7 @@ import {
   translateVisible,
   updateSite,
 } from "./popup-actions.ts";
-import { siteView, toggleStep, visibleMessage, type SiteView } from "./popup-model.ts";
+import { progressView, siteView, toggleStep, visibleMessage, type SiteView } from "./popup-model.ts";
 
 const log = createLogger("popup");
 
@@ -42,8 +44,11 @@ interface State {
   sites: Record<string, SiteSettings>;
   health: HealthResult | null;
   engine: EngineState | null;
+  progress: TabProgress | null;
   /** The privacy notice is open (first enable). */
   consent: boolean;
+  /** The per-site options are unfolded. */
+  more: boolean;
   busy: boolean;
   message: string | null;
 }
@@ -54,13 +59,21 @@ function byId(id: string): HTMLElement {
   return el;
 }
 
+/** Opens a tab of the options page (`hash`: the tab or card to show) and closes the popup. */
+function openOptions(hash: string): void {
+  chrome.tabs
+    .create({ url: chrome.runtime.getURL(`ui/options.html#${hash}`) })
+    .then(() => window.close())
+    .catch(() => undefined);
+}
+
 async function main(): Promise<void> {
   const view = {
-    api: byId("api"),
-    engine: byId("engine"),
+    options: byId("open-options"),
     site: byId("site"),
+    engine: byId("engine"),
+    api: byId("api"),
     uploads: byId("uploads"),
-    footer: byId("footer"),
   };
   const [tab, snapshot] = await Promise.all([activeTab(), loadAll()]);
   applyLocale(snapshot.settings.ui.locale);
@@ -71,56 +84,118 @@ async function main(): Promise<void> {
     sites: snapshot.sites,
     health: null,
     engine: null,
+    progress: null,
     consent: false,
+    more: false,
     busy: false,
     message: null,
   };
   const tabId = tab?.id ?? null;
 
+  replace(view.options, h("span", { class: "gear", "aria-hidden": "true" }), msg().popup.options);
+  view.options.addEventListener("click", () => {
+    chrome.runtime
+      .openOptionsPage()
+      .then(() => window.close())
+      .catch(() => undefined);
+  });
+  view.api.setAttribute("title", msg().popup.options);
+  view.api.addEventListener("click", () => openOptions("engine"));
+
   const offlineMode = (): boolean => state.settings.translate.engine === "offline";
-  const renderApi = (): void => {
+
+  /** The status line: readiness (or the offline engine's state), the model, and what to do when it is not ready. */
+  const renderStatus = (): void => {
+    let block: StatusBlock;
+    let detail: string;
     if (offlineMode()) {
-      // No endpoint is used (or checked) in offline mode: show the offline engine instead.
-      renderStatusBlock(
-        view.api,
-        msg().popup.offlineHeading,
-        offlineBlock(state.engine?.status?.offline ?? null),
-      );
-      return;
+      block = offlineBlock(state.engine?.status?.offline ?? null);
+      detail = msg().popup.offlineHeading;
+    } else {
+      block = apiBlock(state.health?.reading ?? null);
+      detail = state.health?.reading.model ?? state.settings.api.model;
     }
-    const block = apiBlock(state.health?.reading ?? null, state.settings.api.baseUrl);
-    renderStatusBlock(view.api, msg().popup.apiHeading, block);
+    const trouble = block.tone === "error" || block.tone === "warn";
+    replace(
+      view.api,
+      h(
+        "span",
+        { class: "status-main" },
+        h("span", { class: `pill tone-${block.tone}` }, block.title),
+        h("span", { class: "status-detail" }, detail),
+      ),
+      trouble && block.hint !== "" ? h("span", { class: "status-hint" }, block.hint) : null,
+      h("span", { class: "status-go", "aria-hidden": "true" }, "›"),
+    );
+    view.api.className = `status-line${trouble ? " trouble" : ""}`;
+    // Nothing is uploaded in offline mode: no "sent to the AI today" line.
+    const line = offlineMode() ? null : uploadsLine(state.engine?.status ?? null);
+    replace(view.uploads, line ?? "");
+    view.uploads.hidden = line === null;
   };
   const checkApi = (): void => {
     if (offlineMode()) return;
     void fetchApiHealth(endpointOf(state.settings.api)).then((result) => {
       state.health = result;
-      renderApi();
+      renderStatus();
     });
   };
+
+  /** A paused queue or a failed engine, with the fix; hidden when all is well. */
   const renderEngine = (): void => {
-    if (offlineMode()) renderApi();
-    renderStatusBlock(view.engine, msg().popup.engineHeading, engineBlock(state.engine));
-    // Nothing is uploaded in offline mode: no "sent to the AI today" line.
-    const line = offlineMode() ? null : uploadsLine(state.engine?.status ?? null);
-    replace(view.uploads, line ?? "");
-    view.uploads.hidden = line === null;
-    renderSite();
+    const engine = state.engine;
+    const status = engine?.exists === true ? engine.status : undefined;
+    let note: Child[] = [];
+    if (engine?.exists === true && status === null) {
+      note = [h("p", { class: "note-title" }, msg().popup.engineUnreadable)];
+    } else if (status !== undefined && status !== null) {
+      const paused = status.queue.pausedBy;
+      if (status.phase === "failed") {
+        note = [h("p", { class: "note-title" }, msg().enginePhase.failed)];
+      } else if (paused !== null) {
+        const error = msg().errors[paused];
+        note = [
+          h("p", { class: "note-title" }, msg().popup.pausedBy(error.title)),
+          error.hint === "" ? null : h("p", { class: "hint" }, error.hint),
+          paused.startsWith("api.")
+            ? h("button", { type: "button", onclick: () => openOptions("engine") }, msg().popup.options)
+            : null,
+        ];
+      }
+    }
+    replace(view.engine, ...note);
+    view.engine.hidden = note.length === 0;
   };
 
+  const refreshProgress = (): void => {
+    if (tabId === null || state.engine?.exists !== true) return;
+    callEngine("en:tab-progress", { tabId })
+      .then((progress) => {
+        state.progress = progress;
+        renderSite();
+      })
+      .catch((error: unknown) => log.debug("en:tab-progress failed", { error: errorMessage(error) }));
+  };
+
+  /** Actions in flight, and the latest one: only its outcome is shown (an older one may finish later). */
+  let running = 0;
+  let latest = 0;
   const run = (task: () => Promise<string | null>): void => {
+    const id = (latest += 1);
+    running += 1;
     state.busy = true;
     renderSite();
     task()
       .then((message) => {
-        state.message = message;
+        if (id === latest) state.message = message;
       })
       .catch((error: unknown) => {
         log.warn("popup action failed", { error: errorMessage(error) });
-        state.message = msg().popup.actionFailed(errorTitle(error));
+        if (id === latest) state.message = msg().popup.actionFailed(errorTitle(error));
       })
       .finally(() => {
-        state.busy = false;
+        running -= 1;
+        state.busy = running > 0;
         renderSite();
       });
   };
@@ -157,6 +232,12 @@ async function main(): Promise<void> {
       return null;
     });
   };
+  const onTarget = (targetLang: string): void => {
+    run(async () => {
+      state.settings = await saveSettings({ translate: { targetLang } });
+      return msg().options.saved;
+    });
+  };
   const onVisible = (id: number): void => {
     run(async () => visibleMessage(await translateVisible(id)));
   };
@@ -166,6 +247,38 @@ async function main(): Promise<void> {
       return queued === null ? msg().popup.engineStopped : msg().popup.retranslateQueued(queued);
     });
   };
+  const onTranscript = (): void => {
+    const windowId = state.tab?.windowId;
+    if (windowId === undefined) return;
+    // Called straight from the click: sidePanel.open() needs the user gesture.
+    chrome.sidePanel
+      .open({ windowId })
+      .then(() => window.close())
+      .catch((error: unknown) => log.warn("sidePanel.open failed", { error: errorMessage(error) }));
+  };
+
+  /** A switch with its label on the left (the popup's on/off rows). */
+  function switchRow(
+    id: string,
+    label: string,
+    checked: boolean,
+    onChange: (on: boolean) => void,
+    hint = "",
+  ): HTMLElement {
+    const box = h("input", {
+      type: "checkbox",
+      id,
+      checked,
+      disabled: state.busy,
+      onchange: (event: Event) => onChange((event.target as HTMLInputElement).checked),
+    });
+    return h(
+      "label",
+      { class: "switch-row", for: id, ...(hint === "" ? {} : { title: hint }) },
+      h("span", { class: "switch-text" }, label),
+      box,
+    );
+  }
 
   function modeSelector(site: Extract<SiteView, { kind: "site" }>): HTMLElement {
     const option = (mode: SiteSettings["mode"], label: string): HTMLElement =>
@@ -191,32 +304,71 @@ async function main(): Promise<void> {
     );
   }
 
+  function targetRow(): HTMLElement {
+    const select = h(
+      "select",
+      {
+        id: "target-lang",
+        disabled: state.busy,
+        onchange: (event: Event) => onTarget((event.target as HTMLSelectElement).value),
+      },
+      h("option", { value: "auto" }, msg().options.languageAuto),
+      ...TARGET_LANGUAGES.map((language) => h("option", { value: language.code }, language.nativeName)),
+    );
+    select.value = state.settings.translate.targetLang;
+    return h(
+      "div",
+      { class: "row" },
+      h("label", { for: "target-lang" }, msg().options.targetLanguage),
+      select,
+    );
+  }
+
+  function progressBar(): HTMLElement | null {
+    const progress = progressView(state.progress);
+    if (progress === null) return null;
+    const percent = (n: number): string => `${Math.round((n / progress.total) * 100)}%`;
+    return h(
+      "div",
+      { class: `progress${progress.busy ? " busy" : " settled"}`, id: "progress" },
+      h(
+        "div",
+        {
+          class: "bar",
+          role: "progressbar",
+          "aria-valuemin": "0",
+          "aria-valuemax": String(progress.total),
+          "aria-valuenow": String(progress.done),
+        },
+        h("span", { class: "fill", style: `width: ${percent(progress.done)}` }),
+        progress.failed > 0
+          ? h("span", { class: "fill failed", style: `width: ${percent(progress.failed)}` })
+          : null,
+      ),
+      h("p", { class: "progress-text" }, progress.text),
+    );
+  }
+
   function renderSite(): void {
     const site = siteView(state.tab?.url, state.sites);
-    const children: Child[] = [h("h2", null, msg().popup.siteHeading)];
     if (site.kind === "unsupported" || tabId === null) {
-      children.push(h("p", { class: "hint" }, msg().popup.siteUnsupported));
-      replace(view.site, ...children);
+      replace(
+        view.site,
+        h("h2", { class: "site-host" }, msg().popup.siteHeading),
+        h("p", { class: "hint" }, msg().popup.siteUnsupported),
+      );
       return;
     }
-    children.push(
-      h("p", { class: "site-key" }, site.siteKey),
+    const manual = !site.enabled || site.mode === "manual";
+    const children: Child[] = [
       h(
-        "p",
-        { class: `pill tone-${site.enabled ? "ok" : "idle"}` },
-        site.enabled ? msg().popup.siteOn : msg().popup.siteOff,
+        "div",
+        { class: "site-head" },
+        h("span", { class: "site-avatar", "aria-hidden": "true" }, initialOf(site.siteKey)),
+        h("h2", { class: "site-host", title: site.siteKey }, hostOf(site.siteKey)),
       ),
-      h(
-        "button",
-        {
-          type: "button",
-          class: site.enabled ? "" : "primary",
-          disabled: state.busy,
-          onclick: () => onToggle(site),
-        },
-        site.enabled ? msg().ui.siteDisable : msg().ui.siteEnable,
-      ),
-    );
+      switchRow("site-enabled", msg().popup.siteToggle, site.enabled, () => onToggle(site)),
+    ];
     if (state.consent) {
       children.push(
         privacyNotice({
@@ -225,38 +377,24 @@ async function main(): Promise<void> {
             state.consent = false;
             renderSite();
           },
-          onDetails: () => {
-            chrome.tabs
-              .create({ url: chrome.runtime.getURL("ui/options.html#privacy") })
-              .catch(() => undefined);
-          },
+          onDetails: () => openOptions("privacy"),
         }),
       );
     }
-    if (site.enabled) {
-      children.push(
-        modeSelector(site),
-        h(
-          "label",
-          { class: "check", title: msg().popup.cookiesHint },
-          h("input", {
-            type: "checkbox",
-            checked: site.cookies,
-            disabled: state.busy,
-            onchange: (event: Event) => onCookies(site.siteKey, (event.target as HTMLInputElement).checked),
-          }),
-          " ",
-          msg().popup.cookies,
-        ),
-      );
-    }
+    if (site.enabled) children.push(modeSelector(site));
+    children.push(targetRow(), progressBar());
     children.push(
       h(
         "div",
         { class: "actions" },
         h(
           "button",
-          { type: "button", disabled: state.busy, onclick: () => onVisible(tabId) },
+          {
+            type: "button",
+            class: manual ? "primary" : "",
+            disabled: state.busy,
+            onclick: () => onVisible(tabId),
+          },
           msg().ui.translateVisible,
         ),
         state.engine?.exists === true
@@ -266,56 +404,54 @@ async function main(): Promise<void> {
               msg().popup.retranslatePage,
             )
           : null,
+        state.tab?.windowId === undefined
+          ? null
+          : h("button", { type: "button", class: "link", onclick: onTranscript }, msg().popup.openTranscript),
       ),
     );
     if (state.message !== null) children.push(h("p", { class: "message", role: "status" }, state.message));
+    const more = h(
+      "details",
+      { class: "more", open: state.more },
+      h("summary", null, msg().popup.more),
+      site.enabled
+        ? switchRow(
+            "site-cookies",
+            msg().popup.cookies,
+            site.cookies,
+            (on) => onCookies(site.siteKey, on),
+            msg().popup.cookiesHint,
+          )
+        : null,
+      site.enabled ? h("p", { class: "hint" }, msg().popup.cookiesHint) : null,
+      h(
+        "a",
+        {
+          href: "#",
+          onclick: (event: Event) => {
+            event.preventDefault();
+            openOptions("sites");
+          },
+        },
+        msg().popup.siteSettings,
+      ),
+    );
+    more.addEventListener("toggle", () => {
+      state.more = more.open;
+    });
+    children.push(more);
     replace(view.site, ...children);
   }
 
-  replace(
-    view.footer,
-    h(
-      "a",
-      {
-        href: "#",
-        onclick: (event) => {
-          event.preventDefault();
-          chrome.runtime.openOptionsPage().catch(() => undefined);
-        },
-      },
-      msg().popup.options,
-    ),
-    state.tab?.windowId === undefined
-      ? null
-      : h(
-          "a",
-          {
-            href: "#",
-            onclick: (event) => {
-              event.preventDefault();
-              const windowId = state.tab?.windowId;
-              if (windowId === undefined) return;
-              // Called straight from the click: sidePanel.open() needs the user gesture.
-              chrome.sidePanel
-                .open({ windowId })
-                .then(() => window.close())
-                .catch((error: unknown) => log.warn("sidePanel.open failed", { error: errorMessage(error) }));
-            },
-          },
-          msg().popup.openTranscript,
-        ),
-    h("span", { class: "muted" }, msg().popup.build(__BUILD_ID__)),
-  );
-  renderApi();
+  renderStatus();
   renderEngine();
+  renderSite();
 
   watchSettings((settings) => {
     const engineChanged = settings.translate.engine !== state.settings.translate.engine;
     state.settings = settings;
-    if (engineChanged) {
-      renderApi();
-      checkApi();
-    }
+    if (engineChanged) checkApi();
+    renderStatus();
     renderSite();
   });
   watchSites((siteKey, site) => {
@@ -328,9 +464,15 @@ async function main(): Promise<void> {
 
   checkApi();
 
+  const engineChanged = (): void => {
+    renderStatus();
+    renderEngine();
+    renderSite();
+    refreshProgress();
+  };
   if (!(await engineRunning())) {
     state.engine = { exists: false, status: null };
-    renderEngine();
+    engineChanged();
     return;
   }
   let status: EngineStatus | null = null;
@@ -340,18 +482,19 @@ async function main(): Promise<void> {
     log.debug("en:status failed", { error: errorMessage(error) });
   }
   state.engine = { exists: true, status };
-  renderEngine();
+  engineChanged();
   watchEngine({
     view: "popup",
     tabId,
     log,
     onStatus: (next) => {
       state.engine = { exists: true, status: next };
-      renderEngine();
+      engineChanged();
     },
     onGone: () => {
       state.engine = { exists: false, status: null };
-      renderEngine();
+      state.progress = null;
+      engineChanged();
     },
   });
 }

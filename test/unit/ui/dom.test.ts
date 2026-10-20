@@ -3,7 +3,6 @@ import { after, before, test } from "node:test";
 import { catalogFor, msg, setLocale } from "../../../src/shared/i18n/index.ts";
 import { append, clear, h, replace, text } from "../../../src/ui/common/dom.ts";
 import { privacyNotice } from "../../../src/ui/common/privacy-notice.ts";
-import { renderStatusBlock, type StatusBlock } from "../../../src/ui/common/status-view.ts";
 import { asFake, FakeText, installFakeDocument } from "./fake-dom.ts";
 
 let uninstall: () => void = () => undefined;
@@ -65,37 +64,6 @@ test("append, text, clear and replace", () => {
   assert.equal(list.textContent, "x");
   clear(list as unknown as Element);
   assert.equal(list.childNodes.length, 0);
-});
-
-test("renderStatusBlock: heading, tone pill, hint, facts and warnings", () => {
-  const container = asFake(h("section"));
-  const block: StatusBlock = {
-    tone: "error",
-    title: "AI endpoint unreachable",
-    hint: "Check the base URL",
-    lines: ["Model: gpt-4o-mini", "Details: Failed to fetch"],
-    warnings: ['Details: model "gpt-4o-mini" is not listed by the server'],
-  };
-  renderStatusBlock(container as unknown as Element, "AI endpoint", block);
-  const [heading, pill, hint, facts, warning] = container.children;
-  assert.equal(heading?.tagName, "H2");
-  assert.equal(heading?.textContent, "AI endpoint");
-  assert.equal(pill?.className, "pill tone-error");
-  assert.equal(pill?.textContent, "AI endpoint unreachable");
-  assert.equal(hint?.textContent, "Check the base URL");
-  assert.deepEqual(
-    facts?.findAll("li").map((li) => li.textContent),
-    ["Model: gpt-4o-mini", "Details: Failed to fetch"],
-  );
-  assert.equal(warning?.getAttribute("role"), "alert");
-  assert.equal(warning?.textContent, 'Details: model "gpt-4o-mini" is not listed by the server');
-  renderStatusBlock(container as unknown as Element, "AI endpoint", {
-    ...block,
-    hint: "",
-    lines: [],
-    warnings: [],
-  });
-  assert.equal(container.children.length, 2, "empty parts are omitted and the old content replaced");
 });
 
 test("privacy notice: text from msg() (English by default), accept/decline/details wired", () => {

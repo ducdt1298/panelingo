@@ -116,3 +116,27 @@ export function formatDateTime(date: Date, locale = "en"): string {
 export function debugLogFileName(date: Date): string {
   return `panelingo-debug-${date.toISOString().replace(/[:.]/gu, "-")}.json`;
 }
+
+/** The options page's tabs, in navigation order; the URL hash names the open one (#engine, #sites…). */
+export const OPTION_TABS = ["engine", "display", "sites", "privacy", "advanced"] as const;
+export type OptionTab = (typeof OPTION_TABS)[number];
+
+/** Cards that used to be sections of their own (old deep links and bookmarks): the tab that holds them now. */
+const TAB_OF_CARD: Readonly<Record<string, OptionTab>> = {
+  api: "engine",
+  offline: "engine",
+  memory: "engine",
+  languages: "display",
+  lettering: "display",
+  controls: "display",
+  cache: "privacy",
+  transfer: "privacy",
+  debug: "privacy",
+};
+
+/** The tab a URL hash (without "#") opens: a tab, the tab of a card, else the first tab. */
+export function tabFor(hash: string): OptionTab {
+  const tab = OPTION_TABS.find((candidate) => candidate === hash);
+  if (tab !== undefined) return tab;
+  return Object.hasOwn(TAB_OF_CARD, hash) ? (TAB_OF_CARD[hash] ?? OPTION_TABS[0]) : OPTION_TABS[0];
+}

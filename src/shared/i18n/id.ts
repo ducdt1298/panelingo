@@ -304,11 +304,14 @@ export const ID: Catalog = {
     return `${Math.round(hours / 24)} hari`;
   },
   popup: {
+    siteToggle: "Terjemahkan di situs ini",
+    progressDone: (count: number): string => `Selesai: ${count} gambar di halaman ini`,
+    more: "Lainnya untuk situs ini",
+    siteSettings: "Semua setelan untuk situs ini",
     openTranscript: "Buka transkrip",
     cookies: "Kirim cookie saat memuat gambar",
     cookiesHint:
       "Untuk situs yang hanya menampilkan gambar kepada pembaca yang sudah masuk. Cookie hanya dikirim ke server gambar, tidak pernah ke AI.",
-    apiHeading: "Endpoint AI",
     engineHeading: "Mesin terjemahan",
     siteHeading: "Situs ini",
     checking: "Memeriksa…",
@@ -329,8 +332,6 @@ export const ID: Catalog = {
       `Antrean: ${queued} menunggu · ${inFlight} sedang dikirim · ${done} selesai · ${failed} gagal`,
     pausedBy: (title: string): string => `Dijeda: ${title}`,
     siteUnsupported: "Halaman ini tidak dapat diterjemahkan (hanya halaman http/https).",
-    siteOn: "Terjemahan aktif untuk situs ini.",
-    siteOff: "Terjemahan nonaktif untuk situs ini.",
     modeLabel: "Mode",
     visibleSent: (count: number): string =>
       count > 0 ? `${count} gambar dikirim untuk diterjemahkan.` : "Tidak ada gambar komik yang terlihat.",
@@ -346,6 +347,32 @@ export const ID: Catalog = {
     build: (id: string): string => `Build ${id}`,
   },
   options: {
+    tabs: {
+      engine: {
+        label: "Terjemahan",
+        intro:
+          "Apa yang menerjemahkan komik: model AI yang Anda hubungkan, atau model offline eksperimental di perangkat ini.",
+      },
+      display: {
+        label: "Bahasa & tampilan",
+        intro: "Bahasa yang Anda baca, bahasa antarmuka, dan tampilan terjemahan di halaman.",
+      },
+      sites: {
+        label: "Situs",
+        intro:
+          "Situs tempat Panelingo menerjemahkan. Aktifkan situs dari popup di bilah alat saat Anda membacanya.",
+      },
+      privacy: {
+        label: "Privasi & data",
+        intro: "Apa yang dikirim ke AI, apa yang tetap di perangkat ini, dan cara mencadangkan setelan Anda.",
+      },
+      advanced: {
+        label: "Lanjutan",
+        intro:
+          "Penyetelan halus untuk permintaan, deteksi teks, pencarian gambar, dan cache. Nilai bawaan cocok untuk sebagian besar penggunaan; setiap perubahan disimpan saat Anda meninggalkan kolom.",
+      },
+    },
+    controlsHeading: "Tombol dan klik",
     exportLog: "Ekspor log debug",
     exportFailed: "Log debug tidak dapat diekspor.",
     exportEmpty: "Log debug kosong.",
@@ -382,7 +409,6 @@ export const ID: Catalog = {
     save: "Simpan",
     saved: "Tersimpan.",
     saveFailed: "Tidak dapat menyimpan.",
-    sitesHeading: "Situs",
     sitesEmpty:
       "Belum ada situs. Buka halaman komik, klik ikon ekstensi, lalu aktifkan terjemahan untuk situs itu.",
     siteEnabled: "Aktif",
@@ -428,10 +454,10 @@ export const ID: Catalog = {
     },
   },
   optionsAdvanced: {
-    heading: "Pengaturan lanjutan",
-    intro:
-      "Penyesuaian untuk permintaan, deteksi teks, tampilan teks terjemahan, dan cache. Nilai bawaan cocok " +
-      "untuk sebagian besar penggunaan. Setiap perubahan disimpan saat Anda meninggalkan kolom.",
+    search: "Cari setelan",
+    modifiedOnly: "Hanya setelan yang diubah",
+    matches: (count: number): string => `${count} setelan`,
+    noMatch: "Tidak ada setelan yang cocok dengan pencarian Anda.",
     defaultIs: (value: string): string => `Bawaan: ${value}`,
     range: (min: string, max: string): string => `Diizinkan: ${min} sampai ${max}`,
     automatic: "otomatis",

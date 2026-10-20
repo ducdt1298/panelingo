@@ -305,11 +305,14 @@ export const KO: Catalog = {
     return `${Math.round(hours / 24)}일`;
   },
   popup: {
+    siteToggle: "이 사이트에서 번역",
+    progressDone: (count: number): string => `완료: 이 페이지의 이미지 ${count}개`,
+    more: "이 사이트 추가 설정",
+    siteSettings: "이 사이트의 모든 설정",
     openTranscript: "대사 목록 열기",
     cookies: "이미지 요청에 쿠키 보내기",
     cookiesHint:
       "로그인한 독자에게만 이미지를 보여 주는 사이트용입니다. 쿠키는 이미지 서버로만 전송되며 AI로는 절대 전송되지 않습니다.",
-    apiHeading: "AI 엔드포인트",
     engineHeading: "번역 엔진",
     siteHeading: "이 사이트",
     checking: "확인 중…",
@@ -329,8 +332,6 @@ export const KO: Catalog = {
       `대기열: 대기 ${queued} · 전송 중 ${inFlight} · 완료 ${done} · 실패 ${failed}`,
     pausedBy: (title: string): string => `일시 중지됨: ${title}`,
     siteUnsupported: "이 페이지는 번역할 수 없습니다(http/https 페이지만 지원).",
-    siteOn: "이 사이트에서 번역이 켜져 있습니다.",
-    siteOff: "이 사이트에서 번역이 꺼져 있습니다.",
     modeLabel: "모드",
     visibleSent: (count: number): string =>
       count > 0 ? `이미지 ${count}장의 번역을 요청했습니다.` : "화면에 보이는 만화 이미지가 없습니다.",
@@ -345,6 +346,27 @@ export const KO: Catalog = {
     build: (id: string): string => `빌드 ${id}`,
   },
   options: {
+    tabs: {
+      engine: {
+        label: "번역",
+        intro: "만화를 무엇으로 번역할지: 연결한 AI 모델, 또는 이 기기에서 실행되는 실험적인 오프라인 모델.",
+      },
+      display: { label: "언어와 표시", intro: "읽을 언어, 인터페이스 언어, 페이지에서 번역이 보이는 방식." },
+      sites: {
+        label: "사이트",
+        intro: "Panelingo가 번역하는 사이트입니다. 읽는 중에 툴바 팝업에서 사이트를 켜세요.",
+      },
+      privacy: {
+        label: "개인정보와 데이터",
+        intro: "AI로 보내는 것, 이 기기에 남는 것, 설정을 백업하는 방법.",
+      },
+      advanced: {
+        label: "고급",
+        intro:
+          "요청, 텍스트 감지, 이미지 찾기, 캐시를 세밀하게 조정합니다. 대부분은 기본값으로 충분하며, 변경 사항은 입력란을 벗어나면 저장됩니다.",
+      },
+    },
+    controlsHeading: "키와 클릭",
     exportLog: "디버그 로그 내보내기",
     exportFailed: "디버그 로그를 내보낼 수 없습니다.",
     exportEmpty: "디버그 로그가 비어 있습니다.",
@@ -378,7 +400,6 @@ export const KO: Catalog = {
     save: "저장",
     saved: "저장되었습니다.",
     saveFailed: "저장하지 못했습니다.",
-    sitesHeading: "사이트",
     sitesEmpty:
       "아직 사이트가 없습니다. 만화 페이지를 열고 확장 프로그램 아이콘을 클릭한 다음 해당 사이트의 번역을 켜세요.",
     siteEnabled: "사용",
@@ -414,10 +435,10 @@ export const KO: Catalog = {
     logLevels: { debug: "자세히(debug)", info: "정보", warn: "경고", error: "오류만" },
   },
   optionsAdvanced: {
-    heading: "고급 설정",
-    intro:
-      "요청, 텍스트 감지, 번역문 표시, 캐시를 세밀하게 조정합니다. 대부분의 경우 기본값이 적합합니다. " +
-      "변경 사항은 입력란에서 벗어날 때 저장됩니다.",
+    search: "설정 검색",
+    modifiedOnly: "변경한 설정만",
+    matches: (count: number): string => `설정 ${count}개`,
+    noMatch: "검색과 일치하는 설정이 없습니다.",
     defaultIs: (value: string): string => `기본값: ${value}`,
     range: (min: string, max: string): string => `허용 범위: ${min}~${max}`,
     automatic: "자동",

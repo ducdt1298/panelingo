@@ -135,6 +135,8 @@ const SAMPLES: Record<string, ReadonlyArray<readonly unknown[]>> = {
     [3, 1, 12, 0],
   ],
   "popup/pausedBy": [["Rate limited"]],
+  "popup/progressDone": COUNTS.map((n) => [n]),
+  "optionsAdvanced/matches": COUNTS.map((n) => [n]),
   "popup/offlineDownload": [
     [0, 115],
     [12.4, 115.2],
@@ -198,6 +200,8 @@ const COUNTED: ReadonlyArray<[label: string, text: (catalog: unknown, n: number)
   ["options.cacheCleared", (catalog, n) => call(catalog, "options/cacheCleared", [n]), 0],
   ["popup.visibleSent", (catalog, n) => call(catalog, "popup/visibleSent", [n]), 1],
   ["sidepanel.glossary.imported", (catalog, n) => call(catalog, "sidepanel/glossary/imported", [n]), 0],
+  ["popup.progressDone", (catalog, n) => call(catalog, "popup/progressDone", [n]), 1],
+  ["optionsAdvanced.matches", (catalog, n) => call(catalog, "optionsAdvanced/matches", [n]), 1],
 ];
 
 /** Groups the forms of a counted text by plural category: category → distinct shapes seen. */

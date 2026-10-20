@@ -76,17 +76,19 @@ test("an Advanced setting typed in the options page is stored, clamped to its li
   const current = options;
   await withDiagnostics(h, current, async () => {
     const { page } = current;
-    await page.waitForSelector("#advanced-details", { timeout: 15_000 });
-    // Settings are tabs: only the chosen section shows, and the Advanced tab opens its details.
-    assert.equal(
-      await page.$eval("#advanced", (el) => (el as HTMLElement).hidden),
-      true,
-      "not the first tab",
-    );
+    await page.waitForSelector("#adv-search", { timeout: 15_000 });
+    // Settings are tabs: only the chosen one shows.
+    const hidden = (selector: string): Promise<boolean> =>
+      page.$eval(selector, (el) => (el as HTMLElement).hidden === true);
+    assert.equal(await hidden("#tab-advanced"), true, "not the first tab");
     await page.click('a.settings-nav-item[href="#advanced"]');
-    assert.equal(await page.$eval("#advanced", (el) => (el as HTMLElement).hidden), false);
-    assert.equal(await page.$eval("#api", (el) => (el as HTMLElement).hidden), true, "one tab at a time");
-    assert.equal(await page.$eval("#advanced-details", (el) => (el as HTMLDetailsElement).open), true);
+    assert.equal(await hidden("#tab-advanced"), false);
+    assert.equal(await hidden("#tab-engine"), true, "one tab at a time");
+    // The groups start collapsed; a search opens the one that holds the setting.
+    assert.equal(await page.$eval("#adv-group-memory", (el) => (el as HTMLDetailsElement).open), false);
+    await page.type("#adv-search", "earlier lines");
+    assert.equal(await page.$eval("#adv-group-memory", (el) => (el as HTMLDetailsElement).open), true);
+    assert.equal(await hidden("#adv-group-api"), true, "groups without a match hide");
 
     await typeInto(page, "#adv-memory-historyMaxLines", "5");
     await waitUntil(
@@ -101,6 +103,9 @@ test("an Advanced setting typed in the options page is stored, clamped to its li
       (text) => text === EN.options.saved,
     );
 
+    // Lettering rows live on the Language & display tab.
+    await page.click('a.settings-nav-item[href="#display"]');
+    assert.equal(await hidden("#tab-display"), false);
     await typeInto(page, "#adv-render-maxFontPx", "500");
     await waitUntil(
       "render.maxFontPx clamped to 120",
@@ -111,6 +116,8 @@ test("an Advanced setting typed in the options page is stored, clamped to its li
     assert.equal(await textOf(page, "#adv-render-maxFontPx-msg"), EN.optionsAdvanced.adjusted("120"));
     assert.equal(await page.$eval("#adv-render-maxFontPx", (el) => (el as HTMLInputElement).value), "120");
 
+    // Series memory is on the Translation tab.
+    await page.click('a.settings-nav-item[href="#engine"]');
     await page.click("#adv-memory-enabled");
     await waitUntil(
       "memory.enabled off",
@@ -136,7 +143,7 @@ test("the per-site editor saves through the service worker and keeps the registr
   assert.ok(current !== null, "needs the options page of the previous test");
   await withDiagnostics(h, current, async () => {
     const { page } = current;
-    const row = `tr[data-site="${siteKey}"]`;
+    const row = `li.site-item[data-site="${siteKey}"]`;
     await page.click('a.settings-nav-item[href="#sites"]');
     await page.waitForSelector(row);
     const base = await page.$eval(`${row} button.site-toggle`, (el) => el.id.replace(/-toggle$/u, ""));
@@ -187,7 +194,7 @@ test("switched back to automatic on the options page, the same page translates o
   const current = options;
   assert.ok(current !== null, "needs the options page");
   await withDiagnostics(h, current, async () => {
-    const row = `tr[data-site="${siteKey}"]`;
+    const row = `li.site-item[data-site="${siteKey}"]`;
     const base = await current.page.$eval(`${row} button.site-toggle`, (el) =>
       el.id.replace(/-toggle$/u, ""),
     );

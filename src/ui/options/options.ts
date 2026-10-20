@@ -1,12 +1,16 @@
-// Options entry: the OpenAI-compatible endpoint (preset, base URL, API key, model, parallel requests, connection
-// test), offline mode (experimental, offline-view.ts), languages (interface and translation target), the site list
-// with a per-site editor (sites-view.ts), what is sent to the AI, cache clearing, settings backup and restore
-// (transfer-view.ts), the debug log and the collapsed Advanced section generated from a declarative table
-// (advanced-view.ts). Settings go to chrome.storage.local and the
-// service worker relays them to the engine; site patches go through sw:site-set, which also re-syncs the
-// content-script registration.
+// Options entry, in five tabs (the URL hash names the open one; old section anchors open the tab that holds them):
+// - Translation: the engine (AI endpoint or offline, experimental), the endpoint form (preset, base URL, API key,
+//   model, parallel requests, connection test) or the offline card (offline-view.ts), and series memory.
+// - Language & display: interface and translation languages, lettering and keys (rows from advanced-view.ts).
+// - Sites: the site list with a per-site editor (sites-view.ts).
+// - Privacy & data: what is sent to the AI, cache clearing, settings backup and restore (transfer-view.ts), the debug
+//   log.
+// - Advanced: every remaining setting, searchable, generated from a declarative table (advanced-view.ts).
+// Settings go to chrome.storage.local and the service worker relays them to the engine; site patches go through
+// sw:site-set, which also re-syncs the content-script registration.
 
 import { createLogger } from "../../platform/log.ts";
+import { callEngine } from "../../platform/messaging.ts";
 import { loadAll, watchSettings, watchSites } from "../../platform/storage.ts";
 import { errorMessage } from "../../shared/errors.ts";
 import { currentLocale, msg, uiLocales } from "../../shared/i18n/index.ts";
@@ -15,8 +19,16 @@ import { TARGET_LANGUAGES } from "../../shared/languages.ts";
 import type { Settings, SiteSettings } from "../../shared/settings.ts";
 import { endpointOf, fetchApiHealth } from "../common/api-health.ts";
 import { h, replace } from "../common/dom.ts";
-import { apiBlock, errorTitle, offlineBlock, renderStatusBlock } from "../common/status-view.ts";
-import { advancedSection } from "./advanced-view.ts";
+import { engineRunning, watchEngine } from "../common/engine-rpc.ts";
+import {
+  apiBlock,
+  engineBlock,
+  errorTitle,
+  type EngineState,
+  type StatusBlock,
+} from "../common/status-view.ts";
+import { fieldsAt } from "./advanced-model.ts";
+import { advancedSection, settingsCard } from "./advanced-view.ts";
 import {
   clearCache,
   saveAdvanced,
@@ -31,10 +43,13 @@ import {
   debugLogFileName,
   formatDateTime,
   LOG_LEVELS,
+  OPTION_TABS,
   parseBaseUrl,
   parseConcurrency,
   parseModel,
   presetFor,
+  tabFor,
+  type OptionTab,
 } from "./options-model.ts";
 import { offlineSection } from "./offline-view.ts";
 import { sitesSection } from "./sites-view.ts";
@@ -42,8 +57,34 @@ import { downloadJson, transferSection } from "./transfer-view.ts";
 
 const log = createLogger("options");
 
+const ENGINES = ["api", "offline"] as const;
+
 function logFailure(what: string, error: unknown): void {
   log.warn(what, { error: errorMessage(error) });
+}
+
+/** A labeled form field: the label above the control, the hint under it. */
+function field(id: string, label: string, input: HTMLElement, hint: string): HTMLElement {
+  return h(
+    "div",
+    { class: "field" },
+    h("label", { for: id }, label),
+    input,
+    hint === "" ? null : h("p", { class: "hint" }, hint),
+  );
+}
+
+/** The endpoint's readiness in the card header, with what to do when it is not ready. */
+function renderApiStatus(pill: HTMLElement, details: HTMLElement, block: StatusBlock): void {
+  replace(pill, h("p", { class: `pill tone-${block.tone}` }, block.title));
+  replace(
+    details,
+    block.hint === "" ? null : h("p", { class: "hint" }, block.hint),
+    ...block.lines
+      .filter((line) => line.startsWith(msg().popup.cause("")))
+      .map((line) => h("p", { class: "hint" }, line)),
+    ...block.warnings.map((warning) => h("p", { class: "warning", role: "alert" }, warning)),
+  );
 }
 
 async function main(): Promise<void> {
@@ -56,8 +97,51 @@ async function main(): Promise<void> {
   let settings: Settings = snapshot.settings;
   let sites: Record<string, SiteSettings> = snapshot.sites;
 
+  /* ---- translation engine ---- */
+  const engineMessage = h("p", { class: "message", role: "status" });
+  const engineRadios = ENGINES.map((engine) =>
+    h("input", {
+      type: "radio",
+      name: "engine",
+      id: `engine-${engine}`,
+      value: engine,
+      checked: settings.translate.engine === engine,
+      onchange: () => {
+        saveAdvanced({ translate: { engine } })
+          .then((saved) => {
+            settings = saved;
+            showEngine();
+            replace(engineMessage, msg().options.saved);
+          })
+          .catch((error: unknown) => {
+            logFailure("saving the translation engine failed", error);
+            replace(engineMessage, msg().options.saveFailed);
+          });
+      },
+    }),
+  );
+  const engineSection = h(
+    "section",
+    { class: "card", id: "engine-choice" },
+    h(
+      "fieldset",
+      { class: "mode engine-choice" },
+      h("legend", null, msg().offline.engine),
+      ...ENGINES.map((engine, i) =>
+        h(
+          "label",
+          { class: "radio", for: `engine-${engine}` },
+          engineRadios[i],
+          msg().offline.engineChoices[engine],
+        ),
+      ),
+    ),
+    engineMessage,
+  );
+
   /* ---- AI endpoint ---- */
-  const apiStatus = h("div", { class: "status", "aria-live": "polite" });
+  const apiPill = h("div", { class: "status", "aria-live": "polite" });
+  const apiDetails = h("div", { class: "status-details" });
   const apiMessage = h("p", { class: "message", role: "status" });
   const presetSelect = h(
     "select",
@@ -71,7 +155,6 @@ async function main(): Promise<void> {
     id: "base-url",
     value: settings.api.baseUrl,
     spellcheck: "false",
-    size: 40,
   });
   const apiKeyInput = h("input", {
     type: "password",
@@ -79,14 +162,12 @@ async function main(): Promise<void> {
     value: settings.api.apiKey,
     autocomplete: "off",
     spellcheck: "false",
-    size: 40,
   });
   const modelInput = h("input", {
     type: "text",
     id: "model",
     value: settings.api.model,
     spellcheck: "false",
-    size: 30,
   });
   const modelList = h("datalist", { id: "model-list" });
   modelInput.setAttribute("list", "model-list");
@@ -104,15 +185,12 @@ async function main(): Promise<void> {
     if (preset.model !== "") modelInput.value = preset.model;
   });
   const refreshHealth = (endpoint = endpointOf(settings.api)): Promise<void> => {
-    // Offline mode contacts no endpoint on its own; "Test connection" still checks it on request.
-    if (settings.translate.engine === "offline") {
-      renderStatusBlock(apiStatus, msg().options.apiHeading, offlineBlock(null));
-      return Promise.resolve();
-    }
-    renderStatusBlock(apiStatus, msg().options.apiHeading, apiBlock(null));
+    // Offline mode contacts no endpoint on its own (the card is hidden); "Test connection" still checks it.
+    if (settings.translate.engine === "offline") return Promise.resolve();
+    renderApiStatus(apiPill, apiDetails, apiBlock(null));
     return fetchApiHealth(endpoint)
       .then((result) => {
-        renderStatusBlock(apiStatus, msg().options.apiHeading, apiBlock(result.reading, endpoint.baseUrl));
+        renderApiStatus(apiPill, apiDetails, apiBlock(result.reading));
         replace(modelList, ...(result.models ?? []).slice(0, 200).map((id) => h("option", { value: id })));
       })
       .catch((error: unknown) => logFailure("health check failed", error));
@@ -160,35 +238,50 @@ async function main(): Promise<void> {
       })
       .catch((error: unknown) => replace(apiMessage, msg().options.testFailed(errorTitle(error))));
   };
-  const field = (id: string, label: string, input: HTMLElement, hint: string): HTMLElement =>
-    h(
-      "div",
-      { class: "field" },
-      h("label", { for: id }, label),
-      input,
-      hint === "" ? null : h("p", { class: "hint" }, hint),
-    );
   const apiSection = h(
     "section",
     { class: "card", id: "api" },
-    apiStatus,
+    h("div", { class: "card-head" }, h("h3", null, msg().options.apiHeading), apiPill),
+    apiDetails,
     h("p", { class: "hint" }, msg().options.apiIntro),
     field("preset", msg().options.preset, presetSelect, ""),
     field("base-url", msg().options.baseUrl, baseUrlInput, msg().options.baseUrlHint),
     field("api-key", msg().options.apiKey, apiKeyInput, msg().options.apiKeyHint),
-    field("model", msg().options.model, h("span", null, modelInput, modelList), msg().options.modelHint),
+    field(
+      "model",
+      msg().options.model,
+      h("span", { class: "with-list" }, modelInput, modelList),
+      msg().options.modelHint,
+    ),
     field("concurrency", msg().options.concurrency, concurrencySelect, msg().options.concurrencyHint),
     h(
       "div",
       { class: "actions" },
       h("button", { type: "button", class: "primary", onclick: saveApiForm }, msg().options.save),
-      " ",
       h("button", { type: "button", onclick: testConnection }, msg().options.testConnection),
     ),
     apiMessage,
   );
 
-  /* ---- languages ---- */
+  /* ---- offline mode (experimental) ---- */
+  const offline = offlineSection({
+    settings: () => settings,
+    save: saveAdvanced,
+    confirm: (text) => globalThis.confirm(text),
+    onError: logFailure,
+  });
+
+  const fieldDeps = { settings: () => settings, save: saveAdvanced, onError: logFailure };
+  const memory = settingsCard("memory", msg().optionsAdvanced.groups.memory, fieldsAt("memory"), fieldDeps);
+
+  const showEngine = (): void => {
+    const engine = settings.translate.engine;
+    for (const radio of engineRadios) radio.checked = radio.value === engine;
+    apiSection.hidden = engine !== "api";
+    offline.element.hidden = engine !== "offline";
+  };
+
+  /* ---- languages and display ---- */
   const languageMessage = h("p", { class: "message", role: "status" });
   const uiSelect = h(
     "select",
@@ -223,26 +316,35 @@ async function main(): Promise<void> {
   const languageSection = h(
     "section",
     { class: "card", id: "languages" },
-    h("h2", null, msg().options.languageHeading),
-    field("ui-locale", msg().options.uiLanguage, uiSelect, ""),
+    h("h3", null, msg().options.languageHeading),
     field("target-lang", msg().options.targetLanguage, targetSelect, ""),
+    field("ui-locale", msg().options.uiLanguage, uiSelect, ""),
     languageMessage,
   );
+  const lettering = settingsCard(
+    "lettering",
+    msg().optionsAdvanced.groups.render,
+    fieldsAt("lettering"),
+    fieldDeps,
+  );
+  const controls = settingsCard("controls", msg().options.controlsHeading, fieldsAt("controls"), fieldDeps);
 
   /* ---- sites ---- */
   const sitesView = sitesSection({
     settings: () => settings,
-    onDetails: () => privacySection.scrollIntoView({ behavior: "smooth" }),
+    onDetails: () => {
+      location.hash = "#privacy";
+    },
     onError: logFailure,
   });
 
-  /* ---- privacy ---- */
+  /* ---- privacy and data ---- */
   const privacySection = h("section", { class: "card", id: "privacy" });
   const renderPrivacy = (): void => {
     const at = settings.privacy.ackUploadNoticeAt;
     replace(
       privacySection,
-      h("h2", null, msg().options.privacyHeading),
+      h("h3", null, msg().options.privacyHeading),
       h("ul", { class: "points" }, ...msg().options.privacyPoints.map((point) => h("li", null, point))),
       h(
         "p",
@@ -254,7 +356,6 @@ async function main(): Promise<void> {
     );
   };
 
-  /* ---- cache ---- */
   const cacheMessage = h("p", { class: "message", role: "status" });
   const onClearCache = (): void => {
     if (!globalThis.confirm(msg().options.cacheConfirm)) return;
@@ -268,13 +369,26 @@ async function main(): Promise<void> {
   const cacheSection = h(
     "section",
     { class: "card", id: "cache" },
-    h("h2", null, msg().options.cacheHeading),
+    h("h3", null, msg().options.cacheHeading),
     h("p", { class: "hint" }, msg().options.cacheHint),
-    h("button", { type: "button", onclick: onClearCache }, msg().options.cacheClear),
+    h(
+      "div",
+      { class: "actions" },
+      h("button", { type: "button", onclick: onClearCache }, msg().options.cacheClear),
+    ),
     cacheMessage,
   );
 
-  /* ---- debug ---- */
+  const transfer = transferSection({
+    snapshot: () => ({ settings, sites }),
+    confirm: (text) => globalThis.confirm(text),
+    onImported: (value) => {
+      // The page text follows an imported UI language only after a reload.
+      if (value.settings.ui.locale !== renderedLocale) location.reload();
+    },
+    onError: logFailure,
+  });
+
   const levelSelect = h(
     "select",
     { id: "log-level" },
@@ -309,13 +423,31 @@ async function main(): Promise<void> {
         replace(debugMessage, msg().options.exportFailed);
       });
   };
+  // What the engine reports (for bug reports): only read when it already runs; this page never starts it.
+  const engineInfo = h("div", { class: "engine-info", id: "engine-status", "aria-live": "polite" });
+  const renderEngineInfo = (state: EngineState | null): void => {
+    const block = engineBlock(state);
+    replace(
+      engineInfo,
+      h(
+        "div",
+        { class: "card-head" },
+        h("span", { class: "engine-label" }, msg().popup.engineHeading),
+        h("p", { class: `pill tone-${block.tone}` }, block.title),
+      ),
+      block.lines.length === 0
+        ? null
+        : h("ul", { class: "facts" }, ...block.lines.map((line) => h("li", null, line))),
+      block.hint === "" ? null : h("p", { class: "hint" }, block.hint),
+    );
+  };
+  renderEngineInfo(null);
   const debugSection = h(
     "section",
     { class: "card", id: "debug" },
-    h("h2", null, msg().options.debugHeading),
-    h("label", { for: "log-level" }, msg().options.logLevel),
-    " ",
-    levelSelect,
+    h("h3", null, msg().options.debugHeading),
+    engineInfo,
+    field("log-level", msg().options.logLevel, levelSelect, ""),
     h(
       "div",
       { class: "actions" },
@@ -324,45 +456,33 @@ async function main(): Promise<void> {
     debugMessage,
   );
 
-  /* ---- backup and restore ---- */
-  const transfer = transferSection({
-    snapshot: () => ({ settings, sites }),
-    confirm: (text) => globalThis.confirm(text),
-    onImported: (value) => {
-      // The page text follows an imported UI language only after a reload.
-      if (value.settings.ui.locale !== renderedLocale) location.reload();
-    },
-    onError: logFailure,
-  });
-
-  /* ---- offline mode (experimental) ---- */
-  const offline = offlineSection({
-    settings: () => settings,
-    save: saveAdvanced,
-    confirm: (text) => globalThis.confirm(text),
-    onError: logFailure,
-  });
-
   /* ---- advanced ---- */
   const advanced = advancedSection({
-    settings: () => settings,
-    save: saveAdvanced,
+    ...fieldDeps,
     confirm: (text) => globalThis.confirm(text),
-    onError: logFailure,
   });
 
-  const sections = [
-    apiSection,
-    offline.element,
-    languageSection,
-    sitesView.element,
-    privacySection,
-    cacheSection,
-    transfer,
-    debugSection,
-    advanced.element,
-  ];
-  const nav = settingsNav(sections);
+  const cards: Record<OptionTab, HTMLElement[]> = {
+    engine: [engineSection, apiSection, offline.element, memory.element],
+    display: [languageSection, lettering.element, controls.element],
+    sites: [sitesView.element],
+    privacy: [privacySection, cacheSection, transfer, debugSection],
+    advanced: [advanced.element],
+  };
+  const tabs = OPTION_TABS.map((tab) =>
+    h(
+      "section",
+      { class: "tab", id: `tab-${tab}`, role: "tabpanel", "aria-labelledby": `nav-${tab}` },
+      h(
+        "header",
+        { class: "tab-head" },
+        h("h2", null, msg().options.tabs[tab].label),
+        h("p", { class: "hint" }, msg().options.tabs[tab].intro),
+      ),
+      ...cards[tab],
+    ),
+  );
+  const nav = settingsNav(tabs);
   replace(
     root,
     h(
@@ -372,11 +492,13 @@ async function main(): Promise<void> {
       h("h1", null, `${msg().ui.appName} – ${msg().options.title}`),
       h("span", { class: "build muted" }, msg().popup.build(__BUILD_ID__)),
     ),
-    h("div", { class: "settings-layout" }, nav, h("div", { class: "settings-form" }, ...sections)),
+    h("div", { class: "settings-layout" }, nav, h("div", { class: "settings-form" }, ...tabs)),
   );
+  showEngine();
   sitesView.render(sites);
   renderPrivacy();
   void refreshHealth();
+  void watchEngineInfo(renderEngineInfo);
 
   watchSettings((next) => {
     const previous = settings;
@@ -395,7 +517,11 @@ async function main(): Promise<void> {
       presetSelect.value = presetFor(next.api.baseUrl)?.id ?? "";
     }
     advanced.update(next);
+    lettering.update(next);
+    controls.update(next);
+    memory.update(next);
     offline.update(next);
+    showEngine();
     if (previous.translate.engine !== next.translate.engine) void refreshHealth();
     renderPrivacy();
   });
@@ -410,70 +536,81 @@ async function main(): Promise<void> {
 
 main().catch((error: unknown) => logFailure("options page failed to start", error));
 
-/** The section's own heading (its first h2), for the side navigation. */
-function headingOf(section: HTMLElement): string {
-  const heading = typeof section.querySelector === "function" ? section.querySelector("h2") : null;
-  return heading?.textContent?.trim() || section.id;
+/** Shows the engine's status in the Debug log card while it runs (never starts it). */
+async function watchEngineInfo(render: (state: EngineState) => void): Promise<void> {
+  if (!(await engineRunning())) {
+    render({ exists: false, status: null });
+    return;
+  }
+  try {
+    render({ exists: true, status: await callEngine("en:status", {}) });
+  } catch (error) {
+    log.debug("en:status failed", { error: errorMessage(error) });
+    render({ exists: true, status: null });
+  }
+  watchEngine({
+    view: "options",
+    tabId: null,
+    log,
+    onStatus: (status) => render({ exists: true, status }),
+    onGone: () => render({ exists: false, status: null }),
+  });
 }
 
 /**
- * Tabs of the options page: one section at a time, chosen from the left column. The tab follows the URL hash, so
- * deep links (#privacy from the popup, #sites…) and the browser's back button work; the first section is the
- * default. A section with a collapsible body (Advanced) opens it when its tab is shown.
+ * The tab list on the left: one tab shown at a time. The tab follows the URL hash, so deep links (#privacy from the
+ * popup, #sites, an old #cache bookmark) and the browser's back button work; the first tab is the default. Clicking
+ * switches at once; the hash follows through hashchange.
  */
-function settingsNav(sections: readonly HTMLElement[]): HTMLElement {
-  const links = new Map<HTMLElement, HTMLElement>();
-  for (const section of sections) {
-    links.set(
-      section,
-      h(
-        "a",
-        {
-          class: "settings-nav-item",
-          href: `#${section.id}`,
-          role: "tab",
-          // Switch at once; the hash (deep links, back button) follows through hashchange.
-          onclick: () => show(section.id),
-        },
-        headingOf(section),
-      ),
-    );
-  }
-  const nav = h(
-    "nav",
-    { class: "settings-nav", role: "tablist", "aria-label": msg().options.title },
-    ...links.values(),
+function settingsNav(tabs: readonly HTMLElement[]): HTMLElement {
+  const links = OPTION_TABS.map((tab) =>
+    h(
+      "a",
+      {
+        class: `settings-nav-item nav-${tab}`,
+        id: `nav-${tab}`,
+        href: `#${tab}`,
+        role: "tab",
+        "aria-controls": `tab-${tab}`,
+        onclick: () => show(tab),
+      },
+      h("span", { class: "nav-icon", "aria-hidden": "true" }),
+      msg().options.tabs[tab].label,
+    ),
   );
-  // Some sections draw their heading after the first render (status blocks, the site list): label them then.
-  const relabel = (): void => {
-    for (const [section, link] of links) {
-      const label = headingOf(section);
-      if (link.textContent !== label) link.textContent = label;
-    }
-  };
-  if (typeof MutationObserver === "function") {
-    const watcher = new MutationObserver(relabel);
-    for (const section of sections) watcher.observe(section, { childList: true, subtree: true });
-  }
-  const show = (id: string): void => {
-    const current = sections.find((section) => section.id === id) ?? sections[0];
-    for (const [section, link] of links) {
-      const active = section === current;
-      section.hidden = !active;
-      link.className = active ? "settings-nav-item is-active" : "settings-nav-item";
-      link.setAttribute("aria-selected", String(active));
-      if (active && typeof section.querySelector === "function") {
-        const details = section.querySelector("details");
-        if (details !== null) details.open = true;
+  const show = (hash: string): void => {
+    const current = tabFor(hash);
+    OPTION_TABS.forEach((tab, i) => {
+      const active = tab === current;
+      const panel = tabs[i];
+      const link = links[i];
+      if (panel !== undefined) panel.hidden = !active;
+      if (link !== undefined) {
+        link.className = `settings-nav-item nav-${tab}${active ? " is-active" : ""}`;
+        link.setAttribute("aria-selected", String(active));
       }
+    });
+    // An old anchor of a card (#cache, #api…) scrolls to that card inside its tab.
+    if (hash !== current && typeof document.getElementById === "function") {
+      const card = document.getElementById(hash);
+      if (card !== null && typeof card.scrollIntoView === "function") card.scrollIntoView({ block: "start" });
     }
   };
   show(location.hash.slice(1));
   if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
     window.addEventListener("hashchange", () => {
       show(location.hash.slice(1));
-      window.scrollTo(0, 0);
+      if (OPTION_TABS.some((tab) => `#${tab}` === location.hash)) window.scrollTo(0, 0);
     });
   }
-  return nav;
+  return h(
+    "nav",
+    {
+      class: "settings-nav",
+      role: "tablist",
+      "aria-label": msg().options.title,
+      "aria-orientation": "vertical",
+    },
+    ...links,
+  );
 }

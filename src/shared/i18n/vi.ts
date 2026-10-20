@@ -312,11 +312,14 @@ export const VI: Catalog = {
     return `${Math.round(hours / 24)} ngày`;
   },
   popup: {
+    siteToggle: "Dịch trên trang này",
+    progressDone: (count: number): string => `Xong: ${count} ảnh trên trang này`,
+    more: "Thêm cho trang này",
+    siteSettings: "Mọi cài đặt của trang này",
     openTranscript: "Mở bảng lời thoại",
     cookies: "Gửi cookie khi tải ảnh",
     cookiesHint:
       "Cho trang chỉ hiện ảnh khi đã đăng nhập. Cookie chỉ gửi tới máy chủ ảnh, không bao giờ gửi tới AI.",
-    apiHeading: "Endpoint AI",
     engineHeading: "Engine dịch",
     siteHeading: "Trang này",
     checking: "Đang kiểm tra…",
@@ -336,8 +339,6 @@ export const VI: Catalog = {
       `Hàng đợi: ${queued} chờ · ${inFlight} đang gửi · ${done} xong · ${failed} lỗi`,
     pausedBy: (title: string): string => `Đang tạm dừng: ${title}`,
     siteUnsupported: "Không dịch được trên trang này (chỉ trang http/https).",
-    siteOn: "Đang bật dịch cho trang này.",
-    siteOff: "Chưa bật dịch cho trang này.",
     modeLabel: "Chế độ",
     visibleSent: (count: number): string =>
       count > 0 ? `Đã gửi ${count} ảnh để dịch.` : "Không thấy ảnh truyện nào đang hiển thị.",
@@ -352,6 +353,32 @@ export const VI: Catalog = {
     build: (id: string): string => `Bản dựng ${id}`,
   },
   options: {
+    tabs: {
+      engine: {
+        label: "Dịch bằng",
+        intro:
+          "Dùng gì để dịch truyện: model AI bạn kết nối, hoặc các model ngoại tuyến (thử nghiệm) chạy trên máy này.",
+      },
+      display: {
+        label: "Ngôn ngữ & hiển thị",
+        intro: "Ngôn ngữ bạn đọc, ngôn ngữ giao diện và cách bản dịch hiện trên trang.",
+      },
+      sites: {
+        label: "Trang web",
+        intro:
+          "Các trang Panelingo sẽ dịch. Bật dịch cho một trang từ cửa sổ của biểu tượng extension khi đang đọc trang đó.",
+      },
+      privacy: {
+        label: "Riêng tư & dữ liệu",
+        intro: "Những gì được gửi tới AI, những gì lưu trên máy này và cách sao lưu cài đặt.",
+      },
+      advanced: {
+        label: "Nâng cao",
+        intro:
+          "Tinh chỉnh yêu cầu gửi AI, phát hiện chữ, tìm ảnh và bộ nhớ đệm. Giá trị mặc định phù hợp với hầu hết trường hợp; mỗi thay đổi được lưu khi bạn rời ô nhập.",
+      },
+    },
+    controlsHeading: "Phím và thao tác chuột",
     exportLog: "Xuất nhật ký debug",
     exportFailed: "Không xuất được nhật ký debug.",
     exportEmpty: "Nhật ký debug đang trống.",
@@ -384,7 +411,6 @@ export const VI: Catalog = {
     save: "Lưu",
     saved: "Đã lưu.",
     saveFailed: "Không lưu được.",
-    sitesHeading: "Trang đã thêm",
     sitesEmpty: "Chưa có trang nào. Mở một trang truyện, bấm biểu tượng extension rồi bật dịch cho trang đó.",
     siteEnabled: "Bật",
     siteMode: "Chế độ",
@@ -418,10 +444,10 @@ export const VI: Catalog = {
     logLevels: { debug: "Chi tiết (debug)", info: "Thông tin", warn: "Cảnh báo", error: "Chỉ lỗi" },
   },
   optionsAdvanced: {
-    heading: "Cài đặt nâng cao",
-    intro:
-      "Tinh chỉnh yêu cầu gửi AI, nhận diện chữ, cách hiển thị chữ và bộ nhớ đệm. Giá trị mặc định phù hợp " +
-      "với hầu hết nhu cầu. Mỗi thay đổi được lưu khi bạn rời khỏi ô nhập.",
+    search: "Tìm cài đặt",
+    modifiedOnly: "Chỉ mục đã thay đổi",
+    matches: (count: number): string => `${count} mục cài đặt`,
+    noMatch: "Không có mục cài đặt nào khớp.",
     defaultIs: (value: string): string => `Mặc định: ${value}`,
     range: (min: string, max: string): string => `Cho phép: từ ${min} đến ${max}`,
     automatic: "tự động",
@@ -450,8 +476,8 @@ export const VI: Catalog = {
     },
     fields: {
       "api.temperature": {
-        label: "Nhiệt độ (temperature)",
-        hint: "Mức đa dạng của câu trả lời. Để trống để dùng mặc định của nhà cung cấp.",
+        label: "Temperature (độ ngẫu nhiên)",
+        hint: "Càng thấp, bản dịch càng ổn định và sát nghĩa; càng cao, câu chữ càng đa dạng. Để trống để dùng mặc định của nhà cung cấp.",
       },
       "api.urgentLane": {
         label: "Thêm luồng cho ảnh đang xem",

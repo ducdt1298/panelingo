@@ -4,7 +4,7 @@
 
 import type { Logger } from "../platform/log.ts";
 import type { ReqOf, SwApi } from "../shared/protocol.ts";
-import type { ImageState } from "../shared/types.ts";
+import type { ImageState, TabProgress } from "../shared/types.ts";
 
 export type BadgeRequest = ReqOf<SwApi, "sw:badge">;
 export type Badge = Pick<BadgeRequest, "text" | "tone">;
@@ -16,6 +16,18 @@ const IN_PROGRESS: ReadonlySet<ImageState> = new Set<ImageState>([
   "waiting",
   "translating",
 ]);
+
+/** Images of a tab by state, for the popup (en:tab-progress). */
+export function progressOf(states: Iterable<ImageState>): TabProgress {
+  const progress: TabProgress = { total: 0, working: 0, paused: 0, failed: 0 };
+  for (const state of states) {
+    progress.total += 1;
+    if (IN_PROGRESS.has(state)) progress.working += 1;
+    else if (state === "paused") progress.paused += 1;
+    else if (state === "error") progress.failed += 1;
+  }
+  return progress;
+}
 
 /** Badge text holds about four characters. */
 const MAX_COUNT = 99;
@@ -49,6 +61,8 @@ export interface BadgeFeed {
   observe(tabId: number, frameKey: string, imageKey: string, state: ImageState): void;
   /** The frame is gone for good (navigation, closed tab): its images no longer count. */
   forgetFrame(frameKey: string): void;
+  /** Where the tab's images are now. */
+  progress(tabId: number): TabProgress;
 }
 
 export function createBadgeFeed(deps: BadgeFeedDeps): BadgeFeed {
@@ -95,5 +109,6 @@ export function createBadgeFeed(deps: BadgeFeedDeps): BadgeFeed {
       }
       publish(tabId);
     },
+    progress: (tabId) => progressOf(tabs.get(tabId)?.values() ?? []),
   };
 }

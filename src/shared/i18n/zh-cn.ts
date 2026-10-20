@@ -293,10 +293,13 @@ export const ZH_CN: Catalog = {
     return `${Math.round(hours / 24)} 天`;
   },
   popup: {
+    siteToggle: "在此网站翻译",
+    progressDone: (count: number): string => `完成：本页 ${count} 张图片`,
+    more: "此网站的更多设置",
+    siteSettings: "此网站的全部设置",
     openTranscript: "打开台词列表",
     cookies: "加载图片时发送 Cookie",
     cookiesHint: "适用于只向已登录读者显示图片的网站。Cookie 只发送到图片服务器，绝不会发送给 AI。",
-    apiHeading: "AI 接口",
     engineHeading: "翻译引擎",
     siteHeading: "当前网站",
     checking: "正在检查…",
@@ -316,8 +319,6 @@ export const ZH_CN: Catalog = {
       `队列：等待 ${queued} · 发送中 ${inFlight} · 已完成 ${done} · 失败 ${failed}`,
     pausedBy: (title: string): string => `已暂停：${title}`,
     siteUnsupported: "无法翻译此页面（仅支持 http/https 页面）。",
-    siteOn: "此网站已开启翻译。",
-    siteOff: "此网站未开启翻译。",
     modeLabel: "模式",
     visibleSent: (count: number): string =>
       count > 0 ? `已发送 ${count} 张图片进行翻译。` : "当前没有可见的漫画图片。",
@@ -332,6 +333,20 @@ export const ZH_CN: Catalog = {
     build: (id: string): string => `构建版本 ${id}`,
   },
   options: {
+    tabs: {
+      engine: {
+        label: "翻译方式",
+        intro: "用什么翻译漫画：你连接的 AI 模型，或在本设备上运行的实验性离线模型。",
+      },
+      display: { label: "语言与显示", intro: "你阅读的语言、界面语言，以及译文在页面上的样子。" },
+      sites: { label: "网站", intro: "Panelingo 会翻译的网站。阅读时从工具栏弹出窗口开启网站。" },
+      privacy: { label: "隐私与数据", intro: "会发送给 AI 的内容、保留在本设备上的内容，以及如何备份设置。" },
+      advanced: {
+        label: "高级",
+        intro: "对请求、文字检测、查找图片和缓存进行微调。默认值适合大多数情况；每项更改在离开输入框时保存。",
+      },
+    },
+    controlsHeading: "按键与点击",
     exportLog: "导出调试日志",
     exportFailed: "无法导出调试日志。",
     exportEmpty: "调试日志为空。",
@@ -364,7 +379,6 @@ export const ZH_CN: Catalog = {
     save: "保存",
     saved: "已保存。",
     saveFailed: "保存失败。",
-    sitesHeading: "网站",
     sitesEmpty: "还没有添加网站。打开一个漫画页面，点击扩展程序图标，然后为该网站开启翻译。",
     siteEnabled: "启用",
     siteMode: "模式",
@@ -396,8 +410,10 @@ export const ZH_CN: Catalog = {
     logLevels: { debug: "详细（调试）", info: "信息", warn: "警告", error: "仅错误" },
   },
   optionsAdvanced: {
-    heading: "高级设置",
-    intro: "微调请求、文字检测、嵌字和缓存。默认值适合大多数情况。每项更改会在你离开输入框时保存。",
+    search: "搜索设置",
+    modifiedOnly: "只看已更改的设置",
+    matches: (count: number): string => `${count} 项设置`,
+    noMatch: "没有与搜索匹配的设置。",
     defaultIs: (value: string): string => `默认值：${value}`,
     range: (min: string, max: string): string => `允许范围：${min} 到 ${max}`,
     automatic: "自动",

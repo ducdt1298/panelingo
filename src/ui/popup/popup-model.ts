@@ -1,9 +1,11 @@
-// Popup decisions without DOM or chrome (unit-tested): what "This site" shows and what its controls do.
+// Popup decisions without DOM or chrome (unit-tested): what the site card shows, what its controls do, and the
+// tab's progress bar.
 
 import type { ErrorInfo } from "../../shared/errors.ts";
 import { msg } from "../../shared/i18n/index.ts";
 import { DEFAULT_SITE, type Settings, type SiteSettings } from "../../shared/settings.ts";
 import { siteKeyFor } from "../../shared/site.ts";
+import type { TabProgress } from "../../shared/types.ts";
 
 export type SiteView =
   | { kind: "unsupported" }
@@ -56,4 +58,28 @@ export function visibleMessage(outcome: VisibleOutcome): string {
     case "error":
       return msg().popup.actionFailed(msg().errors[outcome.error.code].title);
   }
+}
+
+export interface ProgressView {
+  /** Images that settled (translated, without text, refused…), failed ones excluded. */
+  done: number;
+  failed: number;
+  total: number;
+  /** Still translating (or paused) vs everything settled. */
+  busy: boolean;
+  text: string;
+}
+
+/** The progress bar for the tab's images; null when the tab has none (or the engine never saw it). */
+export function progressView(progress: TabProgress | null): ProgressView | null {
+  if (progress === null || progress.total === 0) return null;
+  const busy = progress.working + progress.paused > 0;
+  const done = progress.total - progress.working - progress.paused - progress.failed;
+  return {
+    done,
+    failed: progress.failed,
+    total: progress.total,
+    busy,
+    text: busy ? msg().ui.progress(done, progress.total) : msg().popup.progressDone(progress.total),
+  };
 }

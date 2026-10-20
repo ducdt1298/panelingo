@@ -337,11 +337,15 @@ export const PL: Catalog = {
     return `${days} ${days === 1 ? "dzień" : "dni"}`;
   },
   popup: {
+    siteToggle: "Tłumacz w tej witrynie",
+    progressDone: (count: number): string =>
+      `Gotowe: ${count} ${plural(count, "obraz", "obrazy", "obrazów")} na tej stronie`,
+    more: "Więcej dla tej witryny",
+    siteSettings: "Wszystkie ustawienia tej witryny",
     openTranscript: "Otwórz transkrypcję",
     cookies: "Wysyłaj pliki cookie przy pobieraniu obrazów",
     cookiesHint:
       "Dla stron, które pokazują obrazy tylko zalogowanym czytelnikom. Pliki cookie trafiają tylko do serwera obrazów, nigdy do AI.",
-    apiHeading: "Endpoint AI",
     engineHeading: "Silnik tłumaczenia",
     siteHeading: "Ta witryna",
     checking: "Sprawdzanie…",
@@ -362,8 +366,6 @@ export const PL: Catalog = {
       `Kolejka: oczekujące ${queued} · wysyłane ${inFlight} · gotowe ${done} · nieudane ${failed}`,
     pausedBy: (title: string): string => `Wstrzymano: ${title}`,
     siteUnsupported: "Tej strony nie można przetłumaczyć (tylko strony http/https).",
-    siteOn: "Tłumaczenie jest włączone dla tej witryny.",
-    siteOff: "Tłumaczenie jest wyłączone dla tej witryny.",
     modeLabel: "Tryb",
     visibleSent: (count: number): string =>
       count > 0
@@ -382,6 +384,32 @@ export const PL: Catalog = {
     build: (id: string): string => `Kompilacja ${id}`,
   },
   options: {
+    tabs: {
+      engine: {
+        label: "Tłumaczenie",
+        intro:
+          "Czym tłumaczyć komiksy: modelem AI, który podłączysz, albo eksperymentalnymi modelami offline na tym urządzeniu.",
+      },
+      display: {
+        label: "Język i wygląd",
+        intro: "Język, w którym czytasz, język interfejsu i wygląd tłumaczeń na stronie.",
+      },
+      sites: {
+        label: "Witryny",
+        intro:
+          "Witryny, na których Panelingo tłumaczy. Włącz witrynę w okienku na pasku narzędzi podczas czytania.",
+      },
+      privacy: {
+        label: "Prywatność i dane",
+        intro: "Co jest wysyłane do AI, co zostaje na tym urządzeniu i jak zrobić kopię ustawień.",
+      },
+      advanced: {
+        label: "Zaawansowane",
+        intro:
+          "Dostrajanie żądań, wykrywania tekstu, wyszukiwania obrazów i pamięci podręcznej. Wartości domyślne pasują w większości przypadków; każda zmiana zapisuje się po opuszczeniu pola.",
+      },
+    },
+    controlsHeading: "Klawisze i kliknięcia",
     exportLog: "Eksportuj dziennik debugowania",
     exportFailed: "Nie udało się wyeksportować dziennika debugowania.",
     exportEmpty: "Dziennik debugowania jest pusty.",
@@ -417,7 +445,6 @@ export const PL: Catalog = {
     save: "Zapisz",
     saved: "Zapisano.",
     saveFailed: "Nie udało się zapisać.",
-    sitesHeading: "Witryny",
     sitesEmpty:
       "Brak witryn. Otwórz stronę z komiksem, kliknij ikonę rozszerzenia i włącz tłumaczenie dla tej witryny.",
     siteEnabled: "Włączone",
@@ -463,10 +490,10 @@ export const PL: Catalog = {
     },
   },
   optionsAdvanced: {
-    heading: "Ustawienia zaawansowane",
-    intro:
-      "Dostrajanie zapytań, wykrywania tekstu, liternictwa i pamięci podręcznej. Wartości domyślne sprawdzą się " +
-      "w większości przypadków. Każda zmiana jest zapisywana po opuszczeniu pola.",
+    search: "Szukaj ustawień",
+    modifiedOnly: "Tylko zmienione ustawienia",
+    matches: (count: number): string => `${count} ${plural(count, "ustawienie", "ustawienia", "ustawień")}`,
+    noMatch: "Żadne ustawienie nie pasuje do wyszukiwania.",
     defaultIs: (value: string): string => `Domyślnie: ${value}`,
     range: (min: string, max: string): string => `Dozwolone: od ${min} do ${max}`,
     automatic: "automatycznie",

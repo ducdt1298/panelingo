@@ -23,6 +23,7 @@ import type {
   RectCss,
   SeriesProfile,
   Size,
+  TabProgress,
   Transcript,
   TranscriptItem,
   UnitGeometry,
@@ -81,6 +82,7 @@ export interface EngineApi {
   "en:ping": [{ probe: Bytes }, { probe: Bytes; phase: EnginePhase }];
   "en:status": [{ tabId?: number }, EngineStatus];
   "en:transcript": [{ tabId: number }, Transcript];
+  "en:tab-progress": [{ tabId: number }, TabProgress];
   /** vi null = revert to the AI text. */
   "en:edit-unit": [{ contentKey: string; unitKey: string; translation: string | null }, Empty];
   "en:retranslate": [{ tabId: number; contentKey?: string; unitKey?: string }, { queued: number }];

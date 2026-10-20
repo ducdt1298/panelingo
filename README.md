@@ -188,9 +188,11 @@ the original page, and <kbd>Alt</kbd>+click (or long-press) a translated balloon
 
 ## Configuration
 
-The options page covers the endpoint, model, parallel requests, interface and target language, your site list, the
-log level and the cache. Advanced settings include detector backend, slicing, timeouts, retries, lettering sizes,
-cache retention and per-site Referer, cookie and layout policies. They are documented with defaults and limits in
+The options page has five tabs: **Translation** (the AI endpoint or offline mode, and series memory), **Language &
+display** (target and interface language, lettering, keys), **Sites** (your site list with a per-site editor),
+**Privacy & data** (what is sent, cache, backup, debug log) and **Advanced** (a searchable list of every other setting:
+detector backend, slicing, timeouts, retries, cache retention…). The toolbar popup turns translation on for the
+current site, picks the mode and the target language, and shows the page's progress. They are documented with defaults and limits in
 [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 
 ## Privacy

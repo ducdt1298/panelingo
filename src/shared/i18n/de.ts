@@ -342,11 +342,15 @@ export const DE: Catalog = {
     return `${days} ${plural(days, "Tag", "Tage")}`;
   },
   popup: {
+    siteToggle: "Auf dieser Website übersetzen",
+    progressDone: (count: number): string =>
+      `Fertig: ${count} ${count === 1 ? "Bild" : "Bilder"} auf dieser Seite`,
+    more: "Mehr für diese Website",
+    siteSettings: "Alle Einstellungen dieser Website",
     openTranscript: "Transkript öffnen",
     cookies: "Cookies bei Bildanfragen senden",
     cookiesHint:
       "Für Seiten, die Bilder nur angemeldeten Lesern zeigen. Cookies gehen nur an den Bildserver, nie an die KI.",
-    apiHeading: "KI-Endpunkt",
     engineHeading: "Übersetzungs-Engine",
     siteHeading: "Diese Website",
     checking: "Wird geprüft…",
@@ -366,8 +370,6 @@ export const DE: Catalog = {
       `Warteschlange: ${queued} wartend · ${inFlight} laufend · ${done} fertig · ${failed} fehlgeschlagen`,
     pausedBy: (title: string): string => `Pausiert: ${title}`,
     siteUnsupported: "Diese Seite kann nicht übersetzt werden (nur http/https-Seiten).",
-    siteOn: "Die Übersetzung ist für diese Website aktiviert.",
-    siteOff: "Die Übersetzung ist für diese Website deaktiviert.",
     modeLabel: "Modus",
     visibleSent: (count: number): string =>
       count > 0
@@ -387,6 +389,34 @@ export const DE: Catalog = {
     build: (id: string): string => `Build ${id}`,
   },
   options: {
+    tabs: {
+      engine: {
+        label: "Übersetzung",
+        intro:
+          "Was die Comics übersetzt: ein KI-Modell, das du verbindest, oder die experimentellen Offline-Modelle auf diesem Gerät.",
+      },
+      display: {
+        label: "Sprache & Anzeige",
+        intro:
+          "Die Sprache, in der du liest, die Sprache der Oberfläche und wie Übersetzungen auf der Seite aussehen.",
+      },
+      sites: {
+        label: "Websites",
+        intro:
+          "Websites, auf denen Panelingo übersetzt. Schalte eine Website beim Lesen über das Popup in der Symbolleiste ein.",
+      },
+      privacy: {
+        label: "Datenschutz & Daten",
+        intro:
+          "Was an die KI gesendet wird, was auf diesem Gerät bleibt und wie du deine Einstellungen sicherst.",
+      },
+      advanced: {
+        label: "Erweitert",
+        intro:
+          "Feinabstimmung für Anfragen, Texterkennung, Bildsuche und Caches. Die Standardwerte passen in den meisten Fällen; jede Änderung wird gespeichert, sobald du das Feld verlässt.",
+      },
+    },
+    controlsHeading: "Tasten und Klicks",
     exportLog: "Debug-Protokoll exportieren",
     exportFailed: "Das Debug-Protokoll konnte nicht exportiert werden.",
     exportEmpty: "Das Debug-Protokoll ist leer.",
@@ -422,7 +452,6 @@ export const DE: Catalog = {
     save: "Speichern",
     saved: "Gespeichert.",
     saveFailed: "Speichern fehlgeschlagen.",
-    sitesHeading: "Websites",
     sitesEmpty:
       "Noch keine Websites. Öffnen Sie eine Comicseite, klicken Sie auf das Symbol der Erweiterung und aktivieren " +
       "Sie die Übersetzung für diese Website.",
@@ -471,10 +500,10 @@ export const DE: Catalog = {
     },
   },
   optionsAdvanced: {
-    heading: "Erweiterte Einstellungen",
-    intro:
-      "Feineinstellungen für Anfragen, Texterkennung, Textdarstellung und Caches. Die Standardwerte passen für " +
-      "die meisten Fälle. Jede Änderung wird gespeichert, sobald Sie das Feld verlassen.",
+    search: "Einstellungen durchsuchen",
+    modifiedOnly: "Nur geänderte Einstellungen",
+    matches: (count: number): string => `${count} ${count === 1 ? "Einstellung" : "Einstellungen"}`,
+    noMatch: "Keine Einstellung passt zu deiner Suche.",
     defaultIs: (value: string): string => `Standard: ${value}`,
     range: (min: string, max: string): string => `Erlaubt: ${min} bis ${max}`,
     automatic: "automatisch",

@@ -250,6 +250,28 @@ test("en:settings, en:status, en:ping and en:prepare-close", async () => {
   assert.equal((await call(handlers, "en:ping", { probe: makeProbe() })).phase, "closing");
 });
 
+test("en:tab-progress: the tab's image counts; an empty answer without a feed; a bad tab id is refused", async () => {
+  const progress = { total: 5, working: 2, paused: 0, failed: 1 };
+  const asked: number[] = [];
+  const handlers = createUiHandlers(
+    deps({
+      tabProgress: (tabId) => {
+        asked.push(tabId);
+        return progress;
+      },
+    }),
+  );
+  assert.deepEqual(await call(handlers, "en:tab-progress", { tabId: 7 }), progress);
+  assert.deepEqual(asked, [7]);
+  await assert.rejects(call(handlers, "en:tab-progress", { tabId: 1.5 }));
+  assert.deepEqual(await call(createUiHandlers(deps()), "en:tab-progress", { tabId: 7 }), {
+    total: 0,
+    working: 0,
+    paused: 0,
+    failed: 0,
+  });
+});
+
 test("en:edit-unit, en:retranslate and en:jump-to", async () => {
   const sent: EngineToCs[] = [];
   const clock = new ManualClock();

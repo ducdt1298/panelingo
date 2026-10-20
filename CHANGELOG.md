@@ -75,6 +75,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **A redesigned popup and options page.** The popup is now a remote control for the page you read: one switch turns
+  translation on for the site, then the mode, the target language, a progress bar for the page, "translate visible
+  images", "translate the page again" and the transcript; per-site cookies fold away under "More for this site", a
+  note explains a paused queue with a button to fix it, and the endpoint (or offline engine) is one status line at
+  the bottom. The options page goes from nine sections to five tabs (Translation, Language & display, Sites, Privacy
+  & data, Advanced; old anchors such as `#cache` still open the right tab). Lettering, keys and series memory moved
+  out of Advanced onto the tabs they belong to; Advanced has collapsible groups, a search box (accents and case do
+  not matter) and an "Only changed settings" filter. The site list no longer overflows its card, and the Debug log
+  card shows the engine's status.
+
 - **Fewer, fuller AI requests.** Requests are no longer one per image: consecutive images of a page share requests
   (gathered while their text becomes ready, and merged again when a lane frees up), so a webtoon chapter makes far
   fewer calls (29 → 17 on a 60-strip fixture chapter). The first request of an on-screen image now holds up to 8

@@ -481,6 +481,7 @@ function compose(input: ComposeInput): EngineRuntime {
     frames,
     lifecycle,
     status,
+    tabProgress: (tabId) => badges.progress(tabId),
     changed: () => markDirty(),
     clock,
   });

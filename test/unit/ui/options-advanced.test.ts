@@ -1,12 +1,20 @@
-// The real Options entry (src/ui/options/options.ts) against the chrome fake: the collapsed Advanced section built
-// from the declarative table (save on change, clamping, resets), the per-site editor (saved through sw:site-set, so
-// the content-script registration follows), settings export/import, and labels for every control.
+// The real Options entry (src/ui/options/options.ts) against the chrome fake: the setting rows built from the
+// declarative table (the Advanced tab's collapsible groups with search and an "only changed" filter, and the cards of
+// the Translation and Language & display tabs; save on change, clamping, resets), the per-site editor (saved through
+// sw:site-set, so the content-script registration follows), settings export/import, and labels for every control.
 
 import assert from "node:assert/strict";
 import { afterEach, describe, test } from "node:test";
 import { catalogFor, msg } from "../../../src/shared/i18n/index.ts";
 import { DEFAULT_SETTINGS, type Settings, type SiteSettings } from "../../../src/shared/settings.ts";
-import { ADVANCED_FIELDS, fieldId, fieldText } from "../../../src/ui/options/advanced-model.ts";
+import {
+  ADVANCED_FIELDS,
+  advancedGroups,
+  fieldId,
+  fieldsAt,
+  fieldText,
+  placeOf,
+} from "../../../src/ui/options/advanced-model.ts";
 import { SETTINGS_EXPORT_FORMAT } from "../../../src/ui/options/settings-transfer.ts";
 import { until } from "../sw/sw-helpers.ts";
 import type { FakeElement } from "./fake-dom.ts";
@@ -69,7 +77,8 @@ function storedSite(run: PageRun, siteKey = SITE): SiteSettings {
 }
 
 function rowOf(run: PageRun, path: string): FakeElement {
-  const row = byId(run, "advanced")
+  const row = run.dom
+    .byId("app")
     .findAll("div")
     .find((div) => div.getAttribute("data-path") === path);
   if (row === undefined) throw new Error(`no row ${path}`);
@@ -112,36 +121,52 @@ function unlabeled(root: FakeElement): string[] {
 }
 
 describe("options page: Advanced section", () => {
-  test("collapsed <details>, one labeled row per table entry grouped by section, values from storage", async () => {
+  test("one labeled row per table entry, in its card or in a collapsed Advanced group; values from storage", async () => {
     const run = await openOptions({ settings: { render: { maxFontPx: 40 }, api: { temperature: null } } });
-    const details = byId(run, "advanced-details");
-    assert.equal(details.tagName, "DETAILS");
-    assert.notEqual(details["open"], true, "collapsed by default");
-    assert.deepEqual(texts(details.findAll("summary")[0] as FakeElement, "h2"), [
-      msg().optionsAdvanced.heading,
-    ]);
+    const advanced = byId(run, "advanced");
+    const groups = advanced.findAll("details");
     assert.deepEqual(
-      texts(details, "legend"),
-      [
-        "api",
-        "translate",
-        "detector",
-        "engine",
-        "discovery",
-        "render",
-        "memory",
-        "cache",
-        "privacy",
-        "debug",
-      ].map((section) => (msg().optionsAdvanced.groups as Record<string, string>)[section]),
+      groups.map((group) => group.getAttribute("id")),
+      advancedGroups(fieldsAt("advanced")).map(({ section }) => `adv-group-${section}`),
     );
+    assert.deepEqual(
+      groups.map(
+        (group) => group.findAll("span").find((span) => span.className === "adv-title")?.textContent,
+      ),
+      ["api", "translate", "detector", "engine", "discovery", "memory", "cache", "privacy", "debug"].map(
+        (section) => (msg().optionsAdvanced.groups as Record<string, string>)[section],
+      ),
+    );
+    assert.ok(
+      groups.every((group) => group["open"] !== true),
+      "groups are collapsed by default",
+    );
+    const cardOf = {
+      advanced: "advanced",
+      memory: "memory",
+      lettering: "lettering",
+      controls: "controls",
+    } as const;
     for (const field of ADVANCED_FIELDS) {
+      const place = placeOf(field);
+      if (place === "custom") continue;
       const id = fieldId(field);
       const control = byId(run, id);
-      const label = details.findAll("label").find((candidate) => candidate.getAttribute("for") === id);
+      const label = byId(run, cardOf[place])
+        .findAll("label")
+        .find((candidate) => candidate.getAttribute("for") === id);
       assert.equal(label?.textContent, fieldText(field, msg()).label, field.path);
       assert.equal(control.getAttribute("aria-describedby"), `${id}-hint`, field.path);
     }
+    assert.ok(
+      byId(run, "lettering").findById("adv-render-maxFontPx") !== null,
+      "lettering on the display tab",
+    );
+    assert.ok(
+      byId(run, "memory").findById("adv-memory-enabled") !== null,
+      "series memory on the translation tab",
+    );
+    assert.equal(advanced.findById("adv-render-font"), null, "not twice");
     assert.equal(byId(run, "adv-render-maxFontPx").value, "40");
     assert.equal(byId(run, "adv-render-maxFontPx").getAttribute("min"), "16");
     assert.equal(byId(run, "adv-api-temperature").value, "");
@@ -153,6 +178,62 @@ describe("options page: Advanced section", () => {
     assert.equal(rowOf(run, "render.minFontPx").className, "adv-field");
     const hint = byId(run, "adv-render-maxFontPx-hint").textContent;
     assert.ok(hint.endsWith("Default: 64 · Allowed: 16 to 120"), hint);
+  });
+
+  test("search and the only-changed filter: matching rows in opened groups, a count, nothing else", async () => {
+    const run = await openOptions({
+      settings: { memory: { historyMaxLines: 3 }, cache: { translationTtlDays: 7 } },
+    });
+    const search = byId(run, "adv-search");
+    const summary = (): string => byId(run, "adv-summary").textContent;
+    const group = (section: string): FakeElement => byId(run, `adv-group-${section}`);
+    const visible = (): string[] =>
+      byId(run, "advanced")
+        .findAll("div")
+        .filter((div) => div.getAttribute("data-path") !== null && div["hidden"] !== true)
+        .map((div) => div.getAttribute("data-path") ?? "");
+
+    search.value = "earlier LINES";
+    run.dispatch(search, "input");
+    assert.deepEqual(visible(), ["memory.historyMaxLines", "memory.historyMaxTokens"]);
+    assert.equal(group("memory")["open"], true, "the group with matches opens");
+    assert.equal(group("api")["hidden"], true, "groups without matches hide");
+    assert.equal(summary(), msg().optionsAdvanced.matches(2));
+
+    search.value = "maxImageBytes";
+    run.dispatch(search, "input");
+    assert.deepEqual(visible(), ["privacy.maxImageBytes"], "the setting path matches too");
+
+    search.value = "zzz nothing";
+    run.dispatch(search, "input");
+    assert.deepEqual(visible(), []);
+    assert.equal(summary(), msg().optionsAdvanced.noMatch);
+
+    search.value = "";
+    run.dispatch(search, "input");
+    assert.equal(summary(), "");
+    assert.notEqual(group("memory")["open"], true, "clearing the search restores the groups as they were");
+    assert.equal(group("api")["hidden"], false);
+
+    const changed = byId(run, "adv-modified");
+    changed["checked"] = true;
+    run.dispatch(changed, "change");
+    assert.deepEqual(visible(), ["memory.historyMaxLines", "cache.translationTtlDays"]);
+    assert.equal(summary(), msg().optionsAdvanced.matches(2));
+    run.dispatch(rowOf(run, "cache.translationTtlDays").findAll("button")[0] as FakeElement, "click");
+    await until(() => !visible().includes("cache.translationTtlDays"), "a reset row leaves the filter");
+    assert.deepEqual(visible(), ["memory.historyMaxLines"]);
+  });
+
+  test("the vi catalog: accents and case do not matter in the search", async () => {
+    const run = await openOptions({ locale: "vi" });
+    const search = byId(run, "adv-search");
+    assert.equal(search.getAttribute("aria-label"), catalogFor("vi").optionsAdvanced.search);
+    const label = catalogFor("vi").optionsAdvanced.fields["memory.historyMaxLines"].label;
+    search.value = label.normalize("NFD").replace(/\p{M}/gu, "").replace(/đ/gu, "d").toUpperCase();
+    run.dispatch(search, "input");
+    assert.equal(rowOf(run, "memory.historyMaxLines")["hidden"], false, String(search.value));
+    assert.equal(rowOf(run, "memory.historyMaxTokens")["hidden"], true);
   });
 
   test("every control of the page has a label", async () => {
@@ -236,9 +317,9 @@ describe("options page: Advanced section", () => {
       () => stored(run).memory.historyMaxLines === DEFAULT_SETTINGS.memory.historyMaxLines,
       "reset",
     );
-    assert.equal(stored(run).render.showDoneBadge, false);
+    assert.equal(stored(run).render.showDoneBadge, true, "rows of the other tabs are not part of it");
     assert.equal(stored(run).api.baseUrl, BASE_URL, "basic settings are not part of the section");
-    assert.equal(byId(run, "adv-render-showDoneBadge")["checked"], false);
+    assert.equal(byId(run, "adv-render-showDoneBadge")["checked"], true);
     assert.ok(texts(byId(run, "advanced"), "p").includes(msg().optionsAdvanced.resetAllDone));
   });
 
@@ -255,9 +336,11 @@ describe("options page: Advanced section", () => {
   test("Vietnamese: labels, groups and hints come from the vi catalog", async () => {
     const vi = catalogFor("vi");
     const run = await openOptions({ locale: "vi" });
-    const details = byId(run, "advanced-details");
-    assert.deepEqual(texts(details.findAll("summary")[0] as FakeElement, "h2"), [vi.optionsAdvanced.heading]);
-    const label = details.findAll("label").find((el) => el.getAttribute("for") === "adv-render-maxFontPx");
+    const summary = byId(run, "adv-group-memory").findAll("summary")[0] as FakeElement;
+    assert.ok(summary.textContent.startsWith(vi.optionsAdvanced.groups.memory));
+    const label = byId(run, "lettering")
+      .findAll("label")
+      .find((el) => el.getAttribute("for") === "adv-render-maxFontPx");
     assert.equal(label?.textContent, vi.optionsAdvanced.fields["render.maxFontPx"].label);
     assert.notEqual(label?.textContent, catalogFor("en").optionsAdvanced.fields["render.maxFontPx"].label);
   });
