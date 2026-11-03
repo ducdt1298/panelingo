@@ -49,7 +49,7 @@ jobs:
 
       # The detector models are downloaded from Hugging Face (pinned commits, sha256-verified) and never committed.
       - name: Restore model cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .cache/models
           key: models-${{ hashFiles('vendor/models.lock.json') }}
