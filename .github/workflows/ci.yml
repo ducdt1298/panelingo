@@ -48,7 +48,7 @@ jobs:
           python -I -B tools/fixtures/make_fixtures.py --out test/fixtures/generated --seed 1 --assets never
 
       - name: Upload fixtures
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-fixtures
           path: test/fixtures/generated
@@ -106,7 +106,7 @@ jobs:
       - run: npm run build:prod
 
       - name: Upload extension
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: panelingo-dist-${{ github.sha }}
           path: dist
